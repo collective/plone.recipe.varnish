@@ -159,7 +159,7 @@ class Recipe:
             elif len(parts)==3:
                 output+='    set backend.host = "%s";\n' % parts[1]
                 output+='    set backend.port = "%s";\n' % parts[2]
-                vhosting+=' elsif (req.http.host ~ "^%s$") {\n' % parts[0]
+                vhosting+=' elsif (req.http.host ~ "^%s(:[0-9]+)?$") {\n' % parts[0]
                 vhosting+='    set req.backend = backend_%d;\n' % i
                 if parts[0] in vhm_map:
                     location=vhm_map[parts[0]]
