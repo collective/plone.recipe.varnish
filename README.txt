@@ -16,6 +16,10 @@ This configures a buildout part which runs Varnish to listen on 127.0.0.1:8000
 for requests, using a 1 gigabyte cache and sending requests to a backend 
 at 127.0.0.1:8080.
 
+Wrappers for all the varnish commands are created in the bin directory
+of your buildout.
+
+
 Virtual hosting
 ---------------
 
@@ -52,8 +56,8 @@ This tells us that the domain plone.org should be mapped to the location
 maps URLs correctly.
 
 
-Options
--------
+Option reference
+----------------
 
 url
     URL for an archive containing the Varnish sources. Either **url** or
@@ -67,8 +71,8 @@ cache-size
     The size of the cache.
 
 bind
-    Hostname, and optionally port, on which Varnish should listen for requests.
-    Defaults to 127.0.0.1:8000.
+    Hostname and port on which Varnish will listen for requests. Defaults
+    to 127.0.0.1:8000.
 
 backends
     Specifies the backend or backends which will process the (uncached)
@@ -90,3 +94,4 @@ telnet
 
 .. _Varnish: http://varnish.projects.linpro.no/
 .. _zc.buildout: http://cheeseshop.python.org/pypi/zc.buildout
+
