@@ -1,7 +1,9 @@
 Varnish recipe for buildout
 ===========================
 
-plone.recipe.varnish is a `zc.buildout`_ recipe to install `Varnish`_.
+plone.recipe.varnish is a `zc.buildout`_ recipe to install `Varnish`_. Even
+though the name contains the Plone there is nothing Plone specific about
+this recipe: it works work non-Zope sites just as well.
 
 Configuring it is very simple. For example::
 
