@@ -126,6 +126,9 @@ class Recipe:
         template=string.Template(template)
         config={}
 
+        vhm_map=self.options.get("zope_vhm_map", "").split()
+        vhm_map=dict(x.split(":") for x in vhm_map)
+
         backends=self.options.get("backends", "127.0.0.1:8080").strip().split()
         backends=[x.split(":") for x in backends]
         if len(backends)>1:
@@ -149,6 +152,11 @@ class Recipe:
                 output+='    set backend.port = "%s";\n' % parts[2]
                 vhosting+=' elsif (req.http.host ~ "^%s$") {\n' % parts[0]
                 vhosting+='    set req.backend = backend_%d;\n' % i
+                if parts[0] in vhm_map:
+                    location=vhm_map[parts[0]]
+                    if location.startswith("/"):
+                        location=location[1:]
+                    vhosting+='    set req.url = regsub(req.url, "(.*)", "/VirtualHostBase/http/%s:80/%s/VirtualHostRoot/$1");\n' % (parts[0], location)
                 vhosting+='}'
             else:
                 self.logger.error("Invalid syntax for backend: %s" % 
@@ -176,9 +184,8 @@ class Recipe:
 
     def install(self):
         location=self.options["location"]
-        if os.path.exists(location):
-            shutil.rmtree(location)
-        os.mkdir(location)
+        if not os.path.exists(location):
+            os.mkdir(location)
         self.options.created(location)
 
         self.downloadVarnish()
