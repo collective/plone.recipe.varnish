@@ -24,6 +24,15 @@ class Recipe:
             self.logger.error("You need to specify either a URL or subversion repository")
             raise zc.buildout.UserError("No download location given")
 
+        # Set some default options
+        self.options["bind"]=self.options.get("bind", "127.0.0.1:8000")
+        self.options["cache-size"]=self.options.get("cache-size", "1G")
+        self.options["backends"]=self.options.get("backends", "127.0.0.1:8080")
+
+        # Convenience settings
+        (host,port)=self.options["bind"].split(":")
+        self.options["bind-host"]=host
+        self.options["bind-port"]=port
         options["location"] = os.path.join(
                 buildout["buildout"]["parts-directory"], self.name)
 
@@ -156,7 +165,8 @@ class Recipe:
                     location=vhm_map[parts[0]]
                     if location.startswith("/"):
                         location=location[1:]
-                    vhosting+='    set req.url = regsub(req.url, "(.*)", "/VirtualHostBase/http/%s:80/%s/VirtualHostRoot/$1");\n' % (parts[0], location)
+                    vhosting+='    set req.url = regsub(req.url, "(.*)", "/VirtualHostBase/http/%s:%s/%s/VirtualHostRoot/$1");\n' % \
+                                (parts[0], self.options["bind-port"], location)
                 vhosting+='}'
             else:
                 self.logger.error("Invalid syntax for backend: %s" % 
@@ -187,11 +197,6 @@ class Recipe:
         if not os.path.exists(location):
             os.mkdir(location)
         self.options.created(location)
-
-        # Set some default options
-        self.options["bind"]=self.options.get("bind", "127.0.0.1:8000")
-        self.options["cache-size"]=self.options.get("cache-size", "1G")
-        self.options["backends"]=self.options.get("backends", "127.0.0.1:8080")
 
         self.downloadVarnish()
         self.compileVarnish()
