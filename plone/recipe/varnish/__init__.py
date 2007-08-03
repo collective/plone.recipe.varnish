@@ -107,13 +107,13 @@ class Recipe:
                         self.options["binary-location"], "sbin", "varnishd")
         print >>f, '    -f "%s" \\' % os.path.join(
                             self.options["binary-location"], "varnish.vcl")
-        print >>f, '    -a %s \\' % self.options.get("bind", "127.0.0.1:6781")
+        print >>f, '    -a %s \\' % self.options["bind"]
         if self.options.get("telnet", None):
             print >>f, '    -T %s \\' % self.options["telnet"]
         print >>f, '    -s file,"%s",%s \\' % (
                 os.path.join(self.options["binary-location"],
                             "var", "varnish", "storage"),
-                self.options.get("cache-size", "1G"))
+                self.options["cache-size"])
         print >>f, '    "$@"'
         f.close()
         os.chmod(target, 0755)
@@ -129,7 +129,7 @@ class Recipe:
         vhm_map=self.options.get("zope_vhm_map", "").split()
         vhm_map=dict(x.split(":") for x in vhm_map)
 
-        backends=self.options.get("backends", "127.0.0.1:8080").strip().split()
+        backends=self.options["backends"].strip().split()
         backends=[x.split(":") for x in backends]
         if len(backends)>1:
             lengths=set([len(x) for x in backends])
@@ -187,6 +187,11 @@ class Recipe:
         if not os.path.exists(location):
             os.mkdir(location)
         self.options.created(location)
+
+        # Set some default options
+        self.options["bind"]=self.options.get("bind", "127.0.0.1:8000")
+        self.options["cache-size"]=self.options.get("cache-size", "1G")
+        self.options["backends"]=self.options.get("backends", "127.0.0.1:8080")
 
         self.downloadVarnish()
         self.compileVarnish()
