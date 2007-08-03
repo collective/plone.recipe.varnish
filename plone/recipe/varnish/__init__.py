@@ -125,12 +125,48 @@ class Recipe:
         template=open(os.path.join(whereami, "template.vcl")).read()
         template=string.Template(template)
         config={}
-        parts=self.options.get("backend", "127.0.0.1:8080").strip().split(":")
-        config["backend_host"]=parts[0]
-        if len(parts)==2:
-            config["backend_port"]=parts[1]
-        else:
-            config["backend_port"]="8080"
+
+        backends=self.options.get("backends", "127.0.0.1:8080").strip().split()
+        backends=[x.split(":") for x in backends]
+        if len(backends)>1:
+            lengths=set([len(x) for x in backends])
+            if lengths!=set([3]):
+                self.logger.error("When using multiple backends a hostname "
+                                  "must be given for each client")
+                raise zc.buildout.UserError("Multiple backends without hostnames")
+
+
+        output=""
+        vhosting=""
+        for i in range(len(backends)):
+            parts=backends[i]
+            output+='backend backend_%d {\n' % i
+            if len(parts)==2:
+                output+='    set backend.host = "%s";\n' % parts[0]
+                output+='    set backend.port = "%s";\n' % parts[1]
+            elif len(parts)==3:
+                output+='    set backend.host = "%s";\n' % parts[1]
+                output+='    set backend.port = "%s";\n' % parts[2]
+                vhosting+=' elsif (req.http.host ~ "^%s$") {\n' % parts[0]
+                vhosting+='    set req.backend = backend_%d;\n' % i
+                vhosting+='}'
+            else:
+                self.logger.error("Invalid syntax for backend: %s" % 
+                                        ":".join(parts))
+                raise zc.buildout.UserError("Invalid syntax for backends")
+            output+="}\n\n"
+
+
+        vhosting=vhosting[4:]
+        if len(backends)==0 and len(backends[0])==2:
+            vhosting='set req.backend = backend_0;'
+        elif len(backends[0])==3:
+            vhosting+=' else {\n'
+            vhosting+='    error 404 "Unknown virtual host";\n'
+            vhosting+='}\n'
+
+        config["backends"]=output
+        config["virtual_hosting"]=vhosting
 
         target=os.path.join(self.options["binary-location"], "varnish.vcl")
         f=open(target, "wt")
@@ -143,7 +179,6 @@ class Recipe:
         if os.path.exists(location):
             shutil.rmtree(location)
         os.mkdir(location)
-
         self.options.created(location)
 
         self.downloadVarnish()

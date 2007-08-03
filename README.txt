@@ -9,12 +9,29 @@ Configuring it is very simple. For example::
     recipe = plone.recipe.varnish
     url = http://puzzle.dl.sourceforge.net/sourceforge/varnish/varnish-1.1.tar.gz
     bind = 127.0.0.1:8000
-    backend = 127.0.0.1:8080
+    backends = 127.0.0.1:8080
     cache-size = 1G
 
 This configures a buildout part which runs Varnish to listen on 127.0.0.1:8000
 for requests, using a 1 gigabyte cache and sending requests to a backend 
-at 127.0.0.1:8080 .
+at 127.0.0.1:8080.
+
+Virtual hosting
+---------------
+
+Varnish supports virtual hosting by selecting a different backend server
+based on headers on the incoming request. You can configure the backends
+through the backends option::
+
+  [varnish]
+  backends =
+     plone.org:127.0.0.1:8000
+     plone.net:127.0.0.1:9000
+
+This will generate a configuration which sends all traffic for the plone.org
+host to a backend server running on port 8000 while all traffic for the
+plone.net host is send to port 9000.
+
 
 Options
 -------
@@ -34,9 +51,13 @@ bind
     Hostname, and optionally port, on which Varnish should listen for requests.
     Defaults to 127.0.0.1:8000.
 
-backend
-    Hostname, and optionally port, for the backend server. Defaults to
-    127.0.0.1:8080.
+backends
+    Specifies the backend or backends which will process the (uncached)
+    requests. There are two ways to specify backends: using
+    **hostname:backend server:backend port** or **backend server:backend
+    port**. Using the first option allows you to do virtual hosting. If
+    multiple backends are specified you have to use the full form including
+    the (virtual) hostname. Defaults to 127.0.0.1:8080.
 
 telnet
     If specified sets the hostname and port on which Varnish will listen

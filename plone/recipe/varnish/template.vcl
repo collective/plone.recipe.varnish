@@ -3,17 +3,14 @@
 #
 # Default backend definition.  Set this to point to your content server.
 
-backend default {
-	set backend.host = "${backend_host}";
-	set backend.port = "${backend_port}";
-}
+${backends}
 
 acl purge {
 	"localhost";
 }
 
 sub vcl_recv {
-        set req.backend = default;
+${virtual_hosting}
 
 	if (req.request != "GET" && req.request != "HEAD") {
         	# PURGE request if zope asks nicely
@@ -76,7 +73,7 @@ sub vcl_fetch {
 		pass;
 	}
 
-	if (obj.url ~ "(rss_|search_rss)") {
+	if (req.url ~ "(rss_|search_rss)") {
 		set obj.ttl = 1800s;
 	}
 }
