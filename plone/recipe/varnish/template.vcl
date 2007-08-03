@@ -26,6 +26,9 @@ ${virtual_hosting}
 		pipe;
 	}
 
+        if (req.http.If-None-Match)
+            pass;
+
 	/* Always cache images */
 	if (req.url ~ "\.(jpg|jpeg|gif|png|tiff|tif|svg|swf|ico|css|js|vsd|doc|ppt|pps|xls|pdf|mp3|mp4|m4a|ogg|mov|avi|wmv|sxw|zip|gz|bz2|tgz|tar|rar|odc|odb|odf|odg|odi|odp|ods|odt|sxc|sxd|sxi|sxw|dmg|torrent|deb|msi|iso|rpm)$") {
 		lookup;
@@ -56,6 +59,9 @@ sub vcl_hit {
         }
 }
 sub vcl_miss {
+        if (req.http.If-Modified-Since)
+            pass;
+
         if (req.request == "PURGE") {
                 error 404 "Not in cache";
         }
