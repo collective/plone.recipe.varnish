@@ -38,10 +38,10 @@ This will generate a configuration which sends all traffic for the plone.org
 host to a backend server running on port 8000 while all traffic for the
 plone.net host is send to port 9000.
 
-Zope hosting
-------------
+Zope 2 hosting
+--------------
 
-If you are using Zope as backend server you will need to rewrite the URL
+If you are using Zope 2 as backend server you will need to rewrite the URL
 so the Zope Virtual Host Monster can generate correct links for links in
 your pages. This can be done either by a web server such as Apache or nginx
 but can also be done by Varnish. This can be configured using the
