@@ -9,7 +9,6 @@ setup(name='plone.recipe.varnish',
       classifiers=[
         "Framework :: Buildout",
         "Framework :: Zope2",
-        "Framework :: Zope3",
         "Intended Audience :: System Administrators",
         "License :: OSI Approved :: GNU General Public License (GPL)",
         "Operating System :: POSIX",
