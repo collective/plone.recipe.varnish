@@ -10,6 +10,9 @@ import urllib2
 import urlparse
 import zc.buildout
 
+OSX = False
+if sys.platform.startswith('darwin'):
+    OSX = True
 
 class Recipe:
     def __init__(self, buildout, name, options):
@@ -89,6 +92,15 @@ class Recipe:
         os.chdir(self.options["source-location"])
         self.logger.info("Compiling Varnish")
         assert subprocess.call(["./configure", "--prefix=" + self.options["binary-location"]]) == 0
+        
+        # Patch libtool on OS X - workaround for http://varnish.projects.linpro.no/ticket/118
+        if OSX:
+            libtool_file_name = os.path.join(self.options["source-location"], 'libtool')
+            libtool_source = open(libtool_file_name, 'r').read()
+            libtool_source = libtool_source.replace('export_dynamic_flag_spec=""', 
+                                                    'export_dynamic_flag_spec="-flat_namespace"')
+            open(libtool_file_name, 'w').write(libtool_source)
+        
         assert subprocess.call(["make", "install"]) == 0
 
 
