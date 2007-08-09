@@ -93,6 +93,13 @@ telnet
     If specified sets the hostname and port on which Varnish will listen
     for commands using its telnet interface.
 
+user
+    The name of the user varnish should switch to before accepting any
+    requests. Defaults to nobody.
+
+group
+    The name of the group varnish should switch to before accepting any
+    request. This defaults to the main group for the specified user.
 
 .. _Varnish: http://varnish.projects.linpro.no/
 .. _zc.buildout: http://cheeseshop.python.org/pypi/zc.buildout

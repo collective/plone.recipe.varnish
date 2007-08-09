@@ -31,6 +31,8 @@ class Recipe:
         self.options["bind"]=self.options.get("bind", "127.0.0.1:8000")
         self.options["cache-size"]=self.options.get("cache-size", "1G")
         self.options["backends"]=self.options.get("backends", "127.0.0.1:8080")
+        self.options["user"]=self.options.get("user", "nobody")
+        self.options["group"]=self.options.get("group", "")
 
         # Convenience settings
         (host,port)=self.options["bind"].split(":")
@@ -125,6 +127,9 @@ class Recipe:
         print >>f, "#!/bin/sh"
         print >>f, "exec %s \\" % os.path.join(
                         self.options["binary-location"], "sbin", "varnishd")
+        print >>f, '    -p user=%s \\' % self.options["user"]
+        if self.options["group"]:
+            print >>f, '    -p group=%s \\' % self.options["group"]
         print >>f, '    -f "%s" \\' % os.path.join(
                             self.options["binary-location"], "varnish.vcl")
         print >>f, '    -a %s \\' % self.options["bind"]
