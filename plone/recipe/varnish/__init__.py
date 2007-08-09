@@ -56,7 +56,6 @@ class Recipe:
 
         if os.path.exists(self.options["source-location"]):
             shutil.rmtree(self.options["source-location"])
-        os.mkdir(self.options["source-location"])
 
         if self.svn:
             self.logger.info("Checking out varnish from subversion.")
