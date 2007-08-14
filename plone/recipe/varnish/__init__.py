@@ -152,7 +152,7 @@ class Recipe:
         config={}
 
         vhm_map=self.options.get("zope_vhm_map", "").split()
-        vhm_map=dict(x.split(":") for x in vhm_map)
+        vhm_map=dict([x.split(":") for x in vhm_map])
 
         backends=self.options["backends"].strip().split()
         backends=[x.split(":") for x in backends]
