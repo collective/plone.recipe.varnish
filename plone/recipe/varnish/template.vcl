@@ -12,14 +12,14 @@ acl purge {
 sub vcl_recv {
 ${virtual_hosting}
 
-    if (req.request != "GET" && req.request != "HEAD") {
-        /* PURGE request if zope asks nicely */
-        if (req.request == "PURGE") {
-            if (!client.ip ~ purge) {
-                    error 405 "Not allowed.";
-            }
-            lookup;
+    if (req.request == "PURGE") {
+        if (!client.ip ~ purge) {
+                error 405 "Not allowed.";
         }
+        lookup;
+    }
+
+    if (req.request != "GET" && req.request != "HEAD") {
         pipe;
     }
     
