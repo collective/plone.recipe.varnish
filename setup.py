@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '1.0'
+version = '1.0b2'
 
 setup(name='plone.recipe.varnish',
       version=version,
@@ -28,7 +28,10 @@ setup(name='plone.recipe.varnish',
           # -*- Extra requirements: -*-
       ],
       entry_points={
-          "zc.buildout" : [ "default = plone.recipe.varnish:Recipe" ],
+          "zc.buildout" : [
+              "build = plone.recipe.varnish:BuildRecipe",
+              "instance = plone.recipe.varnish:ConfigureRecipe",
+              ],
       }
       )
 

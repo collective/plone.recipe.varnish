@@ -7,16 +7,20 @@ this recipe: it works work non-Zope sites just as well.
 
 Configuring it is very simple. For example::
 
-    [varnish]
-    recipe = plone.recipe.varnish
-    url = http://puzzle.dl.sourceforge.net/sourceforge/varnish/varnish-1.1.tar.gz
+    [myvarnish]
+    recipe = plone.recipe.varnish:instance
     bind = 127.0.0.1:8000
     backends = 127.0.0.1:8080
     cache-size = 1G
 
-This configures a buildout part which runs Varnish to listen on 127.0.0.1:8000
-for requests, using a 1 gigabyte cache and sending requests to a backend 
-at 127.0.0.1:8080.
+    [varnish-build]
+    recipe = plone.recipe.varnish:build
+    url = http://puzzle.dl.sourceforge.net/sourceforge/varnish/varnish-1.1.tar.gz
+
+This configures two buildout parts: varnish-build which will download,
+compile and install varnish and myvarnish which runs Varnish, configured to
+listen on 127.0.0.1:8000 for requests, using a 1 gigabyte cache and sending
+requests to a backend at 127.0.0.1:8080.
 
 Wrappers for all the varnish commands are created in the bin directory
 of your buildout.
@@ -29,7 +33,7 @@ Varnish supports virtual hosting by selecting a different backend server
 based on headers on the incoming request. You can configure the backends
 through the backends option::
 
-  [varnish]
+  [myvarnish]
   backends =
      plone.org:127.0.0.1:8000
      plone.net:127.0.0.1:9000
@@ -47,8 +51,8 @@ your pages. This can be done either by a web server such as Apache or nginx
 but can also be done by Varnish. This can be configured using the
 **zope_vhm_map** option. Here is an example::
 
-  [varnish]
-  zope_vhm_map =
+  [myvarnish]
+  zope2_vhm_map =
       plone.org:/plone
       plone.net:/plone
 
@@ -58,8 +62,13 @@ This tells us that the domain plone.org should be mapped to the location
 maps URLs correctly.
 
 
-Option reference
-----------------
+plone.recipe.varnish:build reference
+------------------------------------
+
+The plone.recipe.varnish:build recipe takes care of downloading Varnish,
+compiling it on your system and installing it in your buildout.
+
+It can be configured with any of these options:
 
 url
     URL for an archive containing the Varnish sources. Either **url** or
@@ -68,6 +77,21 @@ url
 svn
     URL for a subversion repository containing Varnish sources. Either **url**
     or **svn** has to be specified.
+
+
+plone.recipe.varnish:instance reference
+---------------------------------------
+
+The plone.recipe.varnish:instance recipe create a Varnish configuration
+file and creates a wrapper script inside your buildout that will start
+Varnish with the correct configuration.
+
+It can be configured with any of these options:
+
+daemon
+    The path of the varnish daemon to use. Defaults to bin/varnishd inside
+    your buildout, which is the executable created by the
+    plone.recipe.varnish:build recipe.
 
 cache-size
     The size of the cache.
