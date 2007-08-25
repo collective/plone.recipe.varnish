@@ -103,6 +103,10 @@ class BuildRecipe:
     def compileVarnish(self):
         os.chdir(self.options["source-location"])
         self.logger.info("Compiling Varnish")
+        
+        if self.svn:
+            assert subprocess.call(["./autogen.sh"]) == 0
+        
         assert subprocess.call(["./configure", "--prefix=" + self.options["binary-location"]]) == 0
         
         if OSX:
