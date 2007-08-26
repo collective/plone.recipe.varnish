@@ -20,8 +20,7 @@ ${virtual_hosting}
     }
 
     if (req.request != "GET" && req.request != "HEAD") {
-        # Do not try to cache POST
-        pass;
+        pipe;
     }
     
     if (req.http.Expect) {
