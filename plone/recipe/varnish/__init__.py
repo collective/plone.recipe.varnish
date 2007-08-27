@@ -52,6 +52,10 @@ class BuildRecipe:
         return self.options.created()
 
 
+    def update(self):
+        pass
+
+
     def downloadVarnish(self):
         download_dir=self.buildout['buildout']['download-directory']
 
