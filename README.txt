@@ -68,6 +68,10 @@ plone.recipe.varnish:build reference
 The plone.recipe.varnish:build recipe takes care of downloading Varnish,
 compiling it on your system and installing it in your buildout.
 
+If you are running on an OS/X system a patch to fix a linking error
+will be automatically applied. More information on the bug and patch
+can be found at http://varnish.projects.linpro.no/ticket/118 .
+
 It can be configured with any of these options:
 
 url
