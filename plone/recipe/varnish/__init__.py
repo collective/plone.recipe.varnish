@@ -147,11 +147,23 @@ class ConfigureRecipe:
         # Set some default options
         self.options["bind"]=self.options.get("bind", "127.0.0.1:8000")
         self.options["cache-size"]=self.options.get("cache-size", "1G")
-        self.options["backends"]=self.options.get("backends", "127.0.0.1:8080")
         self.options["user"]=self.options.get("user", "nobody")
         self.options["group"]=self.options.get("group", "")
         self.options["daemon"]=self.options.get("daemon", 
                 os.path.join(buildout["buildout"]["bin-directory"], "varnishd"))
+        if self.options.has_key("config"):
+            if self.options.has_key("backends") or \
+                    self.options.has_key("zope2_vhm_map"):
+                self.logger.error("If you specify the config= option you can "
+                                  "not use backends or zope2_vhm_map.")
+                raise zc.buildout.UserError("Can not use both config and "
+                                           "backends or zope2_vhm_map options.")
+            self.options["generate_config"]="false"
+        else:
+            self.options["generate_config"]="true"
+            self.options["backends"]=self.options.get("backends", "127.0.0.1:8080")
+            self.options["config"]=os.path.join(self.options["location"],
+                        "varnish.vcl")
 
         # Convenience settings
         (host,port)=self.options["bind"].split(":")
@@ -163,12 +175,10 @@ class ConfigureRecipe:
 
     def install(self):
         location=self.options["location"]
-        if not os.path.exists(location):
-            os.mkdir(location)
-        self.options.created(location)
 
         self.addVarnishRunner()
-        self.createVarnishConfig()
+        if self.options["generate_config"]=="true":
+            self.createVarnishConfig()
 
         return self.options.created()
 
@@ -186,8 +196,7 @@ class ConfigureRecipe:
         print >>f, '    -p user=%s \\' % self.options["user"]
         if self.options["group"]:
             print >>f, '    -p group=%s \\' % self.options["group"]
-        print >>f, '    -f "%s" \\' % os.path.join(
-                            self.options["location"], "varnish.vcl")
+        print >>f, '    -f "%s" \\' % self.options["config"]
         print >>f, '    -a %s \\' % self.options["bind"]
         if self.options.get("telnet", None):
             print >>f, '    -T %s \\' % self.options["telnet"]
@@ -201,6 +210,10 @@ class ConfigureRecipe:
 
 
     def createVarnishConfig(self):
+        if not os.path.exists(location):
+            os.mkdir(location)
+        self.options.created(location)
+
         module=self.options["recipe"].split(":")[0]
         whereami=sys.modules[module].__path__[0]
         template=open(os.path.join(whereami, "template.vcl")).read()
@@ -258,8 +271,8 @@ class ConfigureRecipe:
         config["backends"]=output
         config["virtual_hosting"]=vhosting
 
-        target=os.path.join(self.options["location"], "varnish.vcl")
-        f=open(target, "wt")
+        f=open(self.options["config"], "wt")
         f.write(template.safe_substitute(config))
         f.close()
+        self.options.created(self.options["config"])
 

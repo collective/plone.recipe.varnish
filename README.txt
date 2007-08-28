@@ -110,6 +110,10 @@ bind
     Hostname and port on which Varnish will listen for requests. Defaults
     to 127.0.0.1:8000.
 
+config
+    Path for a Varnish VCL configuration to use. If you use this option
+    you can not use the backends or zope_vhm_map options.
+
 backends
     Specifies the backend or backends which will process the (uncached)
     requests. There are two ways to specify backends: using
