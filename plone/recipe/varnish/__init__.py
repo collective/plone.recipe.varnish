@@ -176,6 +176,10 @@ class ConfigureRecipe:
     def install(self):
         location=self.options["location"]
 
+        if not os.path.exists(location):
+            os.mkdir(location)
+        self.options.created(location)
+
         self.addVarnishRunner()
         if self.options["generate_config"]=="true":
             self.createVarnishConfig()
@@ -210,10 +214,6 @@ class ConfigureRecipe:
 
 
     def createVarnishConfig(self):
-        if not os.path.exists(location):
-            os.mkdir(location)
-        self.options.created(location)
-
         module=self.options["recipe"].split(":")[0]
         whereami=sys.modules[module].__path__[0]
         template=open(os.path.join(whereami, "template.vcl")).read()
