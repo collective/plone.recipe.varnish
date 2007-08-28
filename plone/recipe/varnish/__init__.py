@@ -92,7 +92,7 @@ class BuildRecipe:
                 shutil.rmtree(tmp)
 
 
-    def patchForOSX(self):
+    def PatchForOSX(self):
         """Patch libtool on OS X.
         
         workaround for http://varnish.projects.linpro.no/ticket/118
