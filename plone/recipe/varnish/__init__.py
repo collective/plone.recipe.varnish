@@ -124,6 +124,8 @@ class BuildRecipe:
 
         for dir in ["bin", "sbin"]:
             dir=os.path.join(self.options["binary-location"], dir)
+            if not os.path.isdir(dir):
+                continue
             for file in os.listdir(dir):
                 self.logger.info("Adding script wrapper for %s" % file)
                 target=os.path.join(bintarget, file)
