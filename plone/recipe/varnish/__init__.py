@@ -147,8 +147,6 @@ class ConfigureRecipe:
         # Set some default options
         self.options["bind"]=self.options.get("bind", "127.0.0.1:8000")
         self.options["cache-size"]=self.options.get("cache-size", "1G")
-        self.options["user"]=self.options.get("user", "nobody")
-        self.options["group"]=self.options.get("group", "")
         self.options["daemon"]=self.options.get("daemon", 
                 os.path.join(buildout["buildout"]["bin-directory"], "varnishd"))
         if self.options.has_key("config"):
@@ -197,8 +195,9 @@ class ConfigureRecipe:
         f=open(target, "wt")
         print >>f, "#!/bin/sh"
         print >>f, "exec %s \\" % self.options["daemon"]
-        print >>f, '    -p user=%s \\' % self.options["user"]
-        if self.options["group"]:
+        if self.options.has_key("user"):
+            print >>f, '    -p user=%s \\' % self.options["user"]
+        if self.options.has_key("group"):
             print >>f, '    -p group=%s \\' % self.options["group"]
         print >>f, '    -f "%s" \\' % self.options["config"]
         print >>f, '    -a %s \\' % self.options["bind"]
