@@ -86,3 +86,7 @@ sub vcl_fetch {
         set obj.ttl = 1800s;
     }
 }
+
+sub vcl_hash {
+    set req.hash += req.http.Accept-Encoding;
+}
