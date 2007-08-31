@@ -144,6 +144,9 @@ class ConfigureRecipe:
         self.buildout=buildout
         self.logger=logging.getLogger(self.name)
 
+        self.options["location"] = os.path.join(
+                buildout["buildout"]["parts-directory"], self.name)
+
         # Set some default options
         self.options["bind"]=self.options.get("bind", "127.0.0.1:8000")
         self.options["cache-size"]=self.options.get("cache-size", "1G")
@@ -167,9 +170,6 @@ class ConfigureRecipe:
         (host,port)=self.options["bind"].split(":")
         self.options["bind-host"]=host
         self.options["bind-port"]=port
-        options["location"] = os.path.join(
-                buildout["buildout"]["parts-directory"], self.name)
-
 
     def install(self):
         location=self.options["location"]
@@ -213,7 +213,11 @@ class ConfigureRecipe:
 
 
     def createVarnishConfig(self):
-        module=self.options["recipe"].split(":")[0]
+        module = ''
+        for x in self.options["recipe"]:
+            if x in (':', '>', '<', '='):
+                break
+            module += x
         whereami=sys.modules[module].__path__[0]
         template=open(os.path.join(whereami, "template.vcl")).read()
         template=string.Template(template)
