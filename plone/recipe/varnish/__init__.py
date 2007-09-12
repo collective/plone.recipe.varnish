@@ -200,6 +200,8 @@ class ConfigureRecipe:
         if self.options.has_key("group"):
             print >>f, '    -p group=%s \\' % self.options["group"]
         print >>f, '    -f "%s" \\' % self.options["config"]
+        print >>f, '    -P "%s" \\' % \
+                os.path.join(self.options["location"], "varnish.pid")
         print >>f, '    -a %s \\' % self.options["bind"]
         if self.options.get("telnet", None):
             print >>f, '    -T %s \\' % self.options["telnet"]
