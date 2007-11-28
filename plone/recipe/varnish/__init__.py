@@ -208,6 +208,8 @@ class ConfigureRecipe:
         print >>f, '    -s file,"%s",%s \\' % (
                 os.path.join(self.options["location"], "storage"),
                 self.options["cache-size"])
+        if self.options.get("mode", "daemon") == "foreground":
+            print >>f, '    -F \\'
         print >>f, '    "$@"'
         f.close()
         os.chmod(target, 0755)

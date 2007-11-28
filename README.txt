@@ -103,6 +103,11 @@ daemon
     your buildout, which is the executable created by the
     plone.recipe.varnish:build recipe.
 
+mode
+    Specify whether the varnish daemon should run in 'daemon' or
+    'foreground' mode.  The latter is useful when varnish is run by service
+    supervision tools like daemontools or runit.  Defaults to 'daemon'.
+
 cache-size
     The size of the cache.
 
