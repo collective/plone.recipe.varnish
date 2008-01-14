@@ -15,7 +15,7 @@ Configuring it is very simple. For example::
 
     [varnish-build]
     recipe = plone.recipe.varnish:build
-    url = http://puzzle.dl.sourceforge.net/sourceforge/varnish/varnish-1.1.1.tar.gz
+    url = http://puzzle.dl.sourceforge.net/sourceforge/varnish/varnish-1.1.2.tar.gz
 
 This configures two buildout parts: varnish-build which will download,
 compile and install varnish and myvarnish which runs Varnish, configured to
