@@ -31,7 +31,7 @@ ${virtual_hosting}
         pass;
     }
 
-    /* Do not cache other authorised content */
+    /* Do not cache other authorized content */
     if (req.http.Authenticate || req.http.Authorization) {
         pass;
     }

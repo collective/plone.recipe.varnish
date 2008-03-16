@@ -25,7 +25,6 @@ setup(name='plone.recipe.varnish',
       zip_safe=False,
       install_requires=[
           'setuptools',
-          # -*- Extra requirements: -*-
       ],
       entry_points={
           "zc.buildout" : [
@@ -34,4 +33,3 @@ setup(name='plone.recipe.varnish',
               ],
       }
       )
-

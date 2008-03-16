@@ -2,8 +2,8 @@ Varnish recipe for buildout
 ===========================
 
 plone.recipe.varnish is a `zc.buildout`_ recipe to install `Varnish`_. Even
-though the name contains the Plone there is nothing Plone specific about
-this recipe: it works work non-Zope sites just as well.
+though the name contains the name Plone, there is nothing Plone specific about
+this recipe: it works for non-Zope sites just as well.
 
 Configuring it is very simple. For example::
 
@@ -41,6 +41,7 @@ through the backends option::
 This will generate a configuration which sends all traffic for the plone.org
 host to a backend server running on port 8000 while all traffic for the
 plone.net host is send to port 9000.
+
 
 Zope 2 hosting
 --------------
@@ -106,7 +107,7 @@ daemon
 mode
     Specify whether the varnish daemon should run in 'daemon' or
     'foreground' mode.  The latter is useful when varnish is run by service
-    supervision tools like daemontools or runit.  Defaults to 'daemon'.
+    supervision tools like daemontools or runit. Defaults to 'daemon'.
 
 cache-size
     The size of the cache.
