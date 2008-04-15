@@ -27,33 +27,54 @@ class BuildRecipe:
                     "You need to specify either a URL or subversion repository")
             raise zc.buildout.UserError("No download location given")
 
-        location=options["location"]=os.path.join(
-                buildout["buildout"]["parts-directory"], self.name)
+        # If we use a download, then look for a shared Varnish installation directory
+        if self.svn is None and buildout['buildout'].get('varnish-directory') is not None:
+            _, _, urlpath, _, _, _ = urlparse.urlparse(self.url)
+            fname = urlpath.split('/')[-1]
+            # cleanup the name a bit
+            for s in ('.tar', '.bz2', '.gz', '.tgz'):
+                fname = fname.replace(s, '')
+            location = options['location'] = os.path.join(
+                buildout['buildout']['varnish-directory'],fname)
+            options['shared-varnish'] = 'true'
+        else:
+            # put it into parts
+            location = options['location'] = os.path.join(
+                buildout['buildout']['parts-directory'],self.name)
+
         options["source-location"]=os.path.join(location, "source")
         options["binary-location"]=os.path.join(location, "install")
         options["daemon"]=os.path.join(options["binary-location"], "varnishd")
 
         # Set some default options
-        buildout['buildout'].setdefault(
-                'download-directory',
+        buildout['buildout'].setdefault('download-directory',
                 os.path.join(buildout['buildout']['directory'], 'downloads'))
 
 
     def install(self):
-        location=self.options["location"]
-        if not os.path.exists(location):
-            os.mkdir(location)
-        self.options.created(location)
-
-        self.downloadVarnish()
-        self.compileVarnish()
+        self.installVarnish()
         self.addScriptWrappers()
-
-        return self.options.created()
+        if self.url and self.options.get('shared-varnish') == 'true':
+            # If the varnish installation is shared, only return non-shared paths 
+            return self.options.created()
+        return self.options.created(self.options["location"])
 
 
     def update(self):
         pass
+
+
+    def installVarnish(self):
+        location=self.options["location"]
+        if os.path.exists(location):
+            # If the varnish installation exists and is shared, then we are done
+            if self.options.get('shared-varnish') == 'true':
+                return
+            else:
+                shutil.rmtree(location)
+        os.mkdir(location)
+        self.downloadVarnish()
+        self.compileVarnish()
 
 
     def downloadVarnish(self):
@@ -148,7 +169,7 @@ class ConfigureRecipe:
                 buildout["buildout"]["parts-directory"], self.name)
 
         # Set some default options
-        self.options["bind"]=self.options.get("bind", "127.0.0.1:8000")
+        self.options["bind"]=self.options.get("bind", "127.0.0.1:8000").lstrip(":")
         self.options["cache-size"]=self.options.get("cache-size", "1G")
         self.options["daemon"]=self.options.get("daemon", 
                 os.path.join(buildout["buildout"]["bin-directory"], "varnishd"))
@@ -163,13 +184,20 @@ class ConfigureRecipe:
         else:
             self.options["generate_config"]="true"
             self.options["backends"]=self.options.get("backends", "127.0.0.1:8080")
-            self.options["config"]=os.path.join(self.options["location"],
-                        "varnish.vcl")
+            self.options["config"]=os.path.join(self.options["location"],"varnish.vcl")
 
-        # Convenience settings
-        (host,port)=self.options["bind"].split(":")
-        self.options["bind-host"]=host
-        self.options["bind-port"]=port
+        # Test for valid bind value
+        bind=self.options["bind"].split(":")
+        if len(bind)==1 and bind[0].isdigit():
+            self.options["bind-host"]=''
+            self.options["bind-port"]=bind[0]
+            self.options["bind"]=':' + bind[0]
+        elif len(bind)==2 and bind[1].isdigit():
+            self.options["bind-host"]=bind[0]
+            self.options["bind-port"]=bind[1]
+        else:
+            self.logger.error("Invalid syntax for bind")
+            raise zc.buildout.UserError("Invalid syntax for bind")
 
     def install(self):
         location=self.options["location"]
@@ -190,8 +218,7 @@ class ConfigureRecipe:
 
 
     def addVarnishRunner(self):
-        target=os.path.join(self.buildout["buildout"]["bin-directory"],
-                                self.name)
+        target=os.path.join(self.buildout["buildout"]["bin-directory"],self.name)
         f=open(target, "wt")
         print >>f, "#!/bin/sh"
         print >>f, "exec %s \\" % self.options["daemon"]
@@ -231,7 +258,7 @@ class ConfigureRecipe:
         zope2_vhm_map=dict([x.split(":") for x in zope2_vhm_map])
 
         backends=self.options["backends"].strip().split()
-        backends=[x.split(":") for x in backends]
+        backends=[x.rsplit(":",2) for x in backends]
         if len(backends)>1:
             lengths=set([len(x) for x in backends])
             if lengths!=set([3]):
@@ -242,38 +269,61 @@ class ConfigureRecipe:
 
         output=""
         vhosting=""
+        tab="    "
         for i in range(len(backends)):
             parts=backends[i]
             output+='backend backend_%d {\n' % i
+
+            # no hostname or path, so we have only one backend
             if len(parts)==2:
-                output+='    set backend.host = "%s";\n' % parts[0]
-                output+='    set backend.port = "%s";\n' % parts[1]
+                output+='%sset backend.host = "%s";\n' % (tab, parts[0])
+                output+='%sset backend.port = "%s";\n' % (tab, parts[1])
+                vhosting='set req.backend = backend_0;'
+
+            #hostname and/or path is defined, so we may have multiple backends
             elif len(parts)==3:
-                output+='    set backend.host = "%s";\n' % parts[1]
-                output+='    set backend.port = "%s";\n' % parts[2]
-                vhosting+=' elsif (req.http.host ~ "^%s(:[0-9]+)?$") {\n' % parts[0]
-                vhosting+='    set req.backend = backend_%d;\n' % i
-                if parts[0] in zope2_vhm_map:
-                    location=zope2_vhm_map[parts[0]]
-                    if location.startswith("/"):
-                        location=location[1:]
-                    vhosting+='    set req.url = regsub(req.url, "(.*)", "/VirtualHostBase/http/%s:%s/%s/VirtualHostRoot/$1");\n' % \
-                                (parts[0], self.options["bind-port"], location)
-                vhosting+='}'
+                output+='%sset backend.host = "%s";\n' % (tab, parts[1])
+                output+='%sset backend.port = "%s";\n' % (tab, parts[2])
+
+                # set backend based on path
+                if parts[0].startswith('/') or parts[0].startswith(':'):
+                    path=parts[0].lstrip(':/')
+                    vhosting+='elsif (req.url ~ "^/%s") {\n' % path
+
+                # set backend based on hostname and path
+                elif parts[0].find(':') != -1:
+                    hostname, path = parts[0].split(':',1)
+                    path=path.lstrip(':/')
+                    vhosting+='elsif (req.http.host ~ "^%s(:[0-9]+)?$" && req.url ~ "^/%s") {\n' \
+                                % (hostname, path)
+
+                # set backend based on hostname
+                else:
+                    vhosting+='elsif (req.http.host ~ "^%s(:[0-9]+)?$") {\n' \
+                                % parts[0]
+
+                    # translate into vhm url if defined for hostname
+                    if parts[0] in zope2_vhm_map:
+                        location=zope2_vhm_map[parts[0]]
+                        if location.startswith("/"):
+                            location=location[1:]
+                        vhosting+='%sset req.url = regsub(req.url, "(.*)", "/VirtualHostBase/http/%s:%s/%s/VirtualHostRoot/$1");\n' \
+                                       % (tab, parts[0], self.options["bind-port"], location)
+
+                vhosting+='%sset req.backend = backend_%d;\n' % (tab, i)
+                vhosting+='}\n'
             else:
                 self.logger.error("Invalid syntax for backend: %s" % 
                                         ":".join(parts))
                 raise zc.buildout.UserError("Invalid syntax for backends")
             output+="}\n\n"
 
-
-        vhosting=vhosting[4:]
-        if len(backends)==0 and len(backends[0])==2:
-            vhosting='set req.backend = backend_0;'
-        elif len(backends[0])==3:
-            vhosting+=' else {\n'
-            vhosting+='    error 404 "Unknown virtual host";\n'
-            vhosting+='}\n'
+        if len(backends[0])==3:
+            vhosting=vhosting[3:]
+            vhosting+='else {\n'
+            vhosting+='%serror 404 "Unknown virtual host";\n' % tab
+            vhosting+='}'
+            vhosting=tab.join(vhosting.splitlines(1))
 
         config["backends"]=output
         config["virtual_hosting"]=vhosting
