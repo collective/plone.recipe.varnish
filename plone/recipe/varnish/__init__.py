@@ -237,7 +237,7 @@ class ConfigureRecipe:
                 self.options["cache-size"])
         if self.options.get("mode", "daemon") == "foreground":
             print >>f, '    -F \\'
-        print >>f, '    "$@"'
+        print >>f, '    -t 0 "$@"'
         f.close()
         os.chmod(target, 0755)
         self.options.created(target)
