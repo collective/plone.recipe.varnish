@@ -17,10 +17,10 @@ sub vcl_recv {
         lookup;
     }
     if (req.request != "GET" && req.request != "HEAD") {
-        pipe;
+        pass;
     }
     if (req.http.Expect) {
-        pipe;
+        pass;
     }
     if (req.http.If-None-Match) {
         pass;
