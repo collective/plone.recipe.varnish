@@ -4,6 +4,9 @@ Changelog
 1.0rc6 (unreleased)
 -------------------
 
+* The 1.0rc5 release was broken and has been retracted. Currently the trunk
+  is only usable with the yet unreleased Varnish 1.2.
+  [hannosch]
 
 1.0rc5 (2008-04-27)
 -------------------
