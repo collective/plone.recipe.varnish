@@ -5,7 +5,8 @@ version = '1.0rc5'
 setup(name='plone.recipe.varnish',
       version=version,
       description="Buildout recipe to install varnish",
-      long_description=open("README.txt").read(),
+      long_description=open("README.txt").read() + "\n" + \
+                       open("CHANGES.txt").read(),
       classifiers=[
         "Framework :: Buildout",
         "Framework :: Zope2",
@@ -20,7 +21,7 @@ setup(name='plone.recipe.varnish',
       url='',
       license='GPL',
       packages=find_packages(exclude=['ez_setup']),
-      namespace_packages=['plone.recipe'],
+      namespace_packages=['plone', 'plone.recipe'],
       include_package_data=True,
       zip_safe=False,
       install_requires=[

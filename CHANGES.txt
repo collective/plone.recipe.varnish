@@ -1,0 +1,170 @@
+Changelog
+=========
+
+1.0rc5 (unreleased)
+-------------------
+
+* Pipe is evil: it pipes the whole connection to the backend which means
+  varnish will no longer process any further requests if HTTP pipelining is
+  used. Switch to using pass instead.
+  [wichert]
+
+* Add a default_ttl of zero seconds to the Varnish runner to avoid a Varnish
+  bug with the handling of an Expires header with a date in the past.
+  [newbery]
+
+* Merged branches/newbery-hostnamepath.
+  [newbery]
+
+* A previous changeset removed the force caching of images and such. The
+  problem here is that the next lines force a 'pass' when any of these are
+  accompanied by authentication headers or Plone authentication cookies.
+  [newbery]
+
+* I fixed this, added a few more suffixes and split it up by type to make it
+  easier to customize if necessary.
+  [newbery]
+
+* We don't need to include Accept-Encoding in the hash. Varnish takes care
+  of Vary negotiation already. 
+  [newbery]
+
+
+1.0rc4 (2008-03-18)
+-------------------
+
+* Fixed typos / whitespace.
+  [hannosch]
+
+* Varnish 1.1.2 is out.
+  [wichert]
+
+* Merged witsch-foreground-support back to trunk.
+  [witsch]
+
+* Use a pidfile.
+  [wichert]
+
+
+1.0rc3 (2007-09-02)
+-------------------
+
+* Fixed a bug where options["location"] was being used before it was being set.
+  [rocky]
+
+* Made the module name determination a little more robust during
+  createVarnishConfig so that recipes that specify version deps still work.
+  [rocky]
+
+* Do not use defaults for user and group.
+  [wichert]
+
+* We do need the parts: we use it for the file storage.
+  [wichert]
+
+
+1.0rc2 (2007-08-29)
+-------------------
+
+* Add an option to use an existing configuration file.
+  [wichert]
+
+* Remove hardcoded caching for images, binaries, CSS and javascript. This
+  should be done by the backend server or a custom varnish configuration.
+  [wichert]
+
+* Add Accept-Encoding to the cache key so we can handle compressed content.
+  [wichert]
+
+* Test if a bin-directory exists. This allows us to compile varnish 1.0
+  which does not have an sbin directory.
+  [wichert]
+
+
+1.0rc1 (2007-08-27)
+-------------------
+
+* Document the OSX bugfix we apply when building varnish.
+  [wichert]
+
+* Add a dummy update method to prevent needless recompiles.
+  [wichert]
+
+* Update for Varnish 1.1.1.
+  [wichert]
+
+
+1.0b2 (2007-08-25)
+-------------------
+
+* When building from svn, we need to run autogen.sh.
+  [optilude]
+
+* Refactor the recipe: there are now separate recipes to build and configure
+  Varnish. This makes it possible to reconfigure varnish without having to
+  recompile with as well as using an already installed varnish.
+  [wichert]
+
+* Move the OSX patching code into a separate method.
+  [wichert]
+
+* Use pass for non-GET/HEAD requests. This makes a bit more sense and fixes a
+  login problem for Plone sites.
+  [wichert]
+
+* Reorganize a bit for readability.
+  [wichert]
+
+* Support Python 2.3 as well.
+  [wichert]
+
+* Make it possible to specify the user and group as well.
+  [wichert]
+
+* Do not create the source directory - we move the extracted source in its
+  place later.
+  [wichert]
+
+* If running on OS X, patch libtool as described in
+  http://varnish.projects.linpro.no/ticket/118 and
+  http://thread.gmane.org/gmane.comp.web.varnish.misc/668/focus=669.
+  [optilude]
+
+* VCL is not C. You need the curlies even on single-line if statements.
+  [optilude]
+
+* This rewriting style only works on Zope 3 - Zope 3 reinvented that wheel.
+  [wichert]
+
+* Add support for If-Modified-Since and If-None-Match requests.
+  Thanks to newbery for the suggstions.
+  [wichert]
+
+* Explicitly mention that there is nothing Plone or Zope specific about
+  this recipe.
+  [wichert]
+
+
+1.0b1 (2007-08-04)
+------------------
+
+* More documentation.
+  [wichert]
+
+* Ignore the port information in the host header.
+  [wichert]
+
+* Use the port varnish is bound to in the VHM mapping.
+  [wichert]
+
+* Define all default values centrally.
+  [wichert]
+
+* Add support for Zope virtual hosts.
+  [wichert]
+
+* Add support for virtual hosting.
+  [wichert]
+
+* Initial import of Varnish recipe.
+  [wichert]
