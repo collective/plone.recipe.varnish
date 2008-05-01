@@ -307,7 +307,7 @@ class ConfigureRecipe:
                         location=zope2_vhm_map[parts[0]]
                         if location.startswith("/"):
                             location=location[1:]
-                        vhosting+='%sset req.url = regsub(req.url, "(.*)", "/VirtualHostBase/http/%s:%s/%s/VirtualHostRoot/$1");\n' \
+                        vhosting+='%sset req.url = "/VirtualHostBase/http/%s:%s/%s/VirtualHostRoot/" req.url;\n' \
                                        % (tab, parts[0], self.options["bind-port"], location)
 
                 vhosting+='%sset req.backend = backend_%d;\n' % (tab, i)
