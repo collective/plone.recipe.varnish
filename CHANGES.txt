@@ -23,15 +23,6 @@ Changelog
 * Merged branches/newbery-hostnamepath.
   [newbery]
 
-* A previous changeset removed the force caching of images and such. The
-  problem here is that the next lines force a 'pass' when any of these are
-  accompanied by authentication headers or Plone authentication cookies.
-  [newbery]
-
-* I fixed this, added a few more suffixes and split it up by type to make it
-  easier to customize if necessary.
-  [newbery]
-
 * We don't need to include Accept-Encoding in the hash. Varnish takes care
   of Vary negotiation already. 
   [newbery]
