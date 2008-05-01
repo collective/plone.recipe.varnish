@@ -30,7 +30,7 @@ sub vcl_recv {
 
 sub vcl_hit {
     if (req.request == "PURGE") {
-        set obj.ttl = 0s;
+        purge_url(req.url);
         error 200 "Purged";
     }
     if (!obj.cacheable) {
@@ -67,3 +67,18 @@ sub vcl_fetch {
     }
     insert;
 }
+
+sub vcl_hash {
+    set req.hash += req.url;
+    set req.hash += req.http.host;
+
+    if (req.http.Accept-Encoding ~ "gzip") {
+        set req.hash += "gzip";
+    }
+    else if (req.http.Accept-Encoding ~ "deflate") {
+        set req.hash += "deflate";
+    }
+
+    hash;
+}
+
