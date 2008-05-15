@@ -98,6 +98,10 @@ plone.recipe.varnish:build reference
 The plone.recipe.varnish:build recipe takes care of downloading Varnish,
 compiling it on your system and installing it in your buildout.
 
+You may need some packages that are not yet installed on your system.
+On Debian-like systems you at least need to install
+``libncurses-dev``.
+
 If you are running on an OS/X system a patch to fix a linking error
 will be automatically applied. More information on the bug and patch
 can be found at http://varnish.projects.linpro.no/ticket/118 .
