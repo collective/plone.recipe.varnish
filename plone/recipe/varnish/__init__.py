@@ -276,14 +276,14 @@ class ConfigureRecipe:
 
             # no hostname or path, so we have only one backend
             if len(parts)==2:
-                output+='%sset backend.host = "%s";\n' % (tab, parts[0])
-                output+='%sset backend.port = "%s";\n' % (tab, parts[1])
+                output+='%s.host = "%s";\n' % (tab, parts[0])
+                output+='%s.port = "%s";\n' % (tab, parts[1])
                 vhosting='set req.backend = backend_0;'
 
             #hostname and/or path is defined, so we may have multiple backends
             elif len(parts)==3:
-                output+='%sset backend.host = "%s";\n' % (tab, parts[1])
-                output+='%sset backend.port = "%s";\n' % (tab, parts[2])
+                output+='%s.host = "%s";\n' % (tab, parts[1])
+                output+='%s.port = "%s";\n' % (tab, parts[2])
 
                 # set backend based on path
                 if parts[0].startswith('/') or parts[0].startswith(':'):
