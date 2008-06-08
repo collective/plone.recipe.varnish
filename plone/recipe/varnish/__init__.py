@@ -128,9 +128,13 @@ class BuildRecipe:
     def compileVarnish(self):
         os.chdir(self.options["source-location"])
         self.logger.info("Compiling Varnish")
+        os.chmod("autogen.sh", 0750)
+        os.chmod("install-sh", 0750)
         
-        if self.svn:
+        if not os.path.exists("configure"):
             assert subprocess.call(["./autogen.sh"]) == 0
+        else:
+            os.chmod("configure", 0750)
         
         assert subprocess.call(["./configure", "--prefix=" + self.options["binary-location"]]) == 0
         
