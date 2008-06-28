@@ -129,7 +129,7 @@ class BuildRecipe:
         os.chdir(self.options["source-location"])
         self.logger.info("Compiling Varnish")
         os.chmod("autogen.sh", 0750)
-        os.chmod("install-sh", 0750)
+#        os.chmod("install-sh", 0750)
         
         if not os.path.exists("configure"):
             assert subprocess.call(["./autogen.sh"]) == 0
