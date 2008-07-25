@@ -46,7 +46,6 @@ class BuildRecipe:
         options["daemon"]=os.path.join(options["binary-location"], "varnishd")
 
         # Set some default options
-        options.setdefault('verbose-headers', 'off')
         buildout['buildout'].setdefault('download-directory',
                 os.path.join(buildout['buildout']['directory'], 'downloads'))
 
@@ -190,17 +189,20 @@ class ConfigureRecipe:
         self.options["daemon"]=self.options.get("daemon", 
                 os.path.join(buildout["buildout"]["bin-directory"], "varnishd"))
         if self.options.has_key("config"):
-            if self.options.has_key("backends") or \
-                    self.options.has_key("zope2_vhm_map"):
+            if self.options.has_key("backends") \
+               or self.options.has_key("zope2_vhm_map") \
+               or self.options.has_key("verbose-headers"):
                 self.logger.error("If you specify the config= option you can "
-                                  "not use backends or zope2_vhm_map.")
+                                  "not use backends, zope2_vhm_map or "
+                                  "verbose-headers.")
                 raise zc.buildout.UserError("Can not use both config and "
                                            "backends or zope2_vhm_map options.")
-            self.options["generate_config"]="false"
+            self.options["generate_config"] = "false"
         else:
-            self.options["generate_config"]="true"
-            self.options["backends"]=self.options.get("backends", "127.0.0.1:8080")
-            self.options["config"]=os.path.join(self.options["location"],"varnish.vcl")
+            self.options.setdefault('verbose-headers', 'off')
+            self.options["generate_config"] = "true"
+            self.options["backends"] = self.options.get("backends", "127.0.0.1:8080")
+            self.options["config"] = os.path.join(self.options["location"],"varnish.vcl")
 
         # Test for valid bind value
         bind=self.options["bind"].split(":")
