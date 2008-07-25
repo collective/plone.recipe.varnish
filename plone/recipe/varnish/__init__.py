@@ -12,7 +12,6 @@ import zc.buildout
 
 OSX = sys.platform.startswith('darwin')
 
-
 class BuildRecipe:
     def __init__(self, buildout, name, options):
         self.name=name
@@ -41,12 +40,13 @@ class BuildRecipe:
             # put it into parts
             location = options['location'] = os.path.join(
                 buildout['buildout']['parts-directory'],self.name)
-
+        
         options["source-location"]=os.path.join(location, "source")
         options["binary-location"]=os.path.join(location, "install")
         options["daemon"]=os.path.join(options["binary-location"], "varnishd")
 
         # Set some default options
+        options.setdefault('verbose-headers', 'off')
         buildout['buildout'].setdefault('download-directory',
                 os.path.join(buildout['buildout']['directory'], 'downloads'))
 
@@ -161,6 +161,18 @@ class BuildRecipe:
                 os.chmod(target, 0755)
                 self.options.created(target)
 
+
+verbose_headers = {
+    # key: (value, indentation)
+    'header_hit_notcacheable': ('PASS (not cacheable - hit)', 8),
+    'header_hit_deliver': ('HIT (deliver - from cache)', 4),
+    'header_fetch_notcacheable': ('FETCH (pass - not cacheable)', 8),
+    'header_fetch_setcookie': ('FETCH (pass - response sets cookie)', 8),
+    'header_fetch_cachecontrol': ('FETCH (pass - cache control disallows)', 8),
+    'header_fetch_auth': ('FETCH (pass - authorized and no public cache control)', 8),
+    'header_fetch_insert': ('FETCH (insert)', 4),
+}
+headertpl = '\n%sset obj.http.X-Varnish-Action = "%s";'
 
 class ConfigureRecipe:
     def __init__(self, buildout, name, options):
@@ -331,6 +343,13 @@ class ConfigureRecipe:
 
         config["backends"]=output
         config["virtual_hosting"]=vhosting
+        
+        for key in verbose_headers:
+            if self.options['verbose-headers'] == 'on':
+                pair = verbose_headers[key][1] * ' ', verbose_headers[key][0]
+                config[key] = headertpl % pair                
+            else: 
+                config[key] = ''                
 
         f=open(self.options["config"], "wt")
         f.write(template.safe_substitute(config))

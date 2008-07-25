@@ -4,6 +4,10 @@ Changelog
 1.0rc6 (unreleased)
 -------------------
 
+* Add feature to enable verbose headers in varnish.vcl. This is primary 
+  interesting for debugging of cache-settings. See README.txt.
+  [jensens]
+
 * Deal better with sources which do not have executable-bits set or
   are svn exports.
   [wichert]

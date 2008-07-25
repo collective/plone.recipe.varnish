@@ -33,9 +33,9 @@ sub vcl_hit {
         purge_url(req.url);
         error 200 "Purged";
     }
-    if (!obj.cacheable) {
+    if (!obj.cacheable) {${header_hit_notcacheable}
         pass;
-    }
+    }${header_hit_deliver}
     deliver;
 }
 
@@ -53,18 +53,19 @@ sub vcl_fetch {
     if (!obj.valid) {
         error;
     }
-    if (!obj.cacheable) {
+    if (!obj.cacheable) {${header_fetch_notcacheable}
         pass;
     }
-    if (obj.http.Set-Cookie) {
+    if (obj.http.Set-Cookie) {${header_fetch_setcookie}
         pass;
     }
-    if (obj.http.Cache-Control ~ "(private|no-cache|no-store)") {
+    if (obj.http.Cache-Control ~ "(private|no-cache|no-store)") {${header_fetch_cachecontrol}
         pass;
     }
-    if (req.http.Authorization && !obj.http.Cache-Control ~ "public") {
+    if (req.http.Authorization && !obj.http.Cache-Control ~ "public") {${header_fetch_auth}
         pass;
     }
+    ${header_fetch_insert}
     insert;
 }
 

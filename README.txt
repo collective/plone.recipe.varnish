@@ -151,7 +151,7 @@ mode
     supervision tools like daemontools or runit. Defaults to 'daemon'.
 
 cache-size
-    The size of the cache.
+    The size of the cache (limited to 2G on 32bit systems).
 
 bind
     Hostname and port on which Varnish will listen for requests. Defaults
@@ -159,7 +159,7 @@ bind
 
 config
     Path for a Varnish VCL configuration to use. If you use this option
-    you can not use the backends or zope2_vhm_map options.
+    you can not use the backends, zope2_vhm_map or verbose-headers options .
 
 backends
     Specifies the backend or backends which will process the (uncached)
@@ -177,6 +177,11 @@ zope2_vhm_map
     **hostname:ZODB location** entries which specify the location inside
     Zope where the website for a virtual host lives.
 
+verbose-headers
+    Varnish VCL configuration: a http-response header line  **X-Varnish-Action** 
+    is set for debugging purposes. It shows a hit, why it bypass/fetch from 
+    backend and if if the object was inserted into cache.
+
 telnet
     If specified sets the hostname and port on which Varnish will listen
     for commands using its telnet interface.
@@ -188,7 +193,7 @@ user
 group
     The name of the group varnish should switch to before accepting any
     request. This defaults to the main group for the specified user.
-
+    
 .. _Varnish: http://varnish.projects.linpro.no/
 .. _zc.buildout: http://cheeseshop.python.org/pypi/zc.buildout
 
