@@ -8,6 +8,7 @@ import subprocess
 import tempfile
 import urllib2
 import urlparse
+import sets
 import zc.buildout
 
 OSX = sys.platform.startswith('darwin')
@@ -173,38 +174,40 @@ verbose_headers = {
 }
 headertpl = '\n%sset obj.http.X-Varnish-Action = "%s";'
 
+config_excludes = sets.Set(["zope2_vhm_map", "backends", "verbose-headers"])
+
 class ConfigureRecipe:
     def __init__(self, buildout, name, options):
-        self.name=name
-        self.options=options
-        self.buildout=buildout
-        self.logger=logging.getLogger(self.name)
+        self.name = name
+        self.options = options
+        self.buildout = buildout
+        self.logger = logging.getLogger(self.name)
 
         self.options["location"] = os.path.join(
                 buildout["buildout"]["parts-directory"], self.name)
 
         # Set some default options
-        self.options["bind"]=self.options.get("bind", "127.0.0.1:8000").lstrip(":")
-        self.options["cache-size"]=self.options.get("cache-size", "1G")
-        self.options["daemon"]=self.options.get("daemon", 
+        self.options.setdefault("bind", "127.0.0.1:8000")
+        self.options.setdefault("cache-size", "1G")
+        self.options.setdefault("daemon", 
                 os.path.join(buildout["buildout"]["bin-directory"], "varnishd"))
         if self.options.has_key("config"):
-            if self.options.has_key("backends") \
-               or self.options.has_key("zope2_vhm_map") \
-               or self.options.has_key("verbose-headers"):
-                self.logger.error("If you specify the config= option you can "
-                                  "not use backends, zope2_vhm_map or "
-                                  "verbose-headers.")
-                raise zc.buildout.UserError("Can not use both config and "
-                                           "backends or zope2_vhm_map options.")
+            if sets.Set(self.options.keys()).intersection(config_excludes):
+                msg = ("When config= option is specified the following "
+                       "options cant be used: ")
+                msg += ' '.join(config_excludes)
+                self.logger.error(msg)
+                raise zc.buildout.UserError(msg)
             self.options["generate_config"] = "false"
         else:
-            self.options.setdefault('verbose-headers', 'off')
             self.options["generate_config"] = "true"
-            self.options["backends"] = self.options.get("backends", "127.0.0.1:8080")
-            self.options["config"] = os.path.join(self.options["location"],"varnish.vcl")
+            self.options.setdefault('verbose-headers', 'off')
+            self.options.setdefault("backends", "127.0.0.1:8080")
+            self.options["config"] = os.path.join(self.options["location"],
+                                                  "varnish.vcl")
 
         # Test for valid bind value
+        self.options["bind"] = self.options.get("bind").lstrip(":")
         bind=self.options["bind"].split(":")
         if len(bind)==1 and bind[0].isdigit():
             self.options["bind-host"]=''
