@@ -180,7 +180,8 @@ zope2_vhm_map
 verbose-headers
     Varnish VCL configuration: a http-response header line  **X-Varnish-Action** 
     is set for debugging purposes. It shows a hit, why it bypass/fetch from 
-    backend and if if the object was inserted into cache.
+    backend and if if the object was inserted into cache. 
+    Possible values: **on** or **off** (default).
 
 telnet
     If specified sets the hostname and port on which Varnish will listen
