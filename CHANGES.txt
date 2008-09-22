@@ -4,6 +4,10 @@ Changelog
 1.0rc6 (unreleased)
 -------------------
 
+* Deprecate plone.recipe.varnish:build in favour of zc.recipe.cmmi: it does
+  not make sense to duplicate its logic here.
+  [wichert]
+
 * Add feature to enable verbose headers in varnish.vcl. This is primary 
   interesting for debugging of cache-settings. See README.txt.
   [jensens]
