@@ -4,7 +4,12 @@ Changelog
 1.0rc7 (unreleased)
 -------------------
 
-* ...
+* Be more explicit about deprecating the :build entry point.
+  [wichert]
+
+* Make the :instance specifier optional: after :build has been removed
+  we can deprecate :instance as well.
+  [wichert]
 
 
 1.0rc6 (2008-09-22)
