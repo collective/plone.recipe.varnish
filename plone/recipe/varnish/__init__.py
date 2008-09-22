@@ -9,12 +9,16 @@ import tempfile
 import urllib2
 import urlparse
 import sets
+import warnings
 import zc.buildout
 
 OSX = sys.platform.startswith('darwin')
 
 class BuildRecipe:
     def __init__(self, buildout, name, options):
+        self.logger.info("plone.recipe.varnish:build is obsolete, "
+                         "please use zc.recipe.cmmi instead.")
+
         self.name=name
         self.options=options
         self.buildout=buildout
