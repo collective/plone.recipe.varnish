@@ -2,12 +2,13 @@
 # man page for details on VCL syntax and semantics.
 
 ${backends}
+
 acl purge {
     "localhost";
 }
 
 sub vcl_recv {
-    
+    set req.grace = 120s;
     ${virtual_hosting}
     
     if (req.request == "PURGE") {
@@ -16,43 +17,44 @@ sub vcl_recv {
         }
         lookup;
     }
-    if (req.request != "GET" && req.request != "HEAD") {
+
+    if (req.request == "POST") {
         pass;
     }
-    if (req.http.Expect) {
-        pass;
-    }
+
     if (req.http.If-None-Match) {
         pass;
     }
-    lookup;
 }
+
+sub vcl_pipe {
+    # This is not necessary if you do not do any request rewriting.
+    set req.http.connection = "close";
+}
+
 
 sub vcl_hit {
     if (req.request == "PURGE") {
         purge_url(req.url);
         error 200 "Purged";
     }
+
     if (!obj.cacheable) {${header_hit_notcacheable}
         pass;
     }${header_hit_deliver}
-    deliver;
 }
 
+
 sub vcl_miss {
-    if (req.http.If-Modified-Since) {
-        pass;
-    }
     if (req.request == "PURGE") {
         error 404 "Not in cache";
     }
-    fetch;
+
 }
 
 sub vcl_fetch {
-    if (!obj.valid) {
-        error;
-    }
+    set obj.grace = 120s;
+
     if (!obj.cacheable) {${header_fetch_notcacheable}
         pass;
     }
@@ -66,7 +68,6 @@ sub vcl_fetch {
         pass;
     }
     ${header_fetch_insert}
-    insert;
 }
 
 sub vcl_hash {
@@ -79,7 +80,5 @@ sub vcl_hash {
     else if (req.http.Accept-Encoding ~ "deflate") {
         set req.hash += "deflate";
     }
-
-    hash;
 }
 
