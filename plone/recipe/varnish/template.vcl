@@ -4,81 +4,81 @@
 ${backends}
 
 acl purge {
-    "localhost";
+	"localhost";
 }
 
 sub vcl_recv {
-    set req.grace = 120s;
-    ${virtual_hosting}
-    
-    if (req.request == "PURGE") {
-        if (!client.ip ~ purge) {
-            error 405 "Not allowed.";
-        }
-        lookup;
-    }
+	set req.grace = 120s;
+	${virtual_hosting}
+	
+	if (req.request == "PURGE") {
+		if (!client.ip ~ purge) {
+			error 405 "Not allowed.";
+		}
+		lookup;
+	}
 
-    if (req.request == "POST") {
-        pass;
-    }
+	if (req.request == "POST") {
+		pass;
+	}
 
-    if (req.http.If-None-Match) {
-        pass;
-    }
+	if (req.http.If-None-Match) {
+		pass;
+	}
 }
 
 sub vcl_pipe {
-    # This is not necessary if you do not do any request rewriting.
-    set req.http.connection = "close";
+	# This is not necessary if you do not do any request rewriting.
+	set req.http.connection = "close";
 }
 
 
 sub vcl_hit {
-    if (req.request == "PURGE") {
-        purge_url(req.url);
-        error 200 "Purged";
-    }
+	if (req.request == "PURGE") {
+		purge_url(req.url);
+		error 200 "Purged";
+	}
 
-    if (!obj.cacheable) {${header_hit_notcacheable}
-        pass;
-    }${header_hit_deliver}
+	if (!obj.cacheable) {${header_hit_notcacheable}
+		pass;
+	}${header_hit_deliver}
 }
 
 
 sub vcl_miss {
-    if (req.request == "PURGE") {
-        error 404 "Not in cache";
-    }
+	if (req.request == "PURGE") {
+		error 404 "Not in cache";
+	}
 
 }
 
 sub vcl_fetch {
-    set obj.grace = 120s;
+	set obj.grace = 120s;
 
-    if (!obj.cacheable) {${header_fetch_notcacheable}
-        pass;
-    }
-    if (obj.http.Set-Cookie) {${header_fetch_setcookie}
-        pass;
-    }
-    if (obj.http.Cache-Control ~ "(private|no-cache|no-store)") {${header_fetch_cachecontrol}
-        pass;
-    }
-    if (req.http.Authorization && !obj.http.Cache-Control ~ "public") {${header_fetch_auth}
-        pass;
-    }
-    ${header_fetch_insert}
+	if (!obj.cacheable) {${header_fetch_notcacheable}
+		pass;
+	}
+	if (obj.http.Set-Cookie) {${header_fetch_setcookie}
+		pass;
+	}
+	if (obj.http.Cache-Control ~ "(private|no-cache|no-store)") {${header_fetch_cachecontrol}
+		pass;
+	}
+	if (req.http.Authorization && !obj.http.Cache-Control ~ "public") {${header_fetch_auth}
+		pass;
+	}
+	${header_fetch_insert}
 }
 
 sub vcl_hash {
-    set req.hash += req.url;
-    set req.hash += req.http.host;
+	set req.hash += req.url;
+	set req.hash += req.http.host;
 
-    if (req.http.Accept-Encoding ~ "gzip") {
-        set req.hash += "gzip";
-    }
-    else if (req.http.Accept-Encoding ~ "deflate") {
-        set req.hash += "deflate";
-    }
+	if (req.http.Accept-Encoding ~ "gzip") {
+		set req.hash += "gzip";
+	}
+	else if (req.http.Accept-Encoding ~ "deflate") {
+		set req.hash += "deflate";
+	}
 }
 
