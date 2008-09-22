@@ -290,21 +290,20 @@ class ConfigureRecipe:
 
         output=""
         vhosting=""
-        tab="    "
         for i in range(len(backends)):
             parts=backends[i]
             output+='backend backend_%d {\n' % i
 
             # no hostname or path, so we have only one backend
             if len(parts)==2:
-                output+='%s.host = "%s";\n' % (tab, parts[0])
-                output+='%s.port = "%s";\n' % (tab, parts[1])
+                output+='\t.host = "%s";\n' % parts[0]
+                output+='\t.port = "%s";\n' % parts[1]
                 vhosting='set req.backend = backend_0;'
 
             #hostname and/or path is defined, so we may have multiple backends
             elif len(parts)==3:
-                output+='%s.host = "%s";\n' % (tab, parts[1])
-                output+='%s.port = "%s";\n' % (tab, parts[2])
+                output+='.host = "%s";\n' % parts[1]
+                output+='.port = "%s";\n' % parts[2]
 
                 # set backend based on path
                 if parts[0].startswith('/') or parts[0].startswith(':'):
@@ -328,10 +327,10 @@ class ConfigureRecipe:
                         location=zope2_vhm_map[parts[0]]
                         if location.startswith("/"):
                             location=location[1:]
-                        vhosting+='%sset req.url = "/VirtualHostBase/http/%s:%s/%s/VirtualHostRoot" req.url;\n' \
-                                       % (tab, parts[0], self.options["bind-port"], location)
+                        vhosting+='\tset req.url = "/VirtualHostBase/http/%s:%s/%s/VirtualHostRoot" req.url;\n' \
+                                       % (parts[0], self.options["bind-port"], location)
 
-                vhosting+='%sset req.backend = backend_%d;\n' % (tab, i)
+                vhosting+='\tset req.backend = backend_%d;\n' % i
                 vhosting+='}\n'
             else:
                 self.logger.error("Invalid syntax for backend: %s" % 
@@ -342,9 +341,9 @@ class ConfigureRecipe:
         if len(backends[0])==3:
             vhosting=vhosting[3:]
             vhosting+='else {\n'
-            vhosting+='%serror 404 "Unknown virtual host";\n' % tab
+            vhosting+='\terror 404 "Unknown virtual host";\n'
             vhosting+='}'
-            vhosting=tab.join(vhosting.splitlines(1))
+            vhosting="\t".join(vhosting.splitlines(1))
 
         config["backends"]=output
         config["virtual_hosting"]=vhosting
