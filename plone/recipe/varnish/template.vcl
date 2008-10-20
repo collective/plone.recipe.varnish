@@ -18,13 +18,27 @@ sub vcl_recv {
 		lookup;
 	}
 
-	if (req.request == "POST") {
+	if (req.request != "GET" &&
+		req.request != "HEAD" &&
+		req.request != "PUT" &&
+		req.request != "POST" &&
+		req.request != "TRACE" &&
+		req.request != "OPTIONS" &&
+		req.request != "DELETE") {
+		/* Non-RFC2616 or CONNECT which is weird. */
+		pipe;
+	}
+
+	if (req.request != "GET" && req.request != "HEAD") {
+		/* We only deal with GET and HEAD by default */
 		pass;
 	}
 
 	if (req.http.If-None-Match) {
 		pass;
 	}
+
+	lookup;
 }
 
 sub vcl_pipe {
