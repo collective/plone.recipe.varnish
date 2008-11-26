@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0rc7 (unreleased)
+1.0rc7 (2008-11-26)
 -------------------
 
 * Be more explicit about deprecating the :build entry point.
