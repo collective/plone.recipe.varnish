@@ -6,7 +6,8 @@ Changelog
 
 * Remove the custom vcl_hash from the template. Adding the Accept-Encoding
   header to the cache break effectively breaks purging since nobody will
-  ever include those headers in a PURGE request.
+  ever include those headers in a PURGE request. To make this safe we just
+  remove the Accept-Encoding header from all incoming requests as well.
   [wichert]
 
 

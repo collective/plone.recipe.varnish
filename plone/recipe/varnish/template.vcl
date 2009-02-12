@@ -38,6 +38,8 @@ sub vcl_recv {
 		pass;
 	}
 
+	remove req.http.Accept-Encoding;
+
 	lookup;
 }
 
