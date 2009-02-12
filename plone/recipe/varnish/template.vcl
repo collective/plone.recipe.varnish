@@ -84,15 +84,3 @@ sub vcl_fetch {
 	${header_fetch_insert}
 }
 
-sub vcl_hash {
-	set req.hash += req.url;
-	set req.hash += req.http.host;
-
-	if (req.http.Accept-Encoding ~ "gzip") {
-		set req.hash += "gzip";
-	}
-	else if (req.http.Accept-Encoding ~ "deflate") {
-		set req.hash += "deflate";
-	}
-}
-
