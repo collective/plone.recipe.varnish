@@ -1,7 +1,12 @@
 Changelog
 =========
 
-1.0rc8 (unreleased)
+1.0 (unreleased)
+----------------
+
+
+
+1.0rc8 (2008-02-12)
 -------------------
 
 * Remove the custom vcl_hash from the template. Adding the Accept-Encoding
