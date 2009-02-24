@@ -5,6 +5,7 @@ ${backends}
 
 acl purge {
 	"localhost";
+${purgehosts}
 }
 
 sub vcl_recv {

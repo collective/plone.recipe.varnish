@@ -11,6 +11,7 @@ import urlparse
 import sets
 import warnings
 import zc.buildout
+from sets import Set
 
 OSX = sys.platform.startswith('darwin')
 
@@ -292,6 +293,7 @@ class ConfigureRecipe:
 
 
         output=""
+        purgehosts=Set()
         vhosting=""
         for i in range(len(backends)):
             parts=backends[i]
@@ -303,10 +305,16 @@ class ConfigureRecipe:
                 output+='\t.port = "%s";\n' % parts[1]
                 vhosting='set req.backend = backend_0;'
 
+                #add a host to the set to enable purge requests being allowed
+                purgehosts.add(parts[0])
+
             #hostname and/or path is defined, so we may have multiple backends
             elif len(parts)==3:
                 output+='.host = "%s";\n' % parts[1]
                 output+='.port = "%s";\n' % parts[2]
+
+                #add a host to the set to enable purge requests being allowed
+                purgehosts.add(parts[1])
 
                 # set backend based on path
                 if parts[0].startswith('/') or parts[0].startswith(':'):
@@ -348,7 +356,13 @@ class ConfigureRecipe:
             vhosting+='}'
             vhosting="\t".join(vhosting.splitlines(1))
 
+        #build the purge host string
+        purge=""
+        for host in purgehosts:
+	    purge+='\t"%s";\n' % host
+
         config["backends"]=output
+        config["purgehosts"]=purge
         config["virtual_hosting"]=vhosting
         
         for key in verbose_headers:
