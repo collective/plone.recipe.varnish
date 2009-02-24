@@ -4,11 +4,6 @@ Changelog
 1.0 (unreleased)
 ----------------
 
-* Made the vcl template build its acl purge section from the specified
-  hosts.  At present, the vcl will only allow purges coming from the 
-  localhost. If we have multiple instances that are separate from localhost, 
-  any PURGE requests will be denied without this.
-  [rockdj]
 
 
 1.0rc8 (2008-02-12)
