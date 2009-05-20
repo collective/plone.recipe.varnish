@@ -9,7 +9,6 @@ import tempfile
 import urllib2
 import urlparse
 import sets
-import warnings
 import zc.buildout
 
 OSX = sys.platform.startswith('darwin')
@@ -301,12 +300,14 @@ class ConfigureRecipe:
             if len(parts)==2:
                 output+='\t.host = "%s";\n' % parts[0]
                 output+='\t.port = "%s";\n' % parts[1]
+                output+='\t.first_byte_timeout = 300s;\n'
                 vhosting='set req.backend = backend_0;'
 
             #hostname and/or path is defined, so we may have multiple backends
             elif len(parts)==3:
                 output+='.host = "%s";\n' % parts[1]
                 output+='.port = "%s";\n' % parts[2]
+                output+='.first_byte_timeout = 300s;\n'
 
                 # set backend based on path
                 if parts[0].startswith('/') or parts[0].startswith(':'):

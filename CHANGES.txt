@@ -4,7 +4,11 @@ Changelog
 1.0 (unreleased)
 ----------------
 
-
+* Updated to refer to Varnish 2.0.4. Added a `first_byte_timeout` value of
+  300 seconds to the backend definitions. This is a new option since Varnish
+  2.0.3 and by default set to 60 seconds. This is arguably too low for certain
+  edit operations in Plone sites.
+  [hannosch]
 
 1.0rc8 (2008-02-12)
 -------------------
