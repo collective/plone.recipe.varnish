@@ -200,6 +200,10 @@ user
 group
     The name of the group varnish should switch to before accepting any
     request. This defaults to the main group for the specified user.
+
+balancer
+    If included sets up varnish to load balance the specified backends.
+    Possible values: **none** (default),  **round-robin** or **random**.
     
 .. _Varnish: http://varnish.projects.linpro.no/
 .. _zc.buildout: http://cheeseshop.python.org/pypi/zc.buildout
