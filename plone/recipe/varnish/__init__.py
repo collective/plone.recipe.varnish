@@ -204,6 +204,7 @@ class ConfigureRecipe:
         else:
             self.options["generate_config"] = "true"
             self.options.setdefault('verbose-headers', 'off')
+            self.options.setdefault("balancer", "none")
             self.options.setdefault("backends", "127.0.0.1:8080")
             self.options["config"] = os.path.join(self.options["location"],
                                                   "varnish.vcl")
@@ -238,8 +239,8 @@ class ConfigureRecipe:
 
     def update(self):
         pass
-
-
+    
+    
     def addVarnishRunner(self):
         target=os.path.join(self.buildout["buildout"]["bin-directory"],self.name)
         f=open(target, "wt")
@@ -263,9 +264,10 @@ class ConfigureRecipe:
         print >>f, '    "$@"'
         f.close()
         os.chmod(target, 0755)
-        self.options.created(target)
+        self.options.created(target)        
 
-
+            
+            
     def createVarnishConfig(self):
         module = ''
         for x in self.options["recipe"]:
@@ -280,6 +282,8 @@ class ConfigureRecipe:
         zope2_vhm_map=self.options.get("zope2_vhm_map", "").split()
         zope2_vhm_map=dict([x.split(":") for x in zope2_vhm_map])
 
+        balancer = self.options["balancer"].strip().split()
+            
         backends=self.options["backends"].strip().split()
         backends=[x.rsplit(":",2) for x in backends]
         if len(backends)>1:
@@ -292,6 +296,15 @@ class ConfigureRecipe:
 
         output=""
         vhosting=""
+        director='director director_0 '
+        # set up director if we are load balancing
+        if (balancer[0] != "none"):
+            if (balancer[0] == "round-robin"):
+                director+='round-robin {\n'
+            elif (balancer[0] == "random"):
+                director+='random {\n'
+
+        
         for i in range(len(backends)):
             parts=backends[i]
             output+='backend backend_%d {\n' % i
@@ -300,14 +313,24 @@ class ConfigureRecipe:
             if len(parts)==2:
                 output+='\t.host = "%s";\n' % parts[0]
                 output+='\t.port = "%s";\n' % parts[1]
-                output+='\t.first_byte_timeout = 300s;\n'
-                vhosting='set req.backend = backend_0;'
+                # if we are configuring a load balancer, set up the director as the backend
+                if (balancer[0] != 'none'):
+                    vhosting='set req.backend = director_0;'
+                    if (balancer[0] == 'round-robin'):
+                        director+='\t{\n\t\t.backend = backend_%d;\n\t}\n' % i
+                    elif (balancer[0] == 'random'):
+                        director+='\t{\n\t\t.backend = backend_%d; .weight = 1;\n\t}\n' % i
+                else:
+                    vhosting='set req.backend = backend_0;'
+                    output+='\t.first_byte_timeout = 300s;\n'
 
+                
             #hostname and/or path is defined, so we may have multiple backends
             elif len(parts)==3:
                 output+='.host = "%s";\n' % parts[1]
                 output+='.port = "%s";\n' % parts[2]
-                output+='.first_byte_timeout = 300s;\n'
+                if (balancer[0] == 'none'):
+                    output+='.first_byte_timeout = 300s;\n'
 
                 # set backend based on path
                 if parts[0].startswith('/') or parts[0].startswith(':'):
@@ -334,13 +357,24 @@ class ConfigureRecipe:
                         vhosting+='\tset req.url = "/VirtualHostBase/http/%s:%s/%s/VirtualHostRoot" req.url;\n' \
                                        % (parts[0], self.options["bind-port"], location)
 
-                vhosting+='\tset req.backend = backend_%d;\n' % i
+                if (balancer[0] != 'none'):
+                    vhosting+='\tset req.backend = director_0;\n'
+                    if (balancer[0] == 'round-robin'):
+                        director+='\t{\n\t\t.backend = backend_%d;\n\t}\n' % i
+                    elif (balancer[0] == 'random'):
+                        director+='\t{\n\t\t.backend = backend_%d; .weight = 1;\n\t}\n' % i
+                else:
+                    vhosting+='\tset req.backend = backend_%d;\n' % i
+
                 vhosting+='}\n'
+                
             else:
                 self.logger.error("Invalid syntax for backend: %s" % 
                                         ":".join(parts))
                 raise zc.buildout.UserError("Invalid syntax for backends")
             output+="}\n\n"
+
+        director+='}\n\n'
 
         if len(backends[0])==3:
             vhosting=vhosting[3:]
@@ -349,9 +383,10 @@ class ConfigureRecipe:
             vhosting+='}'
             vhosting="\t".join(vhosting.splitlines(1))
 
+
         config["backends"]=output
         config["virtual_hosting"]=vhosting
-        
+        config["director"]=director
         for key in verbose_headers:
             if self.options['verbose-headers'] == 'on':
                 pair = verbose_headers[key][1] * ' ', verbose_headers[key][0]
@@ -364,3 +399,5 @@ class ConfigureRecipe:
         f.close()
         self.options.created(self.options["config"])
 
+        
+        
