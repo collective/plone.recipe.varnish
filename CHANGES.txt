@@ -4,6 +4,12 @@ Changelog
 1.0 (unreleased)
 ----------------
 
+* Removed `header_hit_deliver` and `header_hit_notcacheable` debug messages
+  from default template. It is not safe to assign to the object during
+  `vcl_hit` until http://varnish.projects.linpro.no/ticket/310 is not fixed.
+  See also http://kristian.blog.linpro.no/2009/05/25/common-varnish-issues.
+  [hannosch]
+
 * Updated to refer to Varnish 2.0.4. Added a `first_byte_timeout` value of
   300 seconds to the backend definitions. This is a new option since Varnish
   2.0.3 and by default set to 60 seconds. This is arguably too low for certain

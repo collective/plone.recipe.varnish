@@ -55,9 +55,9 @@ sub vcl_hit {
 		error 200 "Purged";
 	}
 
-	if (!obj.cacheable) {${header_hit_notcacheable}
+	if (!obj.cacheable) {
 		pass;
-	}${header_hit_deliver}
+	}
 }
 
 

@@ -166,8 +166,8 @@ class BuildRecipe:
 
 verbose_headers = {
     # key: (value, indentation)
-    'header_hit_notcacheable': ('PASS (not cacheable - hit)', 8),
-    'header_hit_deliver': ('HIT (deliver - from cache)', 4),
+    # 'header_hit_notcacheable': ('PASS (not cacheable - hit)', 8),
+    # 'header_hit_deliver': ('HIT (deliver - from cache)', 4),
     'header_fetch_notcacheable': ('FETCH (pass - not cacheable)', 8),
     'header_fetch_setcookie': ('FETCH (pass - response sets cookie)', 8),
     'header_fetch_cachecontrol': ('FETCH (pass - cache control disallows)', 8),
