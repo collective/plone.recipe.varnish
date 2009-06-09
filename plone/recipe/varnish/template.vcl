@@ -3,6 +3,8 @@
 
 ${backends}
 
+${director}
+
 acl purge {
 	"localhost";
 }
