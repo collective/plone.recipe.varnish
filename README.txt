@@ -202,7 +202,8 @@ group
     request. This defaults to the main group for the specified user.
 
 balancer
-    If included sets up varnish to load balance the specified backends.
+    If included and set to either 'random' or 'round-robin', this option configures
+    varnish to load balance the servers specified by the 'backends' directive.
     Possible values: **none** (default),  **round-robin** or **random**.
     
 .. _Varnish: http://varnish.projects.linpro.no/
