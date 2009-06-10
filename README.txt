@@ -95,6 +95,20 @@ This tells us that the domain plone.org should be mapped to the location
 **backends** option a varnish configuration will be generated that
 maps URLs correctly.
 
+Load Balancing
+---------------
+
+Varnish supports load balancing by configuring a director for a pool of backends.
+This director sends the incoming requests that cannot be fulfulled by varnish to 
+backends in the pool in either random or round robin fashion. You can configure
+the director via the balancer option::
+
+  [varnish-instance]
+  balancer = random
+
+This will generate a configuration which sends all traffic to the director,
+which will choose a 'random' backend server to fulfil the request if the content 
+requested is not cached by varnish itself.
 
 plone.recipe.varnish:build reference
 ------------------------------------
