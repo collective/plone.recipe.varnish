@@ -1,8 +1,12 @@
 Changelog
 =========
 
-1.0 (unreleased)
-----------------
+1.0rc9 (2009-06-25)
+-------------------
+
+* Do not set req.grace and obj.grace. See
+  http://vincentfretin.ecreall.com/articles/varnish-user-be-careful
+  [vincentfretin, maurits]
 
 * Removed `header_hit_deliver` and `header_hit_notcacheable` debug messages
   from default template. It is not safe to assign to the object during
