@@ -2,9 +2,7 @@
 # man page for details on VCL syntax and semantics.
 
 ${backends}
-
 ${director}
-
 acl purge {
 	"localhost";
 }
@@ -49,7 +47,6 @@ sub vcl_pipe {
 	set req.http.connection = "close";
 }
 
-
 sub vcl_hit {
 	if (req.request == "PURGE") {
 		purge_url(req.url);
@@ -60,7 +57,6 @@ sub vcl_hit {
 		pass;
 	}
 }
-
 
 sub vcl_miss {
 	if (req.request == "PURGE") {

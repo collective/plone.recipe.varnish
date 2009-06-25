@@ -372,9 +372,9 @@ class ConfigureRecipe:
                 self.logger.error("Invalid syntax for backend: %s" % 
                                         ":".join(parts))
                 raise zc.buildout.UserError("Invalid syntax for backends")
-            output+="}\n\n"
+            output+="}\n"
 
-        director+='}\n\n'
+        director+='}\n'
 
         if len(backends[0])==3:
             vhosting=vhosting[3:]
@@ -386,7 +386,10 @@ class ConfigureRecipe:
 
         config["backends"]=output
         config["virtual_hosting"]=vhosting
-        config["director"]=director
+        if (balancer[0] != 'none'):
+            config["director"]=director
+        else:
+            config["director"]=''
         for key in verbose_headers:
             if self.options['verbose-headers'] == 'on':
                 pair = verbose_headers[key][1] * ' ', verbose_headers[key][0]

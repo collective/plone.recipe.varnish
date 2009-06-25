@@ -1,8 +1,11 @@
 Changelog
 =========
 
-1.0 (unreleased)
----------------
+1.0rc10 (2009-06-25)
+--------------------
+
+* 1.0rc9 generated broken configuration with balancer=none
+  [vincentfretin]
 
 1.0rc9 (2009-06-25)
 -------------------
