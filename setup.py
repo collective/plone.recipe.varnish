@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '1.0rc9'
+version = '1.0'
 
 setup(name='plone.recipe.varnish',
       version=version,
@@ -18,7 +18,7 @@ setup(name='plone.recipe.varnish',
       keywords='buildout varnish cache proxy',
       author='Wichert Akkerman',
       author_email='wichert@wiggy.net',
-      url='',
+      url='http://pypi.python.org/pypi/plone.recipe.varnish',
       license='BSD',
       packages=find_packages(exclude=['ez_setup']),
       namespace_packages=['plone', 'plone.recipe'],
