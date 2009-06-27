@@ -8,6 +8,7 @@ acl purge {
 }
 
 sub vcl_recv {
+        set req.grace = 120s;
 	${virtual_hosting}
 	
 	if (req.request == "PURGE") {
@@ -34,6 +35,10 @@ sub vcl_recv {
 	}
 
 	if (req.http.If-None-Match) {
+		pass;
+	}
+
+	if (req.url ~ "createObject") {
 		pass;
 	}
 
@@ -66,6 +71,7 @@ sub vcl_miss {
 }
 
 sub vcl_fetch {
+        set obj.grace = 120s;
 	if (!obj.cacheable) {${header_fetch_notcacheable}
 		pass;
 	}

@@ -1,7 +1,17 @@
 Changelog
 =========
 
-1.0rc10 (2009-06-25)
+1.0rc11 (2009-06-27)
+--------------------
+
+* Reintroduced grace options. What the varnish documentation say about grace:
+  "varnish serves stale (but cacheable) objects while retrieving object from backend".
+  The problem is "default_ttl" value is 120s (see bin/varnishd/mgt_param.c in varnish 2.0.4).
+  Added a special rule for createObject url to not look up in the cache.
+  [vincentfretin]
+  
+
+1.0rc10 (2009-06-26)
 --------------------
 
 * 1.0rc9 generated broken configuration with balancer=none
