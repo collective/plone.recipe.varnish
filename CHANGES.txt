@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0rc12 (unreleased)
+1.0rc12 (2009-08-27)
 --------------------
 
 * Made the vcl template build its acl purge section.  At present, the vcl
@@ -21,6 +21,7 @@ Changelog
   http://davidjb.com/blog/2009/01/plone-varnish-configuration-cache-hits-purge-fails
   [rockdj]
 
+
 1.0rc11 (2009-06-27)
 --------------------
 
@@ -36,6 +37,7 @@ Changelog
 
 * 1.0rc9 generated broken configuration with balancer=none
   [vincentfretin]
+
 
 1.0rc9 (2009-06-25)
 -------------------
@@ -55,6 +57,7 @@ Changelog
   2.0.3 and by default set to 60 seconds. This is arguably too low for certain
   edit operations in Plone sites.
   [hannosch]
+
 
 1.0rc8 (2008-02-12)
 -------------------
