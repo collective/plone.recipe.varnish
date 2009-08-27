@@ -5,6 +5,7 @@ ${backends}
 ${director}
 acl purge {
 	"localhost";
+${purgehosts}
 }
 
 sub vcl_recv {

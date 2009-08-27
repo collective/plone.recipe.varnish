@@ -208,6 +208,9 @@ class ConfigureRecipe:
             self.options.setdefault("backends", "127.0.0.1:8080")
             self.options["config"] = os.path.join(self.options["location"],
                                                   "varnish.vcl")
+        self.options.setdefault("connect-timeout", "0.4s")
+        self.options.setdefault("first-byte-timeout", "300s")
+        self.options.setdefault("between-bytes-timeout", "60s")
 
         # Test for valid bind value
         self.options["bind"] = self.options.get("bind").lstrip(":")
@@ -295,6 +298,7 @@ class ConfigureRecipe:
 
 
         output=""
+        purgehosts=set([])
         vhosting=""
         director='director director_0 '
         # set up director if we are load balancing
@@ -322,7 +326,13 @@ class ConfigureRecipe:
                         director+='\t{\n\t\t.backend = backend_%d; .weight = 1;\n\t}\n' % i
                 else:
                     vhosting='set req.backend = backend_0;'
-                    output+='\t.first_byte_timeout = 300s;\n'
+                    output+='\t.connect_timeout = %s;\n' % self.options["connect-timeout"]
+                    output+='\t.first_byte_timeout = %s;\n' % self.options["first-byte-timeout"]
+                    output+='\t.between_bytes_timeout = %s;\n' % self.options["between-bytes-timeout"]
+
+
+                #add a host to the set to enable purge requests being allowed
+                purgehosts.add(parts[0])
 
                 
             #hostname and/or path is defined, so we may have multiple backends
@@ -330,12 +340,18 @@ class ConfigureRecipe:
                 output+='.host = "%s";\n' % parts[1]
                 output+='.port = "%s";\n' % parts[2]
                 if (balancer[0] == 'none'):
-                    output+='.first_byte_timeout = 300s;\n'
+                    output+='.connect_timeout = %s;\n' % self.options["connect-timeout"]
+                    output+='.first_byte_timeout = %s;\n' % self.options["first-byte-timeout"]
+                    output+='.between_bytes_timeout = %s;\n' % self.options["between-bytes-timeout"]
+
+                #add a host to the set to enable purge requests being allowed
+                purgehosts.add(parts[1])
 
                 # set backend based on path
                 if parts[0].startswith('/') or parts[0].startswith(':'):
                     path=parts[0].lstrip(':/')
                     vhosting+='elsif (req.url ~ "^/%s") {\n' % path
+                    vhosting+='\tset req.http.host = "%s";\n' % parts[0].split(':')[0].split('/').pop()
 
                 # set backend based on hostname and path
                 elif parts[0].find(':') != -1:
@@ -343,6 +359,8 @@ class ConfigureRecipe:
                     path=path.lstrip(':/')
                     vhosting+='elsif (req.http.host ~ "^%s(:[0-9]+)?$" && req.url ~ "^/%s") {\n' \
                                 % (hostname, path)
+
+                    vhosting+='\tset req.backend = backend_%d;\n' % i
 
                 # set backend based on hostname
                 else:
@@ -383,8 +401,13 @@ class ConfigureRecipe:
             vhosting+='}'
             vhosting="\t".join(vhosting.splitlines(1))
 
+        #build the purge host string
+        purge=""
+        for host in purgehosts:
+	    purge+='\t"%s";\n' % host
 
         config["backends"]=output
+        config["purgehosts"]=purge
         config["virtual_hosting"]=vhosting
         if (balancer[0] != 'none'):
             config["director"]=director

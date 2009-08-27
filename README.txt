@@ -219,6 +219,26 @@ balancer
     If included and set to either 'random' or 'round-robin', this option configures
     varnish to load balance the servers specified by the 'backends' directive.
     Possible values: **none** (default),  **round-robin** or **random**.
+
+connect-timeout
+    If specifed, this option configures the connection timeout (in seconds) for 
+    Varnish connecting to a backend server.  Varnish will only try to 
+    connect to a given backend for this many seconds before giving up.  Defaults 
+    to 0.4 seconds, as per Varnish's default settings.
+
+first-byte-timeout
+    If specifed, this option configures the timeout (in seconds) for 
+    Varnish receiving the first byte from a backend.  Varnish will only wait 
+    for this many seconds before giving up.  A value of 0 means Varnish will
+    never time out.  Defaults to 300 seconds, see 
+    http://vincentfretin.ecreall.com/articles/varnish-guru-meditation-on-timeout
+
+between-bytes-timeout
+    If specifed, this option configures the timeout (in seconds) for 
+    Varnish waiting between bytes when receiving data from a backend.  
+    Varnish will only wait this many seconds between bytes before giving up. A 
+    value of 0 means this will never time out.  Defaults to 60 seconds, as 
+    per Varnish's default settings.
     
 .. _Varnish: http://varnish.projects.linpro.no/
 .. _zc.buildout: http://cheeseshop.python.org/pypi/zc.buildout
