@@ -1,8 +1,8 @@
 Changelog
 =========
 
-1.0rc12 (2009-08-27)
---------------------
+1.0 (2009-08-27)
+----------------
 
 * Made the vcl template build its acl purge section.  At present, the vcl
   will only allow purges coming from the local host.  If we have multiple hosts
