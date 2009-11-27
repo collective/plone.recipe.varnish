@@ -9,7 +9,7 @@ ${purgehosts}
 }
 
 sub vcl_recv {
-        set req.grace = 120s;
+	set req.grace = 120s;
 	${virtual_hosting}
 	
 	if (req.request == "PURGE") {
@@ -72,7 +72,7 @@ sub vcl_miss {
 }
 
 sub vcl_fetch {
-        set obj.grace = 120s;
+	set obj.grace = 120s;
 	if (!obj.cacheable) {${header_fetch_notcacheable}
 		pass;
 	}

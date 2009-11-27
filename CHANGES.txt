@@ -4,6 +4,9 @@ Changelog
 1.1 (unreleased)
 ----------------
 
+- Consistently use tabs in the generated vcl file.
+  [hannosch]
+
 - Whitespace and documentation cleanup.
   [hannosch]
 
