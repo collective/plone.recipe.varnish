@@ -1,8 +1,8 @@
 Changelog
 =========
 
-1.1 (unreleased)
-----------------
+1.0.1 (2009-11-27)
+------------------
 
 - Expose the ``download-url`` of a known-good Varnish release that works with
   the configuration produced by the instance recipe.
