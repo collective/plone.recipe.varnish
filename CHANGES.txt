@@ -4,6 +4,10 @@ Changelog
 1.1 (unreleased)
 ----------------
 
+- Expose the ``download-url`` of a known-good Varnish release that works with
+  the configuration produced by the instance recipe.
+  [hannosch]
+
 - Consistently use tabs in the generated vcl file.
   [hannosch]
 

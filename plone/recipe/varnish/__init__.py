@@ -188,6 +188,10 @@ class ConfigureRecipe:
         self.options["location"] = os.path.join(
                 buildout["buildout"]["parts-directory"], self.name)
 
+        # Expose the download url of a known-good Varnish release
+        url = "http://downloads.sourceforge.net/varnish/varnish-2.0.5.tar.gz"
+        self.options.setdefault("download-url", url)
+
         # Set some default options
         self.options.setdefault("bind", "127.0.0.1:8000")
         self.options.setdefault("cache-size", "1G")
