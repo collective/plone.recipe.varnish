@@ -131,13 +131,13 @@ class BuildRecipe:
         os.chdir(self.options["source-location"])
         self.logger.info("Compiling Varnish")
         os.chmod("autogen.sh", 0750)
-#        os.chmod("install-sh", 0750)
-        
+        # os.chmod("install-sh", 0750)
+
         if not os.path.exists("configure"):
             assert subprocess.call(["./autogen.sh"]) == 0
         else:
             os.chmod("configure", 0750)
-        
+
         assert subprocess.call(["./configure", "--prefix=" + self.options["binary-location"]]) == 0
         
         if OSX:
@@ -404,7 +404,7 @@ class ConfigureRecipe:
         #build the purge host string
         purge=""
         for host in purgehosts:
-	    purge+='\t"%s";\n' % host
+            purge+='\t"%s";\n' % host
 
         config["backends"]=output
         config["purgehosts"]=purge
@@ -424,6 +424,3 @@ class ConfigureRecipe:
         f.write(template.safe_substitute(config))
         f.close()
         self.options.created(self.options["config"])
-
-        
-        
