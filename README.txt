@@ -13,7 +13,7 @@ Configuring it is very simple. For example::
 
     [varnish]
     recipe = plone.recipe.varnish
-    daemon = ${varnish-build:location}/sbin/varnishd
+    daemon = ${buildout:parts-directory}/varnish-build/sbin/varnishd
     bind = 127.0.0.1:8000
     backends = 127.0.0.1:8080
     cache-size = 1G
