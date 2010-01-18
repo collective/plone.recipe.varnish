@@ -62,7 +62,7 @@ Option 1 (rewrites after Varnish)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If generating these VHM-style URLs in a proxy *behind* Varnish (or if using
-VHM's 'mapping' feature), no extra Varnish configuration is needed.  
+VHM's 'mapping' feature), no extra Varnish configuration is needed.$
 Just make sure the "backends" option directs the traffic to the proxy.
 
 Option 2 (rewrites before Varnish)
@@ -80,13 +80,13 @@ based on the "path" instead of the hostname.  For example::
 
 This will generate a configuration which sends all traffic for any request whose
 path starts with "/VirtualHostBase/http/plone.org:80/Plone" to a backend server
-running at 127.0.0.1 on port 8000, while request paths starting with 
+running at 127.0.0.1 on port 8000, while request paths starting with$
 "/VirtualHostBase/http/plone.net:80/Plone" are sent to port 9000.
 
 Option 3 (rewrites within Varnish)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To have Varnish generate these VHM-style URLs, you can use the **zope2_vhm_map** option. 
+To have Varnish generate these VHM-style URLs, you can use the **zope2_vhm_map** option.$
 Here is an example::
 
   [varnish-instance]
@@ -103,7 +103,7 @@ Load Balancing
 ---------------
 
 Varnish supports load balancing by configuring a director for a pool of backends.
-This director sends the incoming requests that cannot be fulfulled by varnish to 
+This director sends the incoming requests that cannot be fulfulled by varnish to$
 backends in the pool in either random or round robin fashion. You can configure
 the director via the balancer option::
 
@@ -157,9 +157,9 @@ config
 backends
     Specifies the backend or backends which will process the (uncached)
     requests. The syntax for backends:
-    
+$
     [<hostname>][/<path>]:<ip address>:<port>
-    
+$
     The optional 'hostname' and 'path' allows you to do virtual hosting.
     If multiple backends are specified then each backend must include
     either a hostname or path (or both) so that Varnish can direct the
@@ -171,9 +171,9 @@ zope2_vhm_map
     Zope where the website for a virtual host lives.
 
 verbose-headers
-    Varnish VCL configuration: a http-response header line  **X-Varnish-Action** 
-    is set for debugging purposes. It shows a hit, why it bypass/fetch from 
-    backend and if if the object was inserted into cache. 
+    Varnish VCL configuration: a http-response header line  **X-Varnish-Action**$
+    is set for debugging purposes. It shows a hit, why it bypass/fetch from$
+    backend and if if the object was inserted into cache.$
     Possible values: **on** or **off** (default).
 
 telnet
