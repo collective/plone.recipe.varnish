@@ -4,6 +4,9 @@ Changelog
 1.0.2 (unreleased)
 ------------------
 
+- Update proposed Varnish to 2.0.6.
+  [hannosch]
+
 - Further documentation cleanup.
   [hannosch, vincentfretin]
 
