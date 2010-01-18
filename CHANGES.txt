@@ -5,7 +5,7 @@ Changelog
 ------------------
 
 - Further documentation cleanup.
-  [hannosch]
+  [hannosch, vincentfretin]
 
 1.0.1 (2009-11-27)
 ------------------
