@@ -117,7 +117,7 @@ Changelog
   not make sense to duplicate its logic here.
   [wichert]
 
-* Add feature to enable verbose headers in varnish.vcl. This is primary$
+* Add feature to enable verbose headers in varnish.vcl. This is primary 
   interesting for debugging of cache-settings. See README.txt.
   [jensens]
 
@@ -146,7 +146,7 @@ Changelog
   [newbery]
 
 * We don't need to include Accept-Encoding in the hash. Varnish takes care
-  of Vary negotiation already.$
+  of Vary negotiation already. 
   [newbery]
 
 
