@@ -43,7 +43,7 @@ class BuildRecipe:
             # put it into parts
             location = options['location'] = os.path.join(
                 buildout['buildout']['parts-directory'],self.name)
-$
+    
         options["source-location"]=os.path.join(location, "source")
         options["binary-location"]=os.path.join(location, "install")
         options["daemon"]=os.path.join(options["binary-location"], "varnishd")
@@ -117,7 +117,7 @@ $
 
     def PatchForOSX(self):
         """Patch libtool on OS X.
-$
+    
         workaround for http://varnish.projects.linpro.no/ticket/118
         """
         libtool_file_name = os.path.join(self.options["source-location"], 'libtool')
@@ -139,10 +139,10 @@ $
             os.chmod("configure", 0750)
 
         assert subprocess.call(["./configure", "--prefix=" + self.options["binary-location"]]) == 0
-$
+    
         if OSX:
             self.PatchForOSX()
-$
+    
         assert subprocess.call(["make", "install"]) == 0
 
 
@@ -246,8 +246,8 @@ class ConfigureRecipe:
 
     def update(self):
         pass
-$
-$
+    
+    
     def addVarnishRunner(self):
         target=os.path.join(self.buildout["buildout"]["bin-directory"],self.name)
         f=open(target, "wt")
@@ -273,8 +273,8 @@ $
         os.chmod(target, 0755)
         self.options.created(target)$
 
-$
-$
+    
+    
     def createVarnishConfig(self):
         module = ''
         for x in self.options["recipe"]:
@@ -290,7 +290,7 @@ $
         zope2_vhm_map=dict([x.split(":") for x in zope2_vhm_map])
 
         balancer = self.options["balancer"].strip().split()
-$
+    
         backends=self.options["backends"].strip().split()
         backends=[x.rsplit(":",2) for x in backends]
         if len(backends)>1:
@@ -312,7 +312,7 @@ $
             elif (balancer[0] == "random"):
                 director+='random {\n'
 
-$
+    
         for i in range(len(backends)):
             parts=backends[i]
             output+='backend backend_%d {\n' % i
@@ -338,7 +338,7 @@ $
                 #add a host to the set to enable purge requests being allowed
                 purgehosts.add(parts[0])
 
-$
+    
             #hostname and/or path is defined, so we may have multiple backends
             elif len(parts)==3:
                 output+='.host = "%s";\n' % parts[1]
@@ -389,7 +389,7 @@ $
                     vhosting+='\tset req.backend = backend_%d;\n' % i
 
                 vhosting+='}\n'
-$
+    
             else:
                 self.logger.error("Invalid syntax for backend: %s" %$
                                         ":".join(parts))
