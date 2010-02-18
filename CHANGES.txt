@@ -4,6 +4,9 @@ Changelog
 1.0.3 (unreleased)
 ------------------
 
+- Added the ability to configure runtime parameters in the varnish runner
+  configuration and added information to the documentation for it.
+  [benliles]
 
 1.0.2 (2010-01-18)
 ------------------

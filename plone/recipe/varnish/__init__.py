@@ -197,6 +197,7 @@ class ConfigureRecipe:
         self.options.setdefault("cache-size", "1G")
         self.options.setdefault("daemon",
                 os.path.join(buildout["buildout"]["bin-directory"], "varnishd"))
+        self.options.setdefault("runtime-parameters","")
         if self.options.has_key("config"):
             if sets.Set(self.options.keys()).intersection(config_excludes):
                 msg = ("When config= option is specified the following "
@@ -251,6 +252,9 @@ class ConfigureRecipe:
     def addVarnishRunner(self):
         target=os.path.join(self.buildout["buildout"]["bin-directory"],self.name)
         f=open(target, "wt")
+        
+        parameters = self.options['runtime-parameters'].strip().split()
+        
         print >>f, "#!/bin/sh"
         print >>f, "exec %s \\" % self.options["daemon"]
         if self.options.has_key("user"):
@@ -268,6 +272,8 @@ class ConfigureRecipe:
                 self.options["cache-size"])
         if self.options.get("mode", "daemon") == "foreground":
             print >>f, '    -F \\'
+        for parameter in parameters:
+            print >>f, '    -p %s \\' % (parameter,)
         print >>f, '    "$@"'
         f.close()
         os.chmod(target, 0755)

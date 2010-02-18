@@ -214,6 +214,11 @@ between-bytes-timeout
     this will never time out. Defaults to 60s, as per Varnish's default
     settings.
 
+runtime-parameters
+    Runtime parameter configuration options. The full list of available options
+    can be found in the manpage varnishd(1) for your version of varnish. 
+    Examples include 'thread_pool_max', 'thread_pool_min', 'sess_timeout'.
+
 .. _Varnish: http://varnish.projects.linpro.no/
 .. _zc.buildout: http://cheeseshop.python.org/pypi/zc.buildout
 
