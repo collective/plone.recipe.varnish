@@ -8,6 +8,9 @@ Changelog
   configuration and added information to the documentation for it.
   [benliles]
 
+- Improve readability of the generated config.
+  [ldr]
+
 1.0.2 (2010-01-18)
 ------------------
 
