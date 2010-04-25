@@ -32,7 +32,6 @@ setup(name='plone.recipe.varnish',
       entry_points={
           "zc.buildout": [
               "default = plone.recipe.varnish:ConfigureRecipe",
-              "build = plone.recipe.varnish:BuildRecipe",
               "instance = plone.recipe.varnish:ConfigureRecipe",
               ],
       },

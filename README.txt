@@ -114,12 +114,6 @@ This will generate a configuration which sends all traffic to the director,
 which will choose a 'random' backend server to fulfill the request if the
 content requested is not cached by varnish itself.
 
-plone.recipe.varnish:build reference
-------------------------------------
-
-*The build recipe is obsolete and will be removed, please use zc.recipe.cmmi
-instead.*
-
 
 plone.recipe.varnish reference
 ------------------------------
@@ -135,8 +129,7 @@ It can be configured with any of these options:
 
 daemon
     The path of the varnish daemon to use. Defaults to bin/varnishd inside
-    your buildout, which is the executable created by the
-    plone.recipe.varnish:build recipe.
+    your buildout' bin directory.
 
 mode
     Specify whether the varnish daemon should run in 'daemon' or

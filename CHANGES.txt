@@ -4,6 +4,9 @@ Changelog
 1.1 (unreleased)
 ----------------
 
+- Removed the deprecated build recipe.
+  [hannosch]
+
 - Added basic test infrastructure and a test for the simple buildout.
   [hannosch]
 
