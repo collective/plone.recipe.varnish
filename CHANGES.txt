@@ -4,6 +4,9 @@ Changelog
 1.1 (unreleased)
 ----------------
 
+- Correct documentation for the ``daemon`` setting and remove the default.
+  [hannosch]
+
 - Removed the deprecated build recipe.
   [hannosch]
 

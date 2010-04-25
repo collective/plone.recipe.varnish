@@ -38,9 +38,8 @@ class ConfigureRecipe:
 
         # Set some default options
         self.options.setdefault("bind", "127.0.0.1:8000")
+        self.daemon = self.options["daemon"]
         self.options.setdefault("cache-size", "1G")
-        self.options.setdefault("daemon",
-                os.path.join(buildout["buildout"]["bin-directory"], "varnishd"))
         self.options.setdefault("runtime-parameters", "")
         if "config" in self.options:
             if set(self.options.keys()).intersection(config_excludes):
@@ -98,7 +97,7 @@ class ConfigureRecipe:
         parameters = self.options['runtime-parameters'].strip().split()
 
         print >>f, "#!/bin/sh"
-        print >>f, "exec %s \\" % self.options["daemon"]
+        print >>f, "exec %s \\" % self.daemon
         if "user" in self.options:
             print >>f, '    -p user=%s \\' % self.options["user"]
         if "group" in self.options:
