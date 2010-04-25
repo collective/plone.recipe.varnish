@@ -1,14 +1,14 @@
 import logging
 import os
-import setuptools
 import shutil
 import string
-import sys
 import subprocess
+import sys
 import tempfile
 import urllib2
 import urlparse
-import sets
+
+import setuptools
 import zc.buildout
 
 OSX = sys.platform.startswith('darwin')
@@ -180,7 +180,7 @@ verbose_headers = {
 }
 headertpl = '\n%sset obj.http.X-Varnish-Action = "%s";'
 
-config_excludes = sets.Set(["zope2_vhm_map", "backends", "verbose-headers"])
+config_excludes = set(["zope2_vhm_map", "backends", "verbose-headers"])
 
 
 class ConfigureRecipe:
@@ -205,7 +205,7 @@ class ConfigureRecipe:
                 os.path.join(buildout["buildout"]["bin-directory"], "varnishd"))
         self.options.setdefault("runtime-parameters", "")
         if "config" in self.options:
-            if sets.Set(self.options.keys()).intersection(config_excludes):
+            if set(self.options.keys()).intersection(config_excludes):
                 msg = ("When config= option is specified the following "
                        "options cant be used: ")
                 msg += ' '.join(config_excludes)

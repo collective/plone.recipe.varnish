@@ -4,6 +4,10 @@ Changelog
 1.0.3 (unreleased)
 ------------------
 
+- Use the built-in set type instead of the deprecated sets module. This recipe
+  now requires at least Python 2.4.
+  [hannosch]
+
 - Added the ability to configure runtime parameters in the varnish runner
   configuration and added information to the documentation for it.
   [benliles]
