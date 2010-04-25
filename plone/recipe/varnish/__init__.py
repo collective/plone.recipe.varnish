@@ -13,36 +13,40 @@ import zc.buildout
 
 OSX = sys.platform.startswith('darwin')
 
+
 class BuildRecipe:
+
     def __init__(self, buildout, name, options):
-        self.name=name
-        self.options=options
-        self.buildout=buildout
-        self.logger=logging.getLogger(self.name)
+        self.name = name
+        self.options = options
+        self.buildout = buildout
+        self.logger = logging.getLogger(self.name)
         self.logger.info("plone.recipe.varnish:build is obsolete, "
                          "please use zc.recipe.cmmi instead.")
 
-        self.svn=options.get("svn", None)
-        self.url=options.get("url", None)
+        self.svn = options.get("svn", None)
+        self.url = options.get("url", None)
         if not (self.svn or self.url):
             self.logger.error(
-                    "You need to specify either a URL or subversion repository")
+                "You need to specify either a URL or subversion repository")
             raise zc.buildout.UserError("No download location given")
 
-        # If we use a download, then look for a shared Varnish installation directory
-        if self.svn is None and buildout['buildout'].get('varnish-directory') is not None:
+        # If we use a download, then look for a shared Varnish installation
+        # directory
+        varnish_directory = buildout['buildout'].get('varnish-directory')
+        if self.svn is None and varnish_directory is not None:
             _, _, urlpath, _, _, _ = urlparse.urlparse(self.url)
             fname = urlpath.split('/')[-1]
             # cleanup the name a bit
             for s in ('.tar', '.bz2', '.gz', '.tgz'):
                 fname = fname.replace(s, '')
             location = options['location'] = os.path.join(
-                buildout['buildout']['varnish-directory'],fname)
+                varnish_directory, fname)
             options['shared-varnish'] = 'true'
         else:
             # put it into parts
             location = options['location'] = os.path.join(
-                buildout['buildout']['parts-directory'],self.name)
+                buildout['buildout']['parts-directory'], self.name)
 
         options["source-location"]=os.path.join(location, "source")
         options["binary-location"]=os.path.join(location, "install")
@@ -52,24 +56,23 @@ class BuildRecipe:
         buildout['buildout'].setdefault('download-directory',
                 os.path.join(buildout['buildout']['directory'], 'downloads'))
 
-
     def install(self):
         self.installVarnish()
         self.addScriptWrappers()
         if self.url and self.options.get('shared-varnish') == 'true':
-            # If the varnish installation is shared, only return non-shared paths
+            # If the varnish installation is shared, only return non-shared
+            # paths
             return self.options.created()
         return self.options.created(self.options["location"])
-
 
     def update(self):
         pass
 
-
     def installVarnish(self):
         location=self.options["location"]
         if os.path.exists(location):
-            # If the varnish installation exists and is shared, then we are done
+            # If the varnish installation exists and is shared, then we are
+            # done
             if self.options.get('shared-varnish') == 'true':
                 return
             else:
@@ -78,16 +81,18 @@ class BuildRecipe:
         self.downloadVarnish()
         self.compileVarnish()
 
-
     def downloadVarnish(self):
-        download_dir=self.buildout['buildout']['download-directory']
+        download_dir = self.buildout['buildout']['download-directory']
+        source = self.options["source-location"]
 
-        if os.path.exists(self.options["source-location"]):
-            shutil.rmtree(self.options["source-location"])
+        if os.path.exists(source):
+            shutil.rmtree(source)
 
         if self.svn:
             self.logger.info("Checking out varnish from subversion.")
-            assert os.system("svn co %s %s" % (self.options["svn"], self.options["source-location"]))==0
+            status = os.system("svn co %s %s" % (self.options["svn"], source))
+            if status != 0:
+                raise AssertionError("SVN checkout of failed.")
         else:
             self.logger.info("Downloading varnish tarball.")
             if not os.path.isdir(download_dir):
@@ -97,9 +102,9 @@ class BuildRecipe:
             tmp=tempfile.mkdtemp("buildout-"+self.name)
 
             try:
-                fname=os.path.join(download_dir, urlpath.split("/")[-1])
+                fname = os.path.join(download_dir, urlpath.split("/")[-1])
                 if not os.path.exists(fname):
-                    f=open(fname, "wb")
+                    f = open(fname, "wb")
                     try:
                         f.write(urllib2.urlopen(self.url).read())
                     except:
@@ -109,23 +114,23 @@ class BuildRecipe:
 
                 setuptools.archive_util.unpack_archive(fname, tmp)
 
-                files=os.listdir(tmp)
-                shutil.move(os.path.join(tmp, files[0]), self.options["source-location"])
+                files = os.listdir(tmp)
+                shutil.move(os.path.join(tmp, files[0]), source)
             finally:
                 shutil.rmtree(tmp)
-
 
     def PatchForOSX(self):
         """Patch libtool on OS X.
 
         workaround for http://varnish.projects.linpro.no/ticket/118
         """
-        libtool_file_name = os.path.join(self.options["source-location"], 'libtool')
+        source = self.options["source-location"]
+        libtool_file_name = os.path.join(source, 'libtool')
         libtool_source = open(libtool_file_name, 'r').read()
-        libtool_source = libtool_source.replace('export_dynamic_flag_spec=""',
-                                                'export_dynamic_flag_spec="-flat_namespace"')
+        libtool_source = libtool_source.replace(
+            'export_dynamic_flag_spec=""',
+            'export_dynamic_flag_spec="-flat_namespace"')
         open(libtool_file_name, 'w').write(libtool_source)
-
 
     def compileVarnish(self):
         os.chdir(self.options["source-location"])
@@ -144,7 +149,6 @@ class BuildRecipe:
             self.PatchForOSX()
 
         assert subprocess.call(["make", "install"]) == 0
-
 
     def addScriptWrappers(self):
         bintarget=self.buildout["buildout"]["bin-directory"]
@@ -178,7 +182,9 @@ headertpl = '\n%sset obj.http.X-Varnish-Action = "%s";'
 
 config_excludes = sets.Set(["zope2_vhm_map", "backends", "verbose-headers"])
 
+
 class ConfigureRecipe:
+
     def __init__(self, buildout, name, options):
         self.name = name
         self.options = options
@@ -197,8 +203,8 @@ class ConfigureRecipe:
         self.options.setdefault("cache-size", "1G")
         self.options.setdefault("daemon",
                 os.path.join(buildout["buildout"]["bin-directory"], "varnishd"))
-        self.options.setdefault("runtime-parameters","")
-        if self.options.has_key("config"):
+        self.options.setdefault("runtime-parameters", "")
+        if "config" in self.options:
             if sets.Set(self.options.keys()).intersection(config_excludes):
                 msg = ("When config= option is specified the following "
                        "options cant be used: ")
@@ -244,22 +250,20 @@ class ConfigureRecipe:
 
         return self.options.created()
 
-
     def update(self):
         pass
 
-
     def addVarnishRunner(self):
-        target=os.path.join(self.buildout["buildout"]["bin-directory"],self.name)
-        f=open(target, "wt")
-        
+        target = os.path.join(self.buildout["buildout"]["bin-directory"], self.name)
+        f = open(target, "wt")
+
         parameters = self.options['runtime-parameters'].strip().split()
-        
+
         print >>f, "#!/bin/sh"
         print >>f, "exec %s \\" % self.options["daemon"]
-        if self.options.has_key("user"):
+        if "user" in self.options:
             print >>f, '    -p user=%s \\' % self.options["user"]
-        if self.options.has_key("group"):
+        if "group" in self.options:
             print >>f, '    -p group=%s \\' % self.options["group"]
         print >>f, '    -f "%s" \\' % self.options["config"]
         print >>f, '    -P "%s" \\' % \
@@ -273,13 +277,11 @@ class ConfigureRecipe:
         if self.options.get("mode", "daemon") == "foreground":
             print >>f, '    -F \\'
         for parameter in parameters:
-            print >>f, '    -p %s \\' % (parameter,)
+            print >>f, '    -p %s \\' % (parameter)
         print >>f, '    "$@"'
         f.close()
         os.chmod(target, 0755)
         self.options.created(target)
-
-
 
     def createVarnishConfig(self):
         module = ''
@@ -287,6 +289,7 @@ class ConfigureRecipe:
             if x in (':', '>', '<', '='):
                 break
             module += x
+
         whereami=sys.modules[module].__path__[0]
         template=open(os.path.join(whereami, "template.vcl")).read()
         template=string.Template(template)
@@ -298,7 +301,7 @@ class ConfigureRecipe:
         balancer = self.options["balancer"].strip().split()
 
         backends=self.options["backends"].strip().split()
-        backends=[x.rsplit(":",2) for x in backends]
+        backends=[x.rsplit(":", 2) for x in backends]
         if len(backends)>1:
             lengths=set([len(x) for x in backends])
             if lengths!=set([3]):
@@ -365,7 +368,7 @@ class ConfigureRecipe:
 
                 # set backend based on hostname and path
                 elif parts[0].find(':') != -1:
-                    hostname, path = parts[0].split(':',1)
+                    hostname, path = parts[0].split(':', 1)
                     path=path.lstrip(':/')
                     vhosting+='elsif (req.http.host ~ "^%s(:[0-9]+)?$" && req.url ~ "^/%s") {\n' \
                                 % (hostname, path)
