@@ -8,7 +8,7 @@ Changelog
 1.1b1 (2010-04-25)
 ------------------
 
-- Updated advertises Varnish to 2.1 and adjusted config.
+- Updated advertised Varnish version to 2.1 and adjusted config.
   [hannosch]
 
 - Correct documentation for the ``daemon`` setting and remove the default.
