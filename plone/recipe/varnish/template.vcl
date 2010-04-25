@@ -16,7 +16,7 @@ sub vcl_recv {
         if (!client.ip ~ purge) {
             error 405 "Not allowed.";
         }
-        lookup;
+        return(lookup);
     }
 
     if (req.request != "GET" &&
@@ -27,25 +27,25 @@ sub vcl_recv {
         req.request != "OPTIONS" &&
         req.request != "DELETE") {
         /* Non-RFC2616 or CONNECT which is weird. */
-        pipe;
+        return(pipe);
     }
 
     if (req.request != "GET" && req.request != "HEAD") {
         /* We only deal with GET and HEAD by default */
-        pass;
+        return(pass);
     }
 
     if (req.http.If-None-Match) {
-        pass;
+        return(pass);
     }
 
     if (req.url ~ "createObject") {
-        pass;
+        return(pass);
     }
 
     remove req.http.Accept-Encoding;
 
-    lookup;
+    return(lookup);
 }
 
 sub vcl_pipe {
@@ -60,7 +60,7 @@ sub vcl_hit {
     }
 
     if (!obj.cacheable) {
-        pass;
+        return(pass);
     }
 }
 
@@ -72,18 +72,18 @@ sub vcl_miss {
 }
 
 sub vcl_fetch {
-    set obj.grace = 120s;
-    if (!obj.cacheable) {${header_fetch_notcacheable}
-        pass;
+    set beresp.grace = 120s;
+    if (!beresp.cacheable) {${header_fetch_notcacheable}
+        return(pass);
     }
-    if (obj.http.Set-Cookie) {${header_fetch_setcookie}
-        pass;
+    if (beresp.http.Set-Cookie) {${header_fetch_setcookie}
+        return(pass);
     }
-    if (obj.http.Cache-Control ~ "(private|no-cache|no-store)") {${header_fetch_cachecontrol}
-        pass;
+    if (beresp.http.Cache-Control ~ "(private|no-cache|no-store)") {${header_fetch_cachecontrol}
+        return(pass);
     }
-    if (req.http.Authorization && !obj.http.Cache-Control ~ "public") {${header_fetch_auth}
-        pass;
+    if (beresp.http.Authorization && !beresp.http.Cache-Control ~ "public") {${header_fetch_auth}
+        return(pass);
     }
     ${header_fetch_insert}
 }

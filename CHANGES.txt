@@ -1,8 +1,11 @@
 Changelog
 =========
 
-1.1 (unreleased)
-----------------
+1.1a1 (unreleased)
+------------------
+
+- Updated advertises Varnish to 2.1 and adjusted config.
+  [hannosch]
 
 - Correct documentation for the ``daemon`` setting and remove the default.
   [hannosch]
