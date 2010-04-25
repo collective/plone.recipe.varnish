@@ -4,6 +4,9 @@ Changelog
 1.1 (unreleased)
 ----------------
 
+- Added basic test infrastructure and a test for the simple buildout.
+  [hannosch]
+
 - Use the built-in set type instead of the deprecated sets module. This recipe
   now requires at least Python 2.4.
   [hannosch]

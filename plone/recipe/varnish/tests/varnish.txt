@@ -1,0 +1,51 @@
+Varnish recipe
+==============
+
+This is the doctest for plone.recipe.varnish. It ensures the template
+works fine. It is based on zc.buildout testing module::
+
+    >>> from zc.buildout.testing import *
+    >>> from os.path import join
+    >>> import sys, os
+
+Let's create a minimum buildout that uses the current plone.recipe.varnish::
+
+    >>> simplest = '''
+    ... [buildout]
+    ... parts = varnish-build varnish
+    ... find-links = %(sample_buildout)s/eggs
+    ...
+    ... [varnish-build]
+    ... recipe = zc.recipe.cmmi
+    ... url = ${varnish:download-url}
+    ...
+    ... [varnish]
+    ... recipe = plone.recipe.varnish
+    ... daemon = ${buildout:parts-directory}/varnish-build/sbin/varnishd
+    ... backends = 127.0.0.1:8080
+    ... ''' % globals()
+    >>> write('buildout.cfg', simplest)
+
+Let's run it::
+
+    >>> print system(join('bin', 'buildout'))
+    Installing varnish.
+    Installing varnish-build.
+    varnish-build: Downloading ...
+    varnish-build: Unpacking and configuring
+    ...
+
+A control script got created::
+
+    >>> 'varnish' in os.listdir('bin')
+    True
+
+Check the config is syntactically correct by compiling it to C::
+
+    >>> print system(join('bin', 'varnish') + ' -C')
+    storage_file: filename: .../parts/varnish/storage size 1024 MB.
+    ...
+    * NB:  This file is machine generated, DO NOT EDIT!
+    ...
+    const struct VCL_conf VCL_conf = {
+    ...

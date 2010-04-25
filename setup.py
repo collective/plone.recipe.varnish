@@ -26,7 +26,9 @@ setup(name='plone.recipe.varnish',
       zip_safe=False,
       install_requires=[
           'setuptools',
+          'zc.buildout',
       ],
+      extras_require = dict(test=['zc.recipe.cmmi']),
       entry_points={
           "zc.buildout": [
               "default = plone.recipe.varnish:ConfigureRecipe",

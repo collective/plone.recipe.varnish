@@ -309,7 +309,6 @@ class ConfigureRecipe:
                                   "must be given for each client")
                 raise zc.buildout.UserError("Multiple backends without hostnames")
 
-
         output=""
         purgehosts=set([])
         vhosting=""
@@ -320,7 +319,6 @@ class ConfigureRecipe:
                 director+='round-robin {\n'
             elif (balancer[0] == "random"):
                 director+='random {\n'
-
 
         for i in range(len(backends)):
             parts=backends[i]
