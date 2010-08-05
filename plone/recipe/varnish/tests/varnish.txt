@@ -43,7 +43,7 @@ A control script got created::
 Check the config is syntactically correct by compiling it to C::
 
     >>> print system(join('bin', 'varnish') + ' -C')
-    storage_file: filename: .../parts/varnish/storage size 1024 MB.
+    storage_file: filename: .../parts/varnish/storage size 256 MB.
     ...
     * NB:  This file is machine generated, DO NOT EDIT!
     ...
