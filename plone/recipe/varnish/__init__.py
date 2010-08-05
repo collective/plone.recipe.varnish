@@ -39,7 +39,7 @@ class ConfigureRecipe:
         # Set some default options
         self.options.setdefault("bind", "127.0.0.1:8000")
         self.daemon = self.options["daemon"]
-        self.options.setdefault("cache-size", "1G")
+        self.options.setdefault("cache-size", "256M")
         self.options.setdefault("runtime-parameters", "")
         if "config" in self.options:
             if set(self.options.keys()).intersection(config_excludes):

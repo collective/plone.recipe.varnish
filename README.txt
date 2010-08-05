@@ -16,7 +16,7 @@ Configuring it is very simple. For example::
     daemon = ${buildout:parts-directory}/varnish-build/sbin/varnishd
     bind = 127.0.0.1:8000
     backends = 127.0.0.1:8080
-    cache-size = 1G
+    cache-size = 256M
 
 This configures two buildout parts: ``varnish-build`` which will download,
 compile and install varnish, and ``varnish`` which runs Varnish, configured to
@@ -137,7 +137,8 @@ mode
     supervision tools like daemontools or runit. Defaults to 'daemon'.
 
 cache-size
-    The size of the cache (limited to 2G on 32bit systems).
+    The size of the cache (limited to 2G on 32bit systems). Defaults to
+    256M.
 
 bind
     Hostname and port on which Varnish will listen for requests. Defaults

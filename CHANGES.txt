@@ -4,6 +4,9 @@ Changelog
 1.1 (unreleased)
 ----------------
 
+- Changed the default cache size to 256M from 1G.
+  [hannosch]
+
 - Updated Varnish to 2.1.2.
   [hannosch]
 
