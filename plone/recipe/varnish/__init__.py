@@ -113,6 +113,8 @@ class ConfigureRecipe:
                 self.options["cache-size"])
         if self.options.get("mode", "daemon") == "foreground":
             print >>f, '    -F \\'
+        if self.options.get("name", None):
+            print >>f, '    -n %s \\' % self.options["name"]
         for parameter in parameters:
             print >>f, '    -p %s \\' % (parameter)
         print >>f, '    "$@"'

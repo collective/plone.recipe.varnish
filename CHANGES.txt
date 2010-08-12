@@ -4,6 +4,10 @@ Changelog
 1.1.1 (unreleased)
 ------------------
 
+- Added the `name` option to be able to define the directory varnishd
+  puts temporary files to and identify the instance when using varnishlog
+  or varnishstat.
+  [fRiSi]
 
 1.1 (2010-08-05)
 ----------------

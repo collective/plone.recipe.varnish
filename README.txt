@@ -20,7 +20,7 @@ Configuring it is very simple. For example::
 
 This configures two buildout parts: ``varnish-build`` which will download,
 compile and install varnish, and ``varnish`` which runs Varnish, configured to
-listen on 127.0.0.1:8000 for requests, using a 1 gigabyte cache and sending
+listen on 127.0.0.1:8000 for requests, using a 256 megabyte cache and sending
 requests to a backend at 127.0.0.1:8080.
 
 Wrappers for all the varnish commands are created in the bin directory of your
@@ -159,6 +159,17 @@ backends
     either a hostname or path (or both) so that Varnish can direct the
     matching request to the appropriate backend. Defaults to 127.0.0.1:8080.
 
+name
+    If specified this sets the name of the varnish instance (defaults to
+    the host name).
+
+    From varnishd's manpage:
+
+      Amongst other things, this name is used to construct the name of the
+      directory in which varnishd keeps temporary files and persistent state.
+      If the specified name begins with a forward slash, it is interpreted as
+      the absolute path to the directory which should be used for this purpose.
+
 zope2_vhm_map
     Defines a virtual host mapping for Zope servers. This is a list of
     **hostname:ZODB location** entries which specify the location inside
@@ -210,9 +221,9 @@ between-bytes-timeout
 
 runtime-parameters
     Runtime parameter configuration options. The full list of available options
-    can be found in the manpage varnishd(1) for your version of varnish. 
+    can be found in the manpage varnishd(1) for your version of varnish.
     Examples include 'thread_pool_max', 'thread_pool_min', 'sess_timeout'.
 
-.. _Varnish: http://varnish.projects.linpro.no/
+.. _Varnish: http://varnish-cache.org/
 .. _zc.buildout: http://cheeseshop.python.org/pypi/zc.buildout
 
