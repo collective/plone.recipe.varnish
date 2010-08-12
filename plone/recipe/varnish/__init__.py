@@ -16,7 +16,7 @@ verbose_headers = {
     'header_fetch_auth': ('FETCH (pass - authorized and no public cache control)', 8),
     'header_fetch_insert': ('FETCH (insert)', 4),
 }
-headertpl = '\n%sset obj.http.X-Varnish-Action = "%s";'
+headertpl = '\n%sset beresp.http.X-Varnish-Action = "%s";'
 
 config_excludes = set(["zope2_vhm_map", "backends", "verbose-headers"])
 

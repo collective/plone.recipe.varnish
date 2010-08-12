@@ -9,6 +9,10 @@ Changelog
   or varnishstat.
   [fRiSi]
 
+- fixed configuration for verbose-headers=on (context in vlc_fetch is
+  bresp instead of obj in newer varnish versions)
+  [fRiSi]
+
 1.1 (2010-08-05)
 ----------------
 
