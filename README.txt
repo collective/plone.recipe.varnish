@@ -158,6 +158,10 @@ backends
     If multiple backends are specified then each backend must include
     either a hostname or path (or both) so that Varnish can direct the
     matching request to the appropriate backend. Defaults to 127.0.0.1:8080.
+    
+purge-hosts
+    Specifies hostnames or ip addresses for purge acl. By default localhost and
+    the backends are allowed to purge. Additional allowed hosts are listed here.
 
 name
     If specified this sets the name of the varnish instance (defaults to

@@ -59,6 +59,7 @@ class ConfigureRecipe:
         self.options.setdefault("connect-timeout", "0.4s")
         self.options.setdefault("first-byte-timeout", "300s")
         self.options.setdefault("between-bytes-timeout", "60s")
+        self.options.setdefault("purge-hosts", "")
 
         # Test for valid bind value
         self.options["bind"] = self.options.get("bind").lstrip(":")
@@ -252,6 +253,10 @@ class ConfigureRecipe:
             vhosting="\t".join(vhosting.splitlines(1))
 
         #build the purge host string
+        for segment in self.options['purge-hosts'].split():
+            segment = segment.strip()
+            if segment:
+                purgehosts.add(segment)
         purge=""
         for host in purgehosts:
             purge+='\t"%s";\n' % host
