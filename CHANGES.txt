@@ -4,6 +4,14 @@ Changelog
 1.1.1 (unreleased)
 ------------------
 
+- Added new options ``cache-type``, ``cache-location`` for specifying type of
+  Varnish storage (such as using malloc for alternative storage) and setting a
+  custom location for said storage
+  [davidjb]
+
+- Added additional unit tests to check Varnish initialisation script
+  [davidjb]
+
 - Added new option 'purge-hosts'. Enables additional addresses allowed to purge.
   [jensens]
 

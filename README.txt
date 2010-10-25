@@ -136,6 +136,22 @@ mode
     'foreground' mode.  The latter is useful when varnish is run by service
     supervision tools like daemontools or runit. Defaults to 'daemon'.
 
+cache-type
+
+    Specify the type of cache storage to use with Varnish.  Possible values: 
+    **file** (storage for each object is allocated from an arena backed by a file),
+    **malloc** (storage for each object is allocated with malloc; in memory),
+    or **persistent** (experimental as at Varnish 2.1.4). Defaults to 'file'.
+
+cache-location
+
+    Customise the location for the Varnish file storage.  Option only applicable 
+    when used with **file** or **persistent** cache-type options.  Defaults to 
+    using a file named ``storage`` inside the relevant parts directory 
+    (eg ``parts/varnish/storage``).  Changing the default location can be
+    useful in putting the storage somewhere with quicker read speeds (RAM
+    disk etc).
+
 cache-size
     The size of the cache (limited to 2G on 32bit systems). Defaults to
     256M.

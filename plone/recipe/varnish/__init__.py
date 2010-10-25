@@ -29,8 +29,8 @@ class ConfigureRecipe:
         self.buildout = buildout
         self.logger = logging.getLogger(self.name)
 
-        self.options["location"] = os.path.join(
-                buildout["buildout"]["parts-directory"], self.name)
+	self.options.setdefault("location", os.path.join(
+                buildout["buildout"]["parts-directory"], self.name))
 
         # Expose the download url of a known-good Varnish release
         url = "http://downloads.sourceforge.net/varnish/varnish-2.1.3.tar.gz"
@@ -39,6 +39,9 @@ class ConfigureRecipe:
         # Set some default options
         self.options.setdefault("bind", "127.0.0.1:8000")
         self.daemon = self.options["daemon"]
+        self.options.setdefault("cache-type", "file")
+        self.options.setdefault("cache-location", 
+                                os.path.join(self.options["location"], 'storage'))
         self.options.setdefault("cache-size", "256M")
         self.options.setdefault("runtime-parameters", "")
         if "config" in self.options:
@@ -109,9 +112,15 @@ class ConfigureRecipe:
         print >>f, '    -a %s \\' % self.options["bind"]
         if self.options.get("telnet", None):
             print >>f, '    -T %s \\' % self.options["telnet"]
-        print >>f, '    -s file,"%s",%s \\' % (
-                os.path.join(self.options["location"], "storage"),
-                self.options["cache-size"])
+        if self.options["cache-type"] == "malloc":
+            print >>f, '    -s %s,%s \\' % (
+                    self.options["cache-type"],
+                    self.options["cache-size"])
+        else:
+            print >>f, '    -s %s,"%s",%s \\' % (
+                    self.options["cache-type"],
+                    self.options["cache-location"],
+                    self.options["cache-size"])
         if self.options.get("mode", "daemon") == "foreground":
             print >>f, '    -F \\'
         if self.options.get("name", None):

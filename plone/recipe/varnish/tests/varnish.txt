@@ -23,8 +23,8 @@ Let's create a minimum buildout that uses the current plone.recipe.varnish::
     ... recipe = plone.recipe.varnish
     ... daemon = ${buildout:parts-directory}/varnish-build/sbin/varnishd
     ... backends = 127.0.0.1:8080
-    ... ''' % globals()
-    >>> write('buildout.cfg', simplest)
+    ... '''
+    >>> write('buildout.cfg', simplest % globals())
 
 Let's run it::
 
@@ -40,6 +40,18 @@ A control script got created::
     >>> 'varnish' in os.listdir('bin')
     True
 
+Check the contents of the control script are correct::
+
+    >>> print open(join('bin', 'varnish')).read()
+    #!/bin/sh
+    exec ...sample-buildout/parts/varnish-build/sbin/varnishd \
+        -f "...sample-buildout/parts/varnish/varnish.vcl" \
+        -P "...sample-buildout/parts/varnish/varnish.pid" \
+        -a 127.0.0.1:8000 \
+        -s file,"...sample-buildout/parts/varnish/storage",256M \
+        "$@"
+    <BLANKLINE>
+
 Check the config is syntactically correct by compiling it to C::
 
     >>> print system(join('bin', 'varnish') + ' -C')
@@ -49,3 +61,59 @@ Check the config is syntactically correct by compiling it to C::
     ...
     const struct VCL_conf VCL_conf = {
     ...
+
+Test out customising the storage options with a new test buildout::
+
+    >>> file_storage = '''
+    ... cache-type = file
+    ... cache-location = %(sample_buildout)s/custom_storage
+    ... cache-size = 3.14G
+    ... '''
+    >>> write('buildout.cfg', (simplest+file_storage) % globals())
+
+Let's run it::
+
+    >>> print system(join('bin', 'buildout'))
+    Uninstalling varnish.
+    Installing varnish.
+    Updating varnish-build.
+
+Check the contents of the control script are correct::
+
+    >>> 'varnish' in os.listdir('bin')
+    True
+
+    >>> print open(join('bin', 'varnish')).read()
+    #!/bin/sh
+    ...
+        -s file,"...sample-buildout/custom_storage",3.14G \
+    ...
+
+Customising our storage options again to check we can work with malloc as
+well::
+
+    >>> mem_storage = simplest + '''
+    ... cache-type = malloc
+    ... cache-size = 2.71G
+    ... '''
+    >>> write('buildout.cfg', mem_storage % globals())
+
+Let's run it::
+
+    >>> print system(join('bin', 'buildout'))
+    Uninstalling varnish.
+    Installing varnish.
+    Updating varnish-build.
+
+Check the contents of the control script reflect our new options::
+
+    >>> 'varnish' in os.listdir('bin')
+    True
+
+    >>> print open(join('bin', 'varnish')).read()
+    #!/bin/sh
+    ...
+        -s malloc,2.71G \
+    ...
+
+
