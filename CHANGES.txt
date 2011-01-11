@@ -1,8 +1,8 @@
 Changelog
 =========
 
-1.1.1 (unreleased)
-------------------
+1.2 (2011-01-11)
+----------------
 
 - Added new options ``cache-type``, ``cache-location`` for specifying type of
   Varnish storage (such as using malloc for alternative storage) and setting a
