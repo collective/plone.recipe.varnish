@@ -33,7 +33,7 @@ class ConfigureRecipe:
                 buildout["buildout"]["parts-directory"], self.name))
 
         # Expose the download url of a known-good Varnish release
-        url = "http://downloads.sourceforge.net/varnish/varnish-2.1.3.tar.gz"
+        url = "http://repo.varnish-cache.org/source/varnish-2.1.5.tar.gz"
         self.options.setdefault("download-url", url)
 
         # Set some default options

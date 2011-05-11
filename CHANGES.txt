@@ -4,6 +4,8 @@ Changelog
 1.2.1 (unreleased)
 ------------------
 
+- Update known good varnish to 2.1.5.
+
 - Add vcl_recv, vcl_hit, vcl_miss, vcl_fetch, vcl_deliver, vcl_pipe options to
   insert arbitrary vcl.
   [elro]
