@@ -244,6 +244,9 @@ runtime-parameters
     can be found in the manpage varnishd(1) for your version of varnish.
     Examples include 'thread_pool_max', 'thread_pool_min', 'sess_timeout'.
 
+vcl_recv, vcl_hit, vcl_miss, vcl_fetch, vcl_deliver, vcl_pipe
+    Insert arbitrary vcl into the generated config.
+
 .. _Varnish: http://varnish-cache.org/
 .. _zc.buildout: http://cheeseshop.python.org/pypi/zc.buildout
 

@@ -4,7 +4,9 @@ Changelog
 1.2.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add vcl_recv, vcl_hit, vcl_miss, vcl_fetch, vcl_deliver, vcl_pipe options to
+  insert arbitrary vcl.
+  [elro]
 
 
 1.2 (2011-01-11)

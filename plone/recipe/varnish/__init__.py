@@ -283,6 +283,8 @@ class ConfigureRecipe:
                 config[key] = headertpl % pair
             else:
                 config[key] = ''
+        for name in ('vcl_recv', 'vcl_hit', 'vcl_miss', 'vcl_fetch', 'vcl_deliver', 'vcl_pipe'):
+            config[name] = self.options.get(name, '')
 
         f=open(self.options["config"], "wt")
         f.write(template.safe_substitute(config))

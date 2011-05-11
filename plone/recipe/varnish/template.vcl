@@ -35,6 +35,8 @@ sub vcl_recv {
         return(pass);
     }
 
+${vcl_recv}
+
     if (req.http.If-None-Match) {
         return(pass);
     }
@@ -51,9 +53,11 @@ sub vcl_recv {
 sub vcl_pipe {
     # This is not necessary if you do not do any request rewriting.
     set req.http.connection = "close";
+${vcl_pipe}
 }
 
 sub vcl_hit {
+${vcl_hit}
     if (req.request == "PURGE") {
         purge_url(req.url);
         error 200 "Purged";
@@ -65,6 +69,7 @@ sub vcl_hit {
 }
 
 sub vcl_miss {
+${vcl_miss}
     if (req.request == "PURGE") {
         error 404 "Not in cache";
     }
@@ -73,6 +78,7 @@ sub vcl_miss {
 
 sub vcl_fetch {
     set beresp.grace = 120s;
+${vcl_fetch}
     if (!beresp.cacheable) {${header_fetch_notcacheable}
         return(pass);
     }
@@ -88,3 +94,6 @@ sub vcl_fetch {
     ${header_fetch_insert}
 }
 
+sub vcl_deliver {
+${vcl_deliver}
+}
