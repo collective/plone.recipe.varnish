@@ -11,7 +11,9 @@ ${purgehosts}
 sub vcl_recv {
     set req.grace = 120s;
     ${virtual_hosting}
-    
+
+${vcl_recv}
+
     if (req.request == "PURGE") {
         if (!client.ip ~ purge) {
             error 405 "Not allowed.";
@@ -34,8 +36,6 @@ sub vcl_recv {
         /* We only deal with GET and HEAD by default */
         return(pass);
     }
-
-${vcl_recv}
 
     if (req.http.If-None-Match) {
         return(pass);
