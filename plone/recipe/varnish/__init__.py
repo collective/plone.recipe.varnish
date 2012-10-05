@@ -40,7 +40,7 @@ class ConfigureRecipe:
         self.options.setdefault("bind", "127.0.0.1:8000")
         self.daemon = self.options["daemon"]
         self.options.setdefault("cache-type", "file")
-        self.options.setdefault("cache-location", 
+        self.options.setdefault("cache-location",
                                 os.path.join(self.options["location"], 'storage'))
         self.options.setdefault("cache-size", "256M")
         self.options.setdefault("runtime-parameters", "")
