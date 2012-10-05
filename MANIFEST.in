@@ -1,0 +1,3 @@
+recursive-include plone *
+include *
+global-exclude *.pyc
