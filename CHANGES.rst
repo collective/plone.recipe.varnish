@@ -4,7 +4,8 @@ Changelog
 1.2.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Moved to https://github.com/collective/plone.recipe.varnish
+  [maurits]
 
 
 1.2.1 (2011-05-13)
