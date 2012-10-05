@@ -6,7 +6,7 @@ setup(name='plone.recipe.varnish',
       version=version,
       description="Buildout recipe to install varnish",
       long_description=open("README.txt").read() + "\n" + \
-                       open("CHANGES.txt").read(),
+                       open("CHANGES.rst").read(),
       classifiers=[
         "Framework :: Buildout",
         "Framework :: Zope2",
