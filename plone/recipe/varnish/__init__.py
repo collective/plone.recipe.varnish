@@ -37,6 +37,7 @@ class ConfigureRecipe:
         self.options.setdefault("download-url", url)
 
         # Set some default options
+        self.options.setdefault("varnish_version", "2")
         self.options.setdefault("bind", "127.0.0.1:8000")
         self.daemon = self.options["daemon"]
         self.options.setdefault("cache-type", "file")
@@ -140,7 +141,13 @@ class ConfigureRecipe:
             module += x
 
         whereami=sys.modules[module].__path__[0]
-        template=open(os.path.join(whereami, "template.vcl")).read()
+        if self.options["varnish_version"] == "2":
+            template=open(os.path.join(whereami, "template.vcl")).read()
+        elif self.options["varnish_version"] == "3":
+            template=open(os.path.join(whereami, "template3.vcl")).read()
+        else:
+            raise ValueError(
+                u"Unknown varnish version %s" % self.options["varnish_version"])
         template=string.Template(template)
         config={}
 
