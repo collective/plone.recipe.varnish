@@ -1,10 +1,12 @@
 Changelog
 =========
 
-1.2.3 (unreleased)
-------------------
+1.3 (unreleased)
+----------------
 
-- Nothing changed yet.
+- Add varnish_version option in order to control vcl generation for
+  varnish version >= 3
+  [rnix]
 
 
 1.2.2 (2012-10-14)
@@ -293,7 +295,7 @@ Changelog
 
 
 1.0b2 (2007-08-25)
--------------------
+------------------
 
 * When building from svn, we need to run autogen.sh.
   [optilude]

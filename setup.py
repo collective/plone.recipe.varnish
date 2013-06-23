@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '1.2.3.dev0'
+version = '1.3dev'
 
 setup(name='plone.recipe.varnish',
       version=version,
