@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.3 (unreleased)
+1.3 (2013-08-21)
 ----------------
 
 - Add varnish_version option in order to control vcl generation for
