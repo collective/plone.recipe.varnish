@@ -201,6 +201,11 @@ zope2_vhm_map
     **hostname:ZODB location** entries which specify the location inside
     Zope where the website for a virtual host lives.
 
+zope2_vhm_port
+    Defines a virtual host mapping port to use in the VHM URL to send back to
+    clients. Useful if there is another port mapping in front of varnish, such
+    as haproxy. Defaults to bind port.
+
 verbose-headers
     Varnish VCL configuration: a http-response header line  **X-Varnish-Action**
     is set for debugging purposes. It shows a hit, why it bypass/fetch from

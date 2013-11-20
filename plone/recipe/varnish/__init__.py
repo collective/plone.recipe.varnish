@@ -18,7 +18,7 @@ verbose_headers = {
 }
 headertpl = '\n%sset beresp.http.X-Varnish-Action = "%s";'
 
-config_excludes = set(["zope2_vhm_map", "backends", "verbose-headers"])
+config_excludes = set(["zope2_vhm_map", "zope2_vhm_port", "backends", "verbose-headers"])
 
 
 class ConfigureRecipe:
@@ -64,6 +64,7 @@ class ConfigureRecipe:
         self.options.setdefault("first-byte-timeout", "300s")
         self.options.setdefault("between-bytes-timeout", "60s")
         self.options.setdefault("purge-hosts", "")
+        self.options.setdefault("external_port", "")
 
         # Test for valid bind value
         self.options["bind"] = self.options.get("bind").lstrip(":")
@@ -141,10 +142,12 @@ class ConfigureRecipe:
             module += x
 
         whereami=sys.modules[module].__path__[0]
+        str_concat = ' '
         if self.options["varnish_version"] == "2":
             template=open(os.path.join(whereami, "template.vcl")).read()
         elif self.options["varnish_version"] == "3":
             template=open(os.path.join(whereami, "template3.vcl")).read()
+            str_concat = ' + '
         else:
             raise ValueError(
                 u"Unknown varnish version %s" % self.options["varnish_version"])
@@ -239,8 +242,9 @@ class ConfigureRecipe:
                         location=zope2_vhm_map[parts[0]]
                         if location.startswith("/"):
                             location=location[1:]
-                        vhosting+='\tset req.url = "/VirtualHostBase/http/%s:%s/%s/VirtualHostRoot" req.url;\n' \
-                                       % (parts[0], self.options["bind-port"], location)
+                        external_port = self.options.get("zope2_vhm_port", self.options["bind-port"])
+                        vhosting+='\tset req.url = "/VirtualHostBase/http/%s:%s/%s/VirtualHostRoot"%sreq.url;\n' \
+                                       % (parts[0], external_port, location, str_concat)
 
                 if (balancer[0] != 'none'):
                     vhosting+='\tset req.backend = director_0;\n'

@@ -3,6 +3,12 @@ Changelog
 
 1.4 (unreleased)
 ----------------
+- Fixup string concat for varnish_version 3.
+  [damaestro]
+
+- Add zope2_vhm_port to be able to explicitly define a response
+  port in VHM URLs.
+  [damaestro]
 
 
 1.3 (2013-08-21)
