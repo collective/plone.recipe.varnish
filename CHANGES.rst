@@ -10,6 +10,25 @@ Changelog
   port in VHM URLs.
   [damaestro]
 
+- Add zope2_vhm_ssl to use VHM to render https urls.
+  [damaestro]
+
+- Add zope2_vhm_ssl_port to be able to explicitly define a response
+  port in VHM URLs for ssl.
+  [damaestro]
+
+- Update verbose-headers to use upstream debug example:
+  https://www.varnish-cache.org/trac/wiki/VCLExampleHitMissHeader
+  [damaestro]
+
+- Add cookie-fixup to better support caching of plone conent
+  and to ensure no authenticated content gets cached.
+  http://developer.plone.org/hosting/varnish.html
+  [damaestro]
+
+- Update VCL templates to be more flexible.
+  [damaestro]
+
 
 1.3 (2013-08-21)
 ----------------
