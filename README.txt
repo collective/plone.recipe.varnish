@@ -201,10 +201,24 @@ zope2_vhm_map
     **hostname:ZODB location** entries which specify the location inside
     Zope where the website for a virtual host lives.
 
+zope2_vhm_port
+    Defines a virtual host mapping port to use in the VHM URL to send back to
+    clients. Useful if there is another port mapping in front of varnish, such
+    as haproxy. Defaults to bind port.
+
+zope2_vhm_ssl
+    If specified this sets VHM URLs to map to https for all requests.
+    Possible values: **on** or **off** (default).
+
+zope2_vhm_ssl_port
+    Defines a virtual host mapping port to use in the VHM URL to send back to
+    clients. Useful if there is another port mapping in front of varnish, such
+    as haproxy. Defaults to 443.
+
 verbose-headers
-    Varnish VCL configuration: a http-response header line  **X-Varnish-Action**
-    is set for debugging purposes. It shows a hit, why it bypass/fetch from
-    backend and if if the object was inserted into cache.
+    Enable sending extra headers in responses that expose what varnish
+    did with the request and the cache status. Useful for debugging
+    cache settings and optimizations.
     Possible values: **on** or **off** (default).
 
 telnet
@@ -249,6 +263,11 @@ runtime-parameters
     Runtime parameter configuration options. The full list of available options
     can be found in the manpage varnishd(1) for your version of varnish.
     Examples include 'thread_pool_max', 'thread_pool_min', 'sess_timeout'.
+
+cookie-fixup
+    Add VCL to sanitize and fixup cookie data to better work with plone and
+    caching. Detect if user is logged in and adjust caching to ensure no
+    authenticated pages get cached. Defaults to on.
 
 vcl_recv, vcl_hit, vcl_miss, vcl_fetch, vcl_deliver, vcl_pipe
     Insert arbitrary vcl into the generated config.
