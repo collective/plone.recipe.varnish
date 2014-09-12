@@ -9,57 +9,57 @@ CONFIG_EXCLUDES = set(['zope2_vhm_map', 'zope2_vhm_port', 'zope2_vhm_ssl',
                        'zope2_vhm_ssl_port', 'backends', 'verbose-headers'])
 
 VCL_FETCH_VERBOSE_V2 = '''
-	# Varnish determined the object was not cacheable
-	if (!beresp.cacheable) {
-		set beresp.http.X-Cacheable = "NO:Not Cacheable";
-	
-	# You don't wish to cache content for logged in users
-	} elsif (req.http.Cookie ~ "(UserID|_session)") {
-		set beresp.http.X-Cacheable = "NO:Got Session";
-		return(pass);
-	
-	# You are respecting the Cache-Control=private header from the backend
-	} elsif (beresp.http.Cache-Control ~ "private") {
-		set beresp.http.X-Cacheable = "NO:Cache-Control=private";
-		return(pass);
-	
-	# You are extending the lifetime of the object artificially
-	} elsif (beresp.ttl < 1s) {
-		set beresp.ttl   = 5s;
-		set beresp.grace = 5s;
-		set beresp.http.X-Cacheable = "YES:FORCED";
+    # Varnish determined the object was not cacheable
+    if (!beresp.cacheable) {
+        set beresp.http.X-Cacheable = "NO:Not Cacheable";
 
-	# Varnish determined the object was cacheable
-	} else {
-		set beresp.http.X-Cacheable = "YES";
-	}
+    # You don't wish to cache content for logged in users
+    } elsif (req.http.Cookie ~ "(UserID|_session)") {
+        set beresp.http.X-Cacheable = "NO:Got Session";
+        return(pass);
+
+    # You are respecting the Cache-Control=private header from the backend
+    } elsif (beresp.http.Cache-Control ~ "private") {
+        set beresp.http.X-Cacheable = "NO:Cache-Control=private";
+        return(pass);
+
+    # You are extending the lifetime of the object artificially
+    } elsif (beresp.ttl < 1s) {
+        set beresp.ttl   = 5s;
+        set beresp.grace = 5s;
+        set beresp.http.X-Cacheable = "YES:FORCED";
+
+    # Varnish determined the object was cacheable
+    } else {
+        set beresp.http.X-Cacheable = "YES";
+    }
 '''
 VCL_FETCH_VERBOSE_V3 = '''
-	# Varnish determined the object was not cacheable
-	if (beresp.ttl <= 0s) {
-		set beresp.http.X-Cacheable = "NO:Not Cacheable";
-	
-	# You don't wish to cache content for logged in users
-	} elsif (req.http.Cookie ~ "(UserID|_session)") {
-		set beresp.http.X-Cacheable = "NO:Got Session";
-		return(hit_for_pass);
-	
-	# You are respecting the Cache-Control=private header from the backend
-	} elsif (beresp.http.Cache-Control ~ "private") {
-		set beresp.http.X-Cacheable = "NO:Cache-Control=private";
-		return(hit_for_pass);
-	
-	# Varnish determined the object was cacheable
-	} else {
-		set beresp.http.X-Cacheable = "YES";
-	}
+    # Varnish determined the object was not cacheable
+    if (beresp.ttl <= 0s) {
+        set beresp.http.X-Cacheable = "NO:Not Cacheable";
+
+    # You don't wish to cache content for logged in users
+    } elsif (req.http.Cookie ~ "(UserID|_session)") {
+        set beresp.http.X-Cacheable = "NO:Got Session";
+        return(hit_for_pass);
+
+    # You are respecting the Cache-Control=private header from the backend
+    } elsif (beresp.http.Cache-Control ~ "private") {
+        set beresp.http.X-Cacheable = "NO:Cache-Control=private";
+        return(hit_for_pass);
+
+    # Varnish determined the object was cacheable
+    } else {
+        set beresp.http.X-Cacheable = "YES";
+    }
 '''
 VCL_DELIVER_VERBOSE = '''
-	if (obj.hits > 0) {
-		set resp.http.X-Cache = "HIT";
-	} else {
-		set resp.http.X-Cache = "MISS";
-	}
+    if (obj.hits > 0) {
+        set resp.http.X-Cache = "HIT";
+    } else {
+        set resp.http.X-Cache = "MISS";
+    }
 '''
 VCL_PLONE_COOKIE_FIXUP = '''
         if (req.http.Cookie && req.http.Cookie ~ "__ac(|_(name|password|persistent))=") {
@@ -90,7 +90,7 @@ class ConfigureRecipe:
         self.buildout = buildout
         self.logger = logging.getLogger(self.name)
 
-	self.options.setdefault('location', os.path.join(
+    self.options.setdefault('location', os.path.join(
                 buildout['buildout']['parts-directory'], self.name))
 
         # Expose the download url of a known-good Varnish release
@@ -234,7 +234,7 @@ class ConfigureRecipe:
                     self.logger.error('When using multiple backends for the same hostname '
                                       'you must define a balancer')
                     raise zc.buildout.UserError('Multiple backends without balancer')
-            
+
 
         zope2_vhm_map = self.options.get('zope2_vhm_map', '').split()
         zope2_vhm_map = dict([x.split(':') for x in zope2_vhm_map])
@@ -328,7 +328,7 @@ class ConfigureRecipe:
                             proto = 'https'
                         vhosting += '\tset req.url = "/VirtualHostBase/%s/%s:%s/%s/VirtualHostRoot"%sreq.url;\n' \
                                         % (proto, url, external_port, location, str_concat)
-                   
+
                     # set backend for the request
                     if (balancer[0] != 'none'):
                         vhosting += '\tset req.backend = director_0;\n'
