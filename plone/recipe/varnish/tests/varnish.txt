@@ -116,4 +116,20 @@ Check the contents of the control script reflect our new options::
         -s malloc,2.71G \
     ...
 
+Test the varnish 3 download::
+
+    >>> varnish_3 = simplest + '''
+    ... varnish_version = 3
+    ... download-url = http://repo.varnish-cache.org/source/varnish-3.0.5.tar.gz
+    ... '''
+    >>> write('buildout.cfg', varnish_3 % globals())
+
+Let's run it::
+
+    >>> print system(join('bin', 'buildout'))
+    Uninstalling varnish.
+    Installing varnish.
+    Updating varnish-build.
+
+
 

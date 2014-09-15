@@ -30,3 +30,6 @@ def test_suite():
                  setUp=setUp, tearDown=buildoutTearDown))
 
     return unittest.TestSuite(suite)
+
+if __name__ == '__main__':
+    unittest.main()

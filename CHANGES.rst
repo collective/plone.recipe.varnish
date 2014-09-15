@@ -3,6 +3,12 @@ Changelog
 
 1.4 (unreleased)
 ----------------
+- add saint-mode for varnish_version 3.
+  [cleder]
+
+- set a ddefault download-url for varnish_version 3.
+  [cleder]
+
 - Fixup string concat for varnish_version 3.
   [damaestro]
 

@@ -144,16 +144,16 @@ mode
 
 cache-type
 
-    Specify the type of cache storage to use with Varnish.  Possible values: 
+    Specify the type of cache storage to use with Varnish.  Possible values:
     **file** (storage for each object is allocated from an arena backed by a file),
     **malloc** (storage for each object is allocated with malloc; in memory),
     or **persistent** (experimental as at Varnish 2.1.4). Defaults to 'file'.
 
 cache-location
 
-    Customise the location for the Varnish file storage.  Option only applicable 
-    when used with **file** or **persistent** cache-type options.  Defaults to 
-    using a file named ``storage`` inside the relevant parts directory 
+    Customise the location for the Varnish file storage.  Option only applicable
+    when used with **file** or **persistent** cache-type options.  Defaults to
+    using a file named ``storage`` inside the relevant parts directory
     (eg ``parts/varnish/storage``).  Changing the default location can be
     useful in putting the storage somewhere with quicker read speeds (RAM
     disk etc).
@@ -180,7 +180,7 @@ backends
     If multiple backends are specified then each backend must include
     either a hostname or path (or both) so that Varnish can direct the
     matching request to the appropriate backend. Defaults to 127.0.0.1:8080.
-    
+
 purge-hosts
     Specifies hostnames or ip addresses for purge acl. By default localhost and
     the backends are allowed to purge. Additional allowed hosts are listed here.
@@ -269,9 +269,14 @@ cookie-fixup
     caching. Detect if user is logged in and adjust caching to ensure no
     authenticated pages get cached. Defaults to on.
 
+saint-mode
+    Add vcl to enable saint-mode_ (deliver stale content when the backend dies).
+    This only works with varnish 3. Defaults to off
+
+
 vcl_recv, vcl_hit, vcl_miss, vcl_fetch, vcl_deliver, vcl_pipe
     Insert arbitrary vcl into the generated config.
 
 .. _Varnish: http://varnish-cache.org/
 .. _zc.buildout: http://cheeseshop.python.org/pypi/zc.buildout
-
+.. _saint-mode: https://www.varnish-cache.org/docs/3.0/tutorial/handling_misbehaving_servers.html#saint-mode
