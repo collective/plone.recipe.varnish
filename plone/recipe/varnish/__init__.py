@@ -71,24 +71,24 @@ VCL_DELIVER_VERBOSE = '''
     }
 '''
 VCL_PLONE_COOKIE_FIXUP = '''
-        if (req.http.Cookie && req.http.Cookie ~ "__ac(|_(name|password|persistent))=") {
-                if (req.url ~ "\.(js|css|kss)") {
-                        remove req.http.cookie;
-                        return(lookup);
-                }
-                return(pass);
+    if (req.http.Cookie && req.http.Cookie ~ "__ac(|_(name|password|persistent))=") {
+        if (req.url ~ "\.(js|css|kss)") {
+            remove req.http.cookie;
+            return(lookup);
         }
-        if (req.http.Cookie) {
-                set req.http.Cookie = ";"%(str_concat)sreq.http.Cookie;
-                set req.http.Cookie = regsuball(req.http.Cookie, "; +", ";");
-                set req.http.Cookie = regsuball(req.http.Cookie, ";(statusmessages|__ac|_ZopeId|__cp)=", "; \1=");
-                set req.http.Cookie = regsuball(req.http.Cookie, ";[^ ][^;]*", "");
-                set req.http.Cookie = regsuball(req.http.Cookie, "^[; ]+|[; ]+$", "");
+        return(pass);
+    }
+    if (req.http.Cookie) {
+        set req.http.Cookie = ";"%(str_concat)sreq.http.Cookie;
+        set req.http.Cookie = regsuball(req.http.Cookie, "; +", ";");
+        set req.http.Cookie = regsuball(req.http.Cookie, ";(statusmessages|__ac|_ZopeId|__cp)=", "; \1=");
+        set req.http.Cookie = regsuball(req.http.Cookie, ";[^ ][^;]*", "");
+        set req.http.Cookie = regsuball(req.http.Cookie, "^[; ]+|[; ]+$", "");
 
-                if (req.http.Cookie == "") {
-                        remove req.http.Cookie;
-                }
+        if (req.http.Cookie == "") {
+            remove req.http.Cookie;
         }
+    }
 '''
 
 class ConfigureRecipe:
