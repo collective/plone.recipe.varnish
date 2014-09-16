@@ -109,7 +109,7 @@ class ConfigureRecipe:
         # Set some default options
         self.options.setdefault('varnish_version', '2')
         if self.options['varnish_version'] == '3':
-            url = 'url = http://repo.varnish-cache.org/source/varnish-3.0.5.tar.gz'
+            url = 'http://repo.varnish-cache.org/source/varnish-3.0.5.tar.gz'
         else:
             url = 'http://repo.varnish-cache.org/source/varnish-2.1.5.tar.gz'
         self.options.setdefault('download-url', url)
