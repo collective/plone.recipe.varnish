@@ -3,8 +3,12 @@ Changelog
 
 1.4 (unreleased)
 ----------------
+
+- Fixup VCL template Varnish 3.
+  [cleberjsantos]
+
 - add saint-mode for varnish_version 3.
-  [cleder]
+  [cleder, cleberjsantos]
 
 - set a ddefault download-url for varnish_version 3.
   [cleder]
