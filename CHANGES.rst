@@ -4,13 +4,16 @@ Changelog
 1.4 (unreleased)
 ----------------
 
+- Fix test for running in the Varnish 2 or later.
+  [cleberjsantos]
+  
 - Fixup VCL template Varnish 3.
   [cleberjsantos]
 
 - add saint-mode for varnish_version 3.
   [cleder, cleberjsantos]
 
-- set a ddefault download-url for varnish_version 3.
+- set a default download-url for varnish_version 3.
   [cleder]
 
 - Fixup string concat for varnish_version 3.
