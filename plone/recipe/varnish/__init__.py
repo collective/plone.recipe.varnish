@@ -59,7 +59,7 @@ VCL_FETCH_VERBOSE_V3 = '''
 VCL_FETCH_SAINT = '''
     if (beresp.status >=500 && beresp.status < 600) {
         set beresp.saintmode = 10s;
-        return(restart);
+        return(hit_for_pass);
       }
 '''
 
