@@ -6,80 +6,89 @@ import zc.buildout
 
 
 CONFIG_EXCLUDES = set(['zope2_vhm_map', 'zope2_vhm_port', 'zope2_vhm_ssl',
-                       'zope2_vhm_ssl_port', 'backends', 'verbose-headers'])
+                       'zope2_vhm_ssl_port', 'backends', 'verbose-headers',
+                       'saint-mode', ])
 
 VCL_FETCH_VERBOSE_V2 = '''
-	# Varnish determined the object was not cacheable
-	if (!beresp.cacheable) {
-		set beresp.http.X-Cacheable = "NO:Not Cacheable";
-	
-	# You don't wish to cache content for logged in users
-	} elsif (req.http.Cookie ~ "(UserID|_session)") {
-		set beresp.http.X-Cacheable = "NO:Got Session";
-		return(pass);
-	
-	# You are respecting the Cache-Control=private header from the backend
-	} elsif (beresp.http.Cache-Control ~ "private") {
-		set beresp.http.X-Cacheable = "NO:Cache-Control=private";
-		return(pass);
-	
-	# You are extending the lifetime of the object artificially
-	} elsif (beresp.ttl < 1s) {
-		set beresp.ttl   = 5s;
-		set beresp.grace = 5s;
-		set beresp.http.X-Cacheable = "YES:FORCED";
+    # Varnish determined the object was not cacheable
+    if (!beresp.cacheable) {
+        set beresp.http.X-Cacheable = "NO:Not Cacheable";
 
-	# Varnish determined the object was cacheable
-	} else {
-		set beresp.http.X-Cacheable = "YES";
-	}
+    # You don't wish to cache content for logged in users
+    } elsif (req.http.Cookie ~ "(UserID|_session)") {
+        set beresp.http.X-Cacheable = "NO:Got Session";
+        return(pass);
+
+    # You are respecting the Cache-Control=private header from the backend
+    } elsif (beresp.http.Cache-Control ~ "private") {
+        set beresp.http.X-Cacheable = "NO:Cache-Control=private";
+        return(pass);
+
+    # You are extending the lifetime of the object artificially
+    } elsif (beresp.ttl < 1s) {
+        set beresp.ttl   = 5s;
+        set beresp.grace = 5s;
+        set beresp.http.X-Cacheable = "YES:FORCED";
+
+    # Varnish determined the object was cacheable
+    } else {
+        set beresp.http.X-Cacheable = "YES";
+    }
 '''
 VCL_FETCH_VERBOSE_V3 = '''
-	# Varnish determined the object was not cacheable
-	if (beresp.ttl <= 0s) {
-		set beresp.http.X-Cacheable = "NO:Not Cacheable";
-	
-	# You don't wish to cache content for logged in users
-	} elsif (req.http.Cookie ~ "(UserID|_session)") {
-		set beresp.http.X-Cacheable = "NO:Got Session";
-		return(hit_for_pass);
-	
-	# You are respecting the Cache-Control=private header from the backend
-	} elsif (beresp.http.Cache-Control ~ "private") {
-		set beresp.http.X-Cacheable = "NO:Cache-Control=private";
-		return(hit_for_pass);
-	
-	# Varnish determined the object was cacheable
-	} else {
-		set beresp.http.X-Cacheable = "YES";
-	}
+    # Varnish determined the object was not cacheable
+    if (beresp.ttl <= 0s) {
+        set beresp.http.X-Cacheable = "NO:Not Cacheable";
+
+    # You don't wish to cache content for logged in users
+    } elsif (req.http.Cookie ~ "(UserID|_session)") {
+        set beresp.http.X-Cacheable = "NO:Got Session";
+        return(hit_for_pass);
+
+    # You are respecting the Cache-Control=private header from the backend
+    } elsif (beresp.http.Cache-Control ~ "private") {
+        set beresp.http.X-Cacheable = "NO:Cache-Control=private";
+        return(hit_for_pass);
+
+    # Varnish determined the object was cacheable
+    } else {
+        set beresp.http.X-Cacheable = "YES";
+    }
 '''
+
+VCL_FETCH_SAINT = '''
+    if (beresp.status >=500 && beresp.status < 600) {
+        set beresp.saintmode = 10s;
+        return(hit_for_pass);
+      }
+'''
+
 VCL_DELIVER_VERBOSE = '''
-	if (obj.hits > 0) {
-		set resp.http.X-Cache = "HIT";
-	} else {
-		set resp.http.X-Cache = "MISS";
-	}
+    if (obj.hits > 0) {
+        set resp.http.X-Cache = "HIT";
+    } else {
+        set resp.http.X-Cache = "MISS";
+    }
 '''
 VCL_PLONE_COOKIE_FIXUP = '''
-        if (req.http.Cookie && req.http.Cookie ~ "__ac(|_(name|password|persistent))=") {
-                if (req.url ~ "\.(js|css|kss)") {
-                        remove req.http.cookie;
-                        return(lookup);
-                }
-                return(pass);
+    if (req.http.Cookie && req.http.Cookie ~ "__ac(|_(name|password|persistent))=") {
+        if (req.url ~ "\.(js|css|kss)") {
+            remove req.http.cookie;
+            return(lookup);
         }
-        if (req.http.Cookie) {
-                set req.http.Cookie = ";"%(str_concat)sreq.http.Cookie;
-                set req.http.Cookie = regsuball(req.http.Cookie, "; +", ";");
-                set req.http.Cookie = regsuball(req.http.Cookie, ";(statusmessages|__ac|_ZopeId|__cp)=", "; \1=");
-                set req.http.Cookie = regsuball(req.http.Cookie, ";[^ ][^;]*", "");
-                set req.http.Cookie = regsuball(req.http.Cookie, "^[; ]+|[; ]+$", "");
+        return(pass);
+    }
+    if (req.http.Cookie) {
+        set req.http.Cookie = ";"%(str_concat)sreq.http.Cookie;
+        set req.http.Cookie = regsuball(req.http.Cookie, "; +", ";");
+        set req.http.Cookie = regsuball(req.http.Cookie, ";(statusmessages|__ac|_ZopeId|__cp)=", "; \1=");
+        set req.http.Cookie = regsuball(req.http.Cookie, ";[^ ][^;]*", "");
+        set req.http.Cookie = regsuball(req.http.Cookie, "^[; ]+|[; ]+$", "");
 
-                if (req.http.Cookie == "") {
-                        remove req.http.Cookie;
-                }
+        if (req.http.Cookie == "") {
+            remove req.http.Cookie;
         }
+    }
 '''
 
 class ConfigureRecipe:
@@ -90,15 +99,20 @@ class ConfigureRecipe:
         self.buildout = buildout
         self.logger = logging.getLogger(self.name)
 
-	self.options.setdefault('location', os.path.join(
+        self.options.setdefault('location', os.path.join(
                 buildout['buildout']['parts-directory'], self.name))
 
         # Expose the download url of a known-good Varnish release
-        url = 'http://repo.varnish-cache.org/source/varnish-2.1.5.tar.gz'
-        self.options.setdefault('download-url', url)
+
+
 
         # Set some default options
-        self.options.setdefault('varnish_version', '2')
+        self.options.setdefault('varnish_version', '3')
+        if self.options['varnish_version'] == '3':
+            url = 'http://repo.varnish-cache.org/source/varnish-3.0.5.tar.gz'
+        else:
+            url = 'http://repo.varnish-cache.org/source/varnish-2.1.5.tar.gz'
+        self.options.setdefault('download-url', url)
         self.options.setdefault('bind', '127.0.0.1:8000')
         self.daemon = self.options['daemon']
         self.options.setdefault('cache-type', 'file')
@@ -117,10 +131,12 @@ class ConfigureRecipe:
         else:
             self.options['generate_config'] = 'true'
             self.options.setdefault('verbose-headers', 'off')
+            self.options.setdefault('saint-mode', 'off')
             self.options.setdefault('balancer', 'none')
             self.options.setdefault('backends', '127.0.0.1:8080')
             self.options['config'] = os.path.join(self.options['location'],
                                                   'varnish.vcl')
+
         self.options.setdefault('connect-timeout', '0.4s')
         self.options.setdefault('first-byte-timeout', '300s')
         self.options.setdefault('between-bytes-timeout', '60s')
@@ -234,7 +250,7 @@ class ConfigureRecipe:
                     self.logger.error('When using multiple backends for the same hostname '
                                       'you must define a balancer')
                     raise zc.buildout.UserError('Multiple backends without balancer')
-            
+
 
         zope2_vhm_map = self.options.get('zope2_vhm_map', '').split()
         zope2_vhm_map = dict([x.split(':') for x in zope2_vhm_map])
@@ -328,7 +344,7 @@ class ConfigureRecipe:
                             proto = 'https'
                         vhosting += '\tset req.url = "/VirtualHostBase/%s/%s:%s/%s/VirtualHostRoot"%sreq.url;\n' \
                                         % (proto, url, external_port, location, str_concat)
-                   
+
                     # set backend for the request
                     if (balancer[0] != 'none'):
                         vhosting += '\tset req.backend = director_0;\n'
@@ -366,6 +382,17 @@ class ConfigureRecipe:
         else:
             config['vcl_fetch_verbose'] = ''
             config['vcl_deliver_verbose'] = ''
+
+        config['vcl_fetch_saint'] = ''
+        if self.options['saint-mode'] == 'on':
+            if self.options['verbose-headers'] == 'on':
+                self.logger.error('When using saint-mode verbose headers must be off')
+                raise zc.buildout.UserError('When using saint-mode verbose headers must be off')
+            elif self.options['varnish_version'] != '3':
+                self.logger.error('saint-mode is available for varnish 3 only')
+                raise zc.buildout.UserError('saint-mode is available for varnish 3 only')
+            else:
+                config['vcl_fetch_saint'] = VCL_FETCH_SAINT
 
         # fixup cookies for better plone caching
         if self.options['cookie-fixup'] == 'on':

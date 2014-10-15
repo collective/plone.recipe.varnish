@@ -55,9 +55,13 @@ Check the contents of the control script are correct::
 Check the config is syntactically correct by compiling it to C::
 
     >>> print system(join('bin', 'varnish') + ' -C')
-    storage_file: filename: .../parts/varnish/storage size 256 MB.
     ...
-    * NB:  This file is machine generated, DO NOT EDIT!
+    /*
+     * NB:  This file is machine generated, DO NOT EDIT!
+     *
+     * Edit and run generate.py instead
+     */
+    <BLANKLINE>
     ...
     const struct VCL_conf VCL_conf = {
     ...
@@ -115,5 +119,21 @@ Check the contents of the control script reflect our new options::
     ...
         -s malloc,2.71G \
     ...
+
+Test the varnish 3 download::
+
+    >>> varnish_3 = simplest + '''
+    ... varnish_version = 3
+    ... download-url = http://repo.varnish-cache.org/source/varnish-3.0.5.tar.gz
+    ... '''
+    >>> write('buildout.cfg', varnish_3 % globals())
+
+Let's run it::
+
+    >>> print system(join('bin', 'buildout'))
+    Uninstalling varnish.
+    Installing varnish.
+    Updating varnish-build.
+
 
 
