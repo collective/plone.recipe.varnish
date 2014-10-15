@@ -277,6 +277,20 @@ It can be configured with any of these options:
 ``vcl_recv``, ``vcl_hit``, ``vcl_miss``, ``vcl_fetch``, ``vcl_deliver``, ``vcl_pipe``
     Insert arbitrary vcl into the generated config.
 
+Mostly Harmless
+---------------
+
+.. image:: https://secure.travis-ci.org/collective/plone.recipe.varnish.png?branch=master
+    :alt: Travis CI badge
+    :target: http://travis-ci.org/collective/plone.recipe.varnish
+
+.. image:: https://pypip.in/d/plone.recipe.varnish/badge.png
+    :target: https://pypi.python.org/pypi/plone.recipe.varnish/
+    :alt: Downloads
+
+Got an idea? Found a bug? Let us know by `opening a support ticket`_.
+
 .. _Varnish: http://varnish-cache.org/
 .. _zc.buildout: http://cheeseshop.python.org/pypi/zc.buildout
 .. _saint-mode: https://www.varnish-cache.org/docs/3.0/tutorial/handling_misbehaving_servers.html#saint-mode
+.. _`opening a support ticket`: https://github.com/collective/plone.recipe.varnish/issues
