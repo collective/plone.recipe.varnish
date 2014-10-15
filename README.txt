@@ -272,7 +272,7 @@ It can be configured with any of these options:
 
 ``saint-mode``
     Add vcl to enable saint-mode_ (deliver stale content when the backend dies).
-    This only works with varnish 3. Defaults to ``off``
+    This only works with varnish 3. Defaults to ``off``.
 
 ``vcl_recv``, ``vcl_hit``, ``vcl_miss``, ``vcl_fetch``, ``vcl_deliver``, ``vcl_pipe``
     Insert arbitrary vcl into the generated config.

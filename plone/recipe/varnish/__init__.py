@@ -386,10 +386,10 @@ class ConfigureRecipe:
         config['vcl_fetch_saint'] = ''
         if self.options['saint-mode'] == 'on':
             if self.options['verbose-headers'] == 'on':
-                logger.error('When using saint-mode verbose headers must be off')
+                self.logger.error('When using saint-mode verbose headers must be off')
                 raise zc.buildout.UserError('When using saint-mode verbose headers must be off')
             elif self.options['varnish_version'] != '3':
-                logger.error('saint-mode is available for varnish 3 only')
+                self.logger.error('saint-mode is available for varnish 3 only')
                 raise zc.buildout.UserError('saint-mode is available for varnish 3 only')
             else:
                 config['vcl_fetch_saint'] = VCL_FETCH_SAINT
