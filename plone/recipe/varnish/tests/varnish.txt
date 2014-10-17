@@ -124,7 +124,7 @@ Test the varnish 3 download::
 
     >>> varnish_3 = simplest + '''
     ... varnish_version = 3
-    ... download-url = http://repo.varnish-cache.org/source/varnish-3.0..tar.gz
+    ... download-url = http://repo.varnish-cache.org/source/varnish-3.0.6.tar.gz
     ... '''
     >>> write('buildout.cfg', varnish_3 % globals())
 
