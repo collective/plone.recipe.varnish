@@ -1,13 +1,43 @@
 # -*- coding: utf-8 -*-
-
-import doctest
-import unittest
-import shutil
-
+from interlude import interact
 from zc.buildout.testing import buildoutSetUp
 from zc.buildout.testing import buildoutTearDown
 from zc.buildout.testing import install
 from zc.buildout.testing import install_develop
+import doctest
+import shutil
+import subprocess
+import sys
+import unittest
+
+FLAGS = (doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+
+## FIXME - check for other platforms
+MUST_CLOSE_FDS = not sys.platform.startswith('win')
+
+
+def system(command, input='', with_exit_code=False):
+    p = subprocess.Popen(
+        command,
+        shell=True,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        close_fds=MUST_CLOSE_FDS
+    )
+    i, o, e = (p.stdin, p.stdout, p.stderr)
+    if input:
+        i.write(input.encode())
+    i.close()
+    result = o.read() + e.read()
+    o.close()
+    e.close()
+    output = result.decode()
+    if with_exit_code:
+        # Use the with_exit_code=True parameter when you want to test the exit
+        # code of the command you're running.
+        output += 'EXIT CODE: %s' % p.wait()
+    return output
 
 
 def setUp(test):
@@ -24,9 +54,17 @@ def tearDown(test):
 
 def test_suite():
     suite = []
-    flags = (doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
-
-    suite.append(doctest.DocFileSuite('varnish.txt', optionflags=flags,
-                 setUp=setUp, tearDown=buildoutTearDown))
+    suite.append(
+        doctest.DocFileSuite(
+            'varnish.rst',
+            optionflags=FLAGS,
+            setUp=setUp,
+            tearDown=buildoutTearDown,
+            globs={'interact': interact, 'system': system},
+        )
+    )
 
     return unittest.TestSuite(suite)
+
+if __name__ == '__main__':
+    unittest.main()

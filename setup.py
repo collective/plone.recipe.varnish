@@ -1,11 +1,27 @@
+import os, sys
 from setuptools import setup, find_packages
+from setuptools.command.test import test as TestCommand
+
+
+class PyTest(TestCommand):
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_args = []
+        self.test_suite = True
+
+    def run_tests(self):
+        # import here, cause outside the eggs aren't loaded
+        import pytest
+        errno = pytest.main(self.test_args)
+        sys.exit(errno)
+
 
 version = '1.4'
 
 setup(name='plone.recipe.varnish',
       version=version,
       description="Buildout recipe to install varnish",
-      long_description=(open("README.txt").read() + "\n" +
+      long_description=(open("README.rst").read() + "\n" +
                         open("CHANGES.rst").read()),
       classifiers=[
           "Framework :: Buildout",
@@ -18,7 +34,7 @@ setup(name='plone.recipe.varnish',
       keywords='buildout varnish cache proxy',
       author='Wichert Akkerman',
       author_email='wichert@wiggy.net',
-      url='https://github.com/collective/plone.recipe.varnish',
+      url='https://pypi.python.org/pypi/plone.recipe.varnish',
       license='BSD',
       packages=find_packages(exclude=['ez_setup']),
       namespace_packages=['plone', 'plone.recipe'],
@@ -29,6 +45,8 @@ setup(name='plone.recipe.varnish',
           'zc.buildout',
       ],
       extras_require = dict(test=['zc.recipe.cmmi', 'interlude']),
+      tests_require=['pytest'],
+      cmdclass = {'test': PyTest},
       entry_points={
           "zc.buildout": [
               "default = plone.recipe.varnish:ConfigureRecipe",

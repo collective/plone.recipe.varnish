@@ -6,9 +6,10 @@ import zc.buildout
 
 
 CONFIG_EXCLUDES = set(['zope2_vhm_map', 'zope2_vhm_port', 'zope2_vhm_ssl',
-                       'zope2_vhm_ssl_port', 'backends', 'verbose-headers'])
+                       'zope2_vhm_ssl_port', 'backends', 'verbose-headers',
+                       'saint-mode', ])
 
-VCL_FETCH_VERBOSE_V2 = '''
+VCL_FETCH_VERBOSE_V2 = '''\
     # Varnish determined the object was not cacheable
     if (!beresp.cacheable) {
         set beresp.http.X-Cacheable = "NO:Not Cacheable";
@@ -34,7 +35,7 @@ VCL_FETCH_VERBOSE_V2 = '''
         set beresp.http.X-Cacheable = "YES";
     }
 '''
-VCL_FETCH_VERBOSE_V3 = '''
+VCL_FETCH_VERBOSE_V3 = '''\
     # Varnish determined the object was not cacheable
     if (beresp.ttl <= 0s) {
         set beresp.http.X-Cacheable = "NO:Not Cacheable";
@@ -54,14 +55,23 @@ VCL_FETCH_VERBOSE_V3 = '''
         set beresp.http.X-Cacheable = "YES";
     }
 '''
-VCL_DELIVER_VERBOSE = '''
+
+VCL_FETCH_SAINT = '''
+    if (beresp.status >=500 && beresp.status < 600) {
+        set beresp.saintmode = 10s;
+        return(hit_for_pass);
+      }
+'''
+
+VCL_DELIVER_VERBOSE = '''\
+>>>>>>> Stashed changes
     if (obj.hits > 0) {
         set resp.http.X-Cache = "HIT";
     } else {
         set resp.http.X-Cache = "MISS";
     }
 '''
-VCL_PLONE_COOKIE_FIXUP = '''
+VCL_PLONE_COOKIE_FIXUP = '''\
         if (req.http.Cookie && req.http.Cookie ~ "__ac(|_(name|password|persistent))=") {
                 if (req.url ~ "\.(js|css|kss)") {
                         remove req.http.cookie;
@@ -69,58 +79,68 @@ VCL_PLONE_COOKIE_FIXUP = '''
                 }
                 return(pass);
         }
-        if (req.http.Cookie) {
-                set req.http.Cookie = ";"%(str_concat)sreq.http.Cookie;
-                set req.http.Cookie = regsuball(req.http.Cookie, "; +", ";");
-                set req.http.Cookie = regsuball(req.http.Cookie, ";(statusmessages|__ac|_ZopeId|__cp)=", "; \1=");
-                set req.http.Cookie = regsuball(req.http.Cookie, ";[^ ][^;]*", "");
-                set req.http.Cookie = regsuball(req.http.Cookie, "^[; ]+|[; ]+$", "");
+        return(pass);
+    }
+    if (req.http.Cookie) {
+        set req.http.Cookie = ";"%(str_concat)sreq.http.Cookie;
+        set req.http.Cookie = regsuball(req.http.Cookie, "; +", ";");
+        set req.http.Cookie = regsuball(req.http.Cookie, ";(statusmessages|__ac|_ZopeId|__cp)=", "; \1=");
+        set req.http.Cookie = regsuball(req.http.Cookie, ";[^ ][^;]*", "");
+        set req.http.Cookie = regsuball(req.http.Cookie, "^[; ]+|[; ]+$", "");
 
-                if (req.http.Cookie == "") {
-                        remove req.http.Cookie;
-                }
+        if (req.http.Cookie == "") {
+            remove req.http.Cookie;
         }
+    }
 '''
 
-class ConfigureRecipe:
+
+class ConfigureRecipe(object):
 
     def __init__(self, buildout, name, options):
         self.name = name
         self.options = options
         self.buildout = buildout
         self.logger = logging.getLogger(self.name)
-
-    self.options.setdefault('location', os.path.join(
-                buildout['buildout']['parts-directory'], self.name))
+        self.options.setdefault(
+            'location',
+            os.path.join(buildout['buildout']['parts-directory'], self.name)
+        )
 
         # Expose the download url of a known-good Varnish release
-        url = 'http://repo.varnish-cache.org/source/varnish-2.1.5.tar.gz'
-        self.options.setdefault('download-url', url)
-
         # Set some default options
-        self.options.setdefault('varnish_version', '2')
+        self.options.setdefault('varnish_version', '3')
+        if self.options['varnish_version'] == '3':
+            url = 'http://repo.varnish-cache.org/source/varnish-3.0.6.tar.gz'
+        else:
+            url = 'http://repo.varnish-cache.org/source/varnish-2.1.5.tar.gz'
+        self.options.setdefault('download-url', url)
         self.options.setdefault('bind', '127.0.0.1:8000')
         self.daemon = self.options['daemon']
         self.options.setdefault('cache-type', 'file')
-        self.options.setdefault('cache-location',
-                                os.path.join(self.options['location'], 'storage'))
+        self.options.setdefault(
+            'cache-location',
+            os.path.join(self.options['location'], 'storage')
+        )
         self.options.setdefault('cache-size', '256M')
         self.options.setdefault('runtime-parameters', '')
         if 'config' in self.options:
             if set(self.options.keys()).intersection(CONFIG_EXCLUDES):
                 msg = ('When config= option is specified the following '
                        'options cant be used: ')
-                msg += ' '.join(config_excludes)
+                msg += ' '.join(CONFIG_EXCLUDES)
                 self.logger.error(msg)
                 raise zc.buildout.UserError(msg)
             self.options['generate_config'] = 'false'
         else:
             self.options['generate_config'] = 'true'
             self.options.setdefault('verbose-headers', 'off')
+            self.options.setdefault('saint-mode', 'off')
             self.options.setdefault('balancer', 'none')
             self.options.setdefault('backends', '127.0.0.1:8080')
             self.options['config'] = os.path.join(self.options['location'],
                                                   'varnish.vcl')
+
         self.options.setdefault('connect-timeout', '0.4s')
         self.options.setdefault('first-byte-timeout', '300s')
         self.options.setdefault('between-bytes-timeout', '60s')
@@ -129,27 +149,27 @@ class ConfigureRecipe:
 
         # Test for valid bind value
         self.options['bind'] = self.options.get('bind').lstrip(':')
-        bind=self.options['bind'].split(':')
-        if len(bind)==1 and bind[0].isdigit():
-            self.options['bind-host']=''
-            self.options['bind-port']=bind[0]
-            self.options['bind']=':' + bind[0]
-        elif len(bind)==2 and bind[1].isdigit():
-            self.options['bind-host']=bind[0]
-            self.options['bind-port']=bind[1]
+        bind = self.options['bind'].split(':')
+        if len(bind) == 1 and bind[0].isdigit():
+            self.options['bind-host'] = ''
+            self.options['bind-port'] = bind[0]
+            self.options['bind'] = ':' + bind[0]
+        elif len(bind) == 2 and bind[1].isdigit():
+            self.options['bind-host'] = bind[0]
+            self.options['bind-port'] = bind[1]
         else:
             self.logger.error('Invalid syntax for bind')
             raise zc.buildout.UserError('Invalid syntax for bind')
 
     def install(self):
-        location=self.options['location']
+        location = self.options['location']
 
         if not os.path.exists(location):
             os.mkdir(location)
         self.options.created(location)
 
         self.addVarnishRunner()
-        if self.options['generate_config']=='true':
+        if self.options['generate_config'] == 'true':
             self.createVarnishConfig()
 
         return self.options.created()
@@ -158,40 +178,43 @@ class ConfigureRecipe:
         pass
 
     def addVarnishRunner(self):
-        target = os.path.join(self.buildout['buildout']['bin-directory'], self.name)
-        f = open(target, 'wt')
-
+        target = os.path.join(
+            self.buildout['buildout']['bin-directory'],
+            self.name
+        )
         parameters = self.options['runtime-parameters'].strip().split()
 
-        print >>f, '#!/bin/sh'
-        print >>f, 'exec %s \\' % self.daemon
-        if 'user' in self.options:
-            print >>f, '    -p user=%s \\' % self.options['user']
-        if 'group' in self.options:
-            print >>f, '    -p group=%s \\' % self.options['group']
-        print >>f, '    -f "%s" \\' % self.options['config']
-        print >>f, '    -P "%s" \\' % \
+        with open(target, 'wt') as tf:
+            print >>tf, '#!/bin/sh'
+            print >>tf, 'exec %s \\' % self.daemon
+            if 'user' in self.options:
+                print >>tf, '    -p user=%s \\' % self.options['user']
+            if 'group' in self.options:
+                print >>tf, '    -p group=%s \\' % self.options['group']
+            print >>tf, '    -f "%s" \\' % self.options['config']
+            print >>tf, '    -P "%s" \\' % \
                 os.path.join(self.options['location'], 'varnish.pid')
-        print >>f, '    -a %s \\' % self.options['bind']
-        if self.options.get('telnet', None):
-            print >>f, '    -T %s \\' % self.options['telnet']
-        if self.options['cache-type'] == 'malloc':
-            print >>f, '    -s %s,%s \\' % (
+            print >>tf, '    -a %s \\' % self.options['bind']
+            if self.options.get('telnet', None):
+                print >>tf, '    -T %s \\' % self.options['telnet']
+            if self.options['cache-type'] == 'malloc':
+                print >>tf, '    -s %s,%s \\' % (
                     self.options['cache-type'],
-                    self.options['cache-size'])
-        else:
-            print >>f, '    -s %s,"%s",%s \\' % (
+                    self.options['cache-size']
+                )
+            else:
+                print >>tf, '    -s %s,"%s",%s \\' % (
                     self.options['cache-type'],
                     self.options['cache-location'],
-                    self.options['cache-size'])
-        if self.options.get('mode', 'daemon') == 'foreground':
-            print >>f, '    -F \\'
-        if self.options.get('name', None):
-            print >>f, '    -n %s \\' % self.options['name']
-        for parameter in parameters:
-            print >>f, '    -p %s \\' % (parameter)
-        print >>f, '    "$@"'
-        f.close()
+                    self.options['cache-size']
+                )
+            if self.options.get('mode', 'daemon') == 'foreground':
+                print >>tf, '    -F \\'
+            if self.options.get('name', None):
+                print >>tf, '    -n %s \\' % self.options['name']
+            for parameter in parameters:
+                print >>tf, '    -p %s \\' % (parameter)
+            print >>tf, '    "$@"'
         os.chmod(target, 0755)
         self.options.created(target)
 
@@ -214,7 +237,9 @@ class ConfigureRecipe:
             vcl_fetch_verbose = VCL_FETCH_VERBOSE_V3
         else:
             raise ValueError(
-                u'Unknown varnish version %s' % self.options['varnish_version'])
+                u'Unknown varnish version %s' %
+                self.options['varnish_version']
+            )
         template = string.Template(template)
         config = {}
 
@@ -222,19 +247,27 @@ class ConfigureRecipe:
 
         backends = self.options['backends'].strip().split()
         backends = [x.rsplit(':', 2) for x in backends]
-        if len(backends)>1:
+        if len(backends) > 1:
             lengths = set([len(x) for x in backends])
             if lengths != set([3]):
-                self.logger.error('When using multiple backends a hostname '
-                                  'must be given for each client')
-                raise zc.buildout.UserError('Multiple backends without hostnames')
+                self.logger.error(
+                    'When using multiple backends a hostname '
+                    'must be given for each client'
+                )
+                raise zc.buildout.UserError(
+                    'Multiple backends without hostnames'
+                )
             else:
                 hostnames = [x[0] for x in backends]
-                if len(hostnames) != len(set(hostnames)) and balancer[0] == 'none':
-                    self.logger.error('When using multiple backends for the same hostname '
-                                      'you must define a balancer')
-                    raise zc.buildout.UserError('Multiple backends without balancer')
-
+                if len(hostnames) != len(set(hostnames)) \
+                   and balancer[0] == 'none':
+                    self.logger.error(
+                        'When using multiple backends for the same hostname '
+                        'you must define a balancer'
+                    )
+                    raise zc.buildout.UserError(
+                        'Multiple backends without balancer'
+                    )
 
         zope2_vhm_map = self.options.get('zope2_vhm_map', '').split()
         zope2_vhm_map = dict([x.split(':') for x in zope2_vhm_map])
@@ -258,11 +291,12 @@ class ConfigureRecipe:
                 director += 'round-robin {\n'
             elif (balancer[0] == 'random'):
                 director += 'random {\n'
-            for i in range(len(backends)):
+            for idx in range(len(backends)):
                 if (balancer[0] == 'round-robin'):
-                   director += '\t{\n\t\t.backend = backend_%d;\n\t}\n' % i
+                    director += '\t{\n\t\t.backend = backend_%d;\n\t}\n' % idx
                 elif (balancer[0] == 'random'):
-                   director += '\t{\n\t\t.backend = backend_%d; .weight = 1;\n\t}\n' % i
+                    director += '\t{\n\t\t.backend = backend_'\
+                                '%d; .weight = 1;\n\t}\n' % idx
             director += '}\n'
 
         # configure all backends
@@ -274,16 +308,22 @@ class ConfigureRecipe:
                 try:
                     (ip, port) = backends[i]
                 except ValueError:
-                    self.logger.error('Invalid syntax for backend: %s' % ':'.join(backends[i]))
+                    self.logger.error(
+                        'Invalid syntax for backend: %s' %
+                        ':'.join(backends[i])
+                    )
                     raise zc.buildout.UserError('Invalid syntax for backends')
 
             # generate vcl backend config
             backend += 'backend backend_%d {\n' % i
             backend += '\t.host = "%s";\n' % ip
             backend += '\t.port = "%s";\n' % port
-            backend += '\t.connect_timeout = %s;\n' % self.options['connect-timeout']
-            backend += '\t.first_byte_timeout = %s;\n' % self.options['first-byte-timeout']
-            backend += '\t.between_bytes_timeout = %s;\n' % self.options['between-bytes-timeout']
+            backend += '\t.connect_timeout = %s;\n' % \
+                       self.options['connect-timeout']
+            backend += '\t.first_byte_timeout = %s;\n' % \
+                       self.options['first-byte-timeout']
+            backend += '\t.between_bytes_timeout = %s;\n' % \
+                       self.options['between-bytes-timeout']
             backend += '}\n'
 
             # allow purging from backend
@@ -303,14 +343,15 @@ class ConfigureRecipe:
                     if url.startswith('/') or url.startswith(':'):
                         path = url.lstrip(':/')
                         vhosting += 'elsif (req.url ~ "^/%s") {\n' % path
-                        vhosting += '\tset req.http.host = "%s";\n' % url.split(':')[0].split('/').pop()
+                        vhosting += '\tset req.http.host = "%s";\n' % \
+                                    url.split(':')[0].split('/').pop()
 
                     # set backend based on hostname and path
                     elif url.find(':') != -1:
                         hostname, path = url.split(':', 1)
                         path = path.lstrip(':/')
                         vhosting += 'elsif (req.http.host ~ "^%s(:[0-9]+)?$" && req.url ~ "^/%s") {\n' \
-                                        % (hostname, path)
+                                     % (hostname, path)
 
                     # set backend based on hostname
                     else:
@@ -367,14 +408,29 @@ class ConfigureRecipe:
             config['vcl_fetch_verbose'] = ''
             config['vcl_deliver_verbose'] = ''
 
+        config['vcl_fetch_saint'] = ''
+        if self.options['saint-mode'] == 'on':
+            if self.options['verbose-headers'] == 'on':
+                error = 'When using saint-mode verbose headers must be off'
+                self.logger.error(error)
+                raise zc.buildout.UserError(error)
+            elif self.options['varnish_version'] != '3':
+                error = 'saint-mode is available for varnish 3 only'
+                self.logger.error(error)
+                raise zc.buildout.UserError(error)
+            else:
+                config['vcl_fetch_saint'] = VCL_FETCH_SAINT
+
         # fixup cookies for better plone caching
         if self.options['cookie-fixup'] == 'on':
-            config['vcl_plone_cookie_fixup'] = VCL_PLONE_COOKIE_FIXUP % {'str_concat': str_concat}
+            config['vcl_plone_cookie_fixup'] = \
+                VCL_PLONE_COOKIE_FIXUP % {'str_concat': str_concat}
         else:
             config['vcl_plone_cookie_fixup'] = ''
 
         # inject custom vcl
-        for name in ('vcl_recv', 'vcl_hit', 'vcl_miss', 'vcl_fetch', 'vcl_deliver', 'vcl_pipe'):
+        for name in ('vcl_recv', 'vcl_hit', 'vcl_miss', 'vcl_fetch',
+                     'vcl_deliver', 'vcl_pipe'):
             config[name] = self.options.get(name, '')
 
         f = open(self.options['config'], 'wt')
