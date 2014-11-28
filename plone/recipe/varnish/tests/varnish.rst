@@ -4,9 +4,13 @@ Varnish recipe
 This is the doctest for plone.recipe.varnish. It ensures the template
 works fine. It is based on zc.buildout testing module::
 
-    >>> from zc.buildout.testing import *
-    >>> from os.path import join
-    >>> import sys, os
+    >>> from zc.buildout.testing import write
+    >>> import os
+    >>> import sys
+
+    >>> buildout_bin = os.path.join('bin', 'buildout')
+    >>> varnish_bin = os.path.join('bin', 'varnish')
+    >>> system = exec_system
 
 Let's create a minimum buildout that uses the current plone.recipe.varnish::
 
@@ -28,7 +32,7 @@ Let's create a minimum buildout that uses the current plone.recipe.varnish::
 
 Let's run it::
 
-    >>> print system(join('bin', 'buildout'))
+    >>> print system(buildout_bin)
     Installing varnish.
     Installing varnish-build.
     varnish-build: Downloading ...
@@ -42,7 +46,7 @@ A control script got created::
 
 Check the contents of the control script are correct::
 
-    >>> print open(join('bin', 'varnish')).read()
+    >>> print open(varnish_bin).read()
     #!/bin/sh
     exec ...sample-buildout/parts/varnish-build/sbin/varnishd \
         -f "...sample-buildout/parts/varnish/varnish.vcl" \
@@ -54,7 +58,8 @@ Check the contents of the control script are correct::
 
 Check the config is syntactically correct by compiling it to C::
 
-    >>> print system(join('bin', 'varnish') + ' -C')
+    >>> interact(locals())
+    >>> print system(varnish_bin + ' -C')
     ...
     /*
      * NB:  This file is machine generated, DO NOT EDIT!
@@ -77,7 +82,7 @@ Test out customising the storage options with a new test buildout::
 
 Let's run it::
 
-    >>> print system(join('bin', 'buildout'))
+    >>> print system(buildout_bin)
     Uninstalling varnish.
     Installing varnish.
     Updating varnish-build.
@@ -87,7 +92,7 @@ Check the contents of the control script are correct::
     >>> 'varnish' in os.listdir('bin')
     True
 
-    >>> print open(join('bin', 'varnish')).read()
+    >>> print open(varnish_bin).read()
     #!/bin/sh
     ...
         -s file,"...sample-buildout/custom_storage",3.14G \
@@ -104,7 +109,7 @@ well::
 
 Let's run it::
 
-    >>> print system(join('bin', 'buildout'))
+    >>> print system(buildout_bin)
     Uninstalling varnish.
     Installing varnish.
     Updating varnish-build.
@@ -114,7 +119,7 @@ Check the contents of the control script reflect our new options::
     >>> 'varnish' in os.listdir('bin')
     True
 
-    >>> print open(join('bin', 'varnish')).read()
+    >>> print open(varnish_bin).read()
     #!/bin/sh
     ...
         -s malloc,2.71G \
@@ -130,7 +135,7 @@ Test the varnish 3 download::
 
 Let's run it::
 
-    >>> print system(join('bin', 'buildout'))
+    >>> print system(buildout_bin)
     Uninstalling varnish.
     Installing varnish.
     Updating varnish-build.

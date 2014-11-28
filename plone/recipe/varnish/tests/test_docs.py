@@ -16,7 +16,7 @@ FLAGS = (doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
 MUST_CLOSE_FDS = not sys.platform.startswith('win')
 
 
-def system(command, input='', with_exit_code=False):
+def exec_system(command, input='', with_exit_code=False):
     p = subprocess.Popen(
         command,
         shell=True,
@@ -27,12 +27,12 @@ def system(command, input='', with_exit_code=False):
     )
     i, o, e = (p.stdin, p.stdout, p.stderr)
     if input:
-        i.write(input.encode())
+        i.write(input.encode('utf8'))
     i.close()
     result = o.read() + e.read()
     o.close()
     e.close()
-    output = result.decode()
+    output = result.decode('utf-8')
     if with_exit_code:
         # Use the with_exit_code=True parameter when you want to test the exit
         # code of the command you're running.
@@ -44,6 +44,8 @@ def setUp(test):
     buildoutSetUp(test)
     install_develop('plone.recipe.varnish', test)
     install('zc.recipe.cmmi', test)
+    install('jinja2', test)
+    install('markupsafe', test)
 
 
 def tearDown(test):
@@ -60,7 +62,7 @@ def test_suite():
             optionflags=FLAGS,
             setUp=setUp,
             tearDown=buildoutTearDown,
-            globs={'interact': interact, 'system': system},
+            globs={'interact': interact, 'exec_system': exec_system},
         )
     )
 

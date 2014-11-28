@@ -1,12 +1,25 @@
 Changelog
 =========
 
+2.0 (unreleased)
+----------------
+
+- major overhaul: 
+ 
+    - skip support of varnish < v4.0
+
+    - use jinja2 templates for vcl
+
+    - cleanup of the whole generation: do not generate vcl in python
+
+    [jensens] 
+
 1.4 (unreleased)
 ----------------
 
 - Fix test for running in the Varnish 2 or later.
   [cleberjsantos]
-  
+
 - Fixup VCL template Varnish 3.
   [cleberjsantos]
 

@@ -1,52 +1,47 @@
+# This is a basic VCL configuration file for varnish.  See the vcl(7)
+# man page for details on VCL syntax and semantics.
+
+{% if version >= '4' %}
 /*
 * Marker to tell the VCL compiler that this VCL has been adapted to the
 * new 4.0 format.
 * Varnish now requires the first line of VCL to indicate the VCL version number:
 */
 
-vcl 4.0;
+vcl {{version}}.0;
+{% endif %}
 
 import std;
 
-${backends}
-# Note. Add this block with logic for creation, within the __init__.py
+{% for vh in vhostings %}
+backend {{vh['name']}} {
+   .host = "{{vh['host']}}";
+   .port = "{{vh['port']}}";
+   .connect_timeout = {{vh['connect_timeout']}};
+   .first_byte_timeout = {{vh['first_byte_timeout']}}s;
+   .between_bytes_timeout  = {{vh['between_bytes_timeout']}}s;
+}
 
-# backend backend_0 {
-#    .host = "IP HERE";
-#    .port = "8081";
-#    .connect_timeout = 0.4s;       # How long to wait for a backend connection?
-#    .first_byte_timeout = 300s;    # How long to wait before we receive a first byte from our backend?
-#    .between_bytes_timeout  = 60s; # How long to wait between bytes received from our backend?
-#}
-#
-#backend backend_1 {
-#    .host = "IP HERE";
-#    .port = "8082";
-#    .connect_timeout = 0.4s;
-#    .first_byte_timeout = 300s;
-#    .between_bytes_timeout  = 60s;
-#}
-
-
-/* 
-Directors have been moved to the vmod_directors.
-Below is a redirector based on round-robin requests
-*/
-
-# Note. Add this block with logic for creation, within the __init__.py
-# {director}
+{% endfor %}
+{% if directors %}
 import directors;
 
 sub vcl_init {
-    new cluster1 = directors.round_robin(); # A new directors for round robin defined
-    cluster1.add_backend(backend_0);        # Added Backend defined above
-    cluster1.add_backend(backend_1);
-}
+    {% for director in directors %}
+    new {{director['name']}} = directors.{{director['type']}}();
+    {% for backend in directors['backends'] %}
+    {{director['name']}}.add_backend(backend);
+    {% endfor %}
 
+    {% endfor %}
+}
+{% endif %}
 
 acl purge {
     "localhost";
-${purgehosts}
+    {% for purgehost in purgehosts %}
+    "{{purgehost}}";
+    {% endfor %}
 }
 
 sub vcl_recv {
@@ -62,7 +57,7 @@ ${virtal_hosting}
         }
         return(purge);
     }
-    
+
     if (req.method == "BAN") {
             # Same ACL check as above:
             if (!client.ip ~ purge) {
@@ -155,7 +150,7 @@ ${vcl_hit}
         # normal hit
         return (deliver);
     }
-    
+
     # We have no fresh fish. Lets look at the stale ones.
     if (std.healthy(req.backend_hint)) {
         # Backend is healthy. Limit age to 10s.
@@ -178,13 +173,13 @@ ${vcl_hit}
             return (fetch);
         }
     }
-    
+
     if (req.method == "PURGE") {
         set req.method = "GET";
         set req.http.X-purger = "Purged";
         return(synth(200, "Purged. in hit " + req.url));
     }
-    
+
     // fetch & deliver once we get the result
     return (fetch);
 }
@@ -249,7 +244,7 @@ ${vcl_deliver}
 sub vcl_synth {
     set resp.http.Content-Type = "text/html; charset=utf-8";
     set resp.http.Retry-After = "5";
-    
+
     synthetic( {"
         <?xml version="1.0" encoding="utf-8"?>
         <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
