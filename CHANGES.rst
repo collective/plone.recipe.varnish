@@ -4,15 +4,15 @@ Changelog
 2.0 (unreleased)
 ----------------
 
-- major overhaul: 
- 
-    - skip support of varnish < v4.0
+- cleanup of the whole generation:
 
-    - use jinja2 templates for vcl
+  - skip support of varnish < v4.0
+  - do not generate vcl code in python
+  - use jinja2 templates for vcl
+  - refactor vcl generation out in own testable class
 
-    - cleanup of the whole generation: do not generate vcl in python
+  [jensens]
 
-    [jensens] 
 
 1.4 (unreleased)
 ----------------

@@ -55,16 +55,15 @@ def tearDown(test):
 
 
 def test_suite():
-    suite = []
-    suite.append(
+    suite = [
         doctest.DocFileSuite(
-            'varnish.rst',
+            'recipe.rst',
             optionflags=FLAGS,
             setUp=setUp,
             tearDown=buildoutTearDown,
             globs={'interact': interact, 'exec_system': exec_system},
         )
-    )
+    ]
 
     return unittest.TestSuite(suite)
 

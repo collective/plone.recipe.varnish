@@ -1,90 +1,24 @@
 # -*- coding: utf-8 -*-
-from jinja2 import Environment
-from jinja2 import PackageLoader
 import logging
 import os
 import zc.buildout
+from .vclgen import VclGenerator
 
-
-CONFIG_EXCLUDES = set(['zope2_vhm_map', 'zope2_vhm_port', 'zope2_vhm_ssl',
-                       'zope2_vhm_ssl_port', 'backends', 'verbose-headers',
-                       'saint-mode', ])
-
-jinja2env = Environment(
-    loader=PackageLoader('plone.recipe.varnish', 'templates')
-)
-TEMPLATES_BY_MAJORVERSION = {
-    '3': jinja2env.get_template('varnish4.vcl.jinja2'),
-    '4': jinja2env.get_template('varnish4.vcl.jinja2'),
+DOWNLOAD_URLS = {
+    '4': 'https://repo.varnish-cache.org/source/varnish-4.0.0.tar.gz',
 }
 
-BALANCER_TYPES = [
-    'round-robin',
-    'random',
-]
-
-
-# below here tpl unused since jinja 2
-
-VCL_FETCH_VERBOSE_V3 = '''\
-    # Varnish determined the object was not cacheable
-    if (beresp.ttl <= 0s) {
-        set beresp.http.X-Cacheable = "NO:Not Cacheable";
-
-    # You don't wish to cache content for logged in users
-    } elsif (req.http.Cookie ~ "(UserID|_session)") {
-        set beresp.http.X-Cacheable = "NO:Got Session";
-        return(hit_for_pass);
-
-    # You are respecting the Cache-Control=private header from the backend
-    } elsif (beresp.http.Cache-Control ~ "private") {
-        set beresp.http.X-Cacheable = "NO:Cache-Control=private";
-        return(hit_for_pass);
-
-    # Varnish determined the object was cacheable
-    } else {
-        set beresp.http.X-Cacheable = "YES";
-    }
-'''
-
-VCL_FETCH_SAINT = '''
-    if (beresp.status >=500 && beresp.status < 600) {
-        set beresp.saintmode = 10s;
-        return(hit_for_pass);
-      }
-'''
-
-VCL_DELIVER_VERBOSE = '''\
-    if (obj.hits > 0) {
-        set resp.http.X-Cache = "HIT";
-    } else {
-        set resp.http.X-Cache = "MISS";
-    }
-'''
-VCL_PLONE_COOKIE_FIXUP = '''\
-        if (req.http.Cookie && req.http.Cookie ~ "__ac(|_(name|password|persistent))=") {
-                if (req.url ~ "\.(js|css|kss)") {
-                        remove req.http.cookie;
-                        return(lookup);
-                }
-                return(pass);
-        }
-        return(pass);
-    }
-    if (req.http.Cookie) {
-        set req.http.Cookie = ";"%(str_concat)sreq.http.Cookie;
-        set req.http.Cookie = regsuball(req.http.Cookie, "; +", ";");
-        set req.http.Cookie = regsuball(req.http.Cookie, ";(statusmessages|__ac|_ZopeId|__cp)=", "; \1=");
-        set req.http.Cookie = regsuball(req.http.Cookie, ";[^ ][^;]*", "");
-        set req.http.Cookie = regsuball(req.http.Cookie, "^[; ]+|[; ]+$", "");
-
-        if (req.http.Cookie == "") {
-            remove req.http.Cookie;
-        }
-    }
-'''
-
-
+CONFIG_EXCLUDES = set(
+    [
+        'zope2_vhm_map',
+        'zope2_vhm_port',
+        'zope2_vhm_ssl',
+        'zope2_vhm_ssl_port',
+        'backends',
+        'verbose-headers',
+        'saint-mode',
+    ]
+)
 
 
 class ConfigureRecipe(object):
@@ -101,11 +35,15 @@ class ConfigureRecipe(object):
 
         # Expose the download url of a known-good Varnish release
         # Set some default options
-        self.options.setdefault('varnish_version', '3')
-        if self.options['varnish_version'] == '3':
-            url = 'http://repo.varnish-cache.org/source/varnish-3.0.6.tar.gz'
+        self.options.setdefault('varnish_version', '4')
+        if self.options['varnish_version'] in DOWNLOAD_URLS:
+            url = DOWNLOAD_URLS[self.options['varnish_version']]
         else:
-            url = 'http://repo.varnish-cache.org/source/varnish-2.1.5.tar.gz'
+            self._log_and_raise(
+                'Varnish {0} is not supported.'.format(
+                    self.options['varnish_version']
+                )
+            )
         self.options.setdefault('download-url', url)
         self.options.setdefault('bind', '127.0.0.1:8000')
         self.daemon = self.options['daemon']
@@ -155,7 +93,7 @@ class ConfigureRecipe(object):
 
     def _log_and_raise(self, message):
         self.logger.error(message)
-        zc.buildout.UserError(message)
+        raise zc.buildout.UserError(message)
 
     def install(self):
         location = self.options['location']
@@ -215,191 +153,97 @@ class ConfigureRecipe(object):
         self.options.created(target)
 
     def _process_backends(self):
-        backends = [
-            x.rsplit(':', 2)
-            for x in self.options['backends'].strip().split()
+        result = {}
+        raw_backends = [
+            _.rsplit(':', 2)
+            for _ in self.options['backends'].strip().split()
         ]
-
         # consistency checks
-        if len(backends) > 1:
-            lengths = set([len(x) for x in backends])
+        if len(raw_backends) > 1:
+            lengths = set([len(x) for x in raw_backends])
             if lengths != set([3]):
                 self._log_and_raise(
                     'When using multiple backends a hostname '
                     'must be given for each client'
                 )
-            else:
-                hostnames = [x[0] for x in backends]
-                if len(hostnames) != len(set(hostnames)) \
-                   and balancer[0] == 'none':
-                    self._log_and_raise(
-                        'When using multiple backends for the same hostname '
-                        'you must define a balancer'
+        for idx, raw_backend in enumerate(raw_backends):
+            backend = {
+                'name': 'backend_{0:03d}'.format(idx)
+
+            }
+            try:
+                if len(backend) == 3:
+                    url, host, port = raw_backend
+                else:
+                    host, port = raw_backend
+                    url = None
+            except ValueError:
+                self._log_and_raise(
+                    'Invalid syntax for backend: {0}'.format(
+                        ':'.join(raw_backend)
                     )
-        return backends
+                )
+                raise zc.buildout.UserError('Invalid syntax for backends')
+            backend['url'] = url
+            backend['host'] = host
+            backend['port'] = port
+            backend['connect_timeout'] = self.options['connect-timeout']
+            backend['first_byte_timeout'] = self.options['first-byte-timeout']
+            backend['between_bytes_timeout'] = \
+                self.options['between-bytes-timeout']
+
+            result.append(backend)
+
+        return result
 
     def _process_zope_vhm_map(self, backends):
-        zope2_vhm_map = {}
+        result = {}
+
+        vhm_external_port = self.options.get(
+            'zope2_vhm_port',
+            self.options['bind-port']
+        )
+        vhm_proto = 'http'
+        if self.options.get('zope2_vhm_ssl', False) == 'on':
+            vhm_external_port = self.options.get('zope2_vhm_ssl_port', '443')
+            vhm_proto = 'https'
+
         for line in self.options.get('zope2_vhm_map', '').split():
-            key, value = line.split(':')
-            zope2_vhm_map[key] = value
+            domain, location = line.split(':')
+            result[domain.strip()] = {
+                'location': location.strip(),
+                'proto': vhm_proto,
+                'external_port': vhm_external_port,
+            }
 
         # consistency checks
-        if zope2_vhm_map:
+        if result:
             lengths = set([len(x) for x in backends])
             if lengths != set([3]):
                 self._log_and_raise(
                     'When using VHM a hostname must be given for each backend'
                 )
-        return zope2_vhm_map
+        return result
+
+    def _process_balancers(self, balancer, backends):
+        """if theres is a balancer configured, all backends are assigned.
+
+        this could be refactored in future to support multiple balancers.
+        """
+        result = []
+        if balancer != 'none':
+            record = {
+                'type': balancer,
+                'name': 'balancer_0',
+                'backends': [_['name'] for _ in backends],
+            }
+            result.append(record)
+        return result
 
     def createVarnishConfig(self):
         major_version = self.options['varnish_version']
-        if major_version not in TEMPLATES_BY_MAJORVERSION:
-            self._log_and_raise(
-                'Varnish version must be one of {0}'
-                'Use an older version of this recipe to support older '
-                'Varnish. Newer versions than listed here are not '
-                'supported.'.format(str(TEMPLATES_BY_MAJORVERSION.keys()))
-            )
         config = {}
         config['version'] = major_version
-
-        balancer = self.options['balancer'].strip().split()
-        backends = config['backends'] = self._process_backends()
-        zope2_vhm_map = self._process_zope_vhm_map(backends)
-
-        # generate vcl director config if we are load balancing
-        config['directors'] = list()
-
-        # we are prepared to support mutliple directors, but for now
-        # this is not implemented
-        if balancer[0] in BALANCER_TYPES:
-            director = dict()
-            director['type'] = balancer[0]
-            director['backends'] = [_['name'] for _ in backends]
-            config['directors'].append(director)
-        elif balancer[0] != 'none':
-            self._log_and_raise(
-                'balancer type {0} not supported.'.format(balancer[0])
-            )
-
-        # collect already configure vhostings
-        config['purgehosts'] = set()
-        config['vhosting'] = list()
-        config['404page'] = False
-
-        vhosting_configured = set()
-
-        # configure all backends
-        for idx, backend in enumerate(backends):
-            vh = dict()
-            config['vhosting'].append(vh)
-            vh['name'] = 'backend_{0:03d}'.format(idx)
-            vh['lines'] = []
-            url = None
-            try:
-                if len(backend) == 3:
-                    url, ip, port = backend
-                else:
-                    ip, port = backend
-            except ValueError:
-                self._log_and_raise(
-                    'Invalid syntax for backend: {0}'.format(
-                        ':'.join(backend)
-                    )
-                )
-                raise zc.buildout.UserError('Invalid syntax for backends')
-
-            # collect ips allowed for purging
-            config['purgehosts'].add(ip)
-
-            # vcl backend config base
-            vh['host'] = ip
-            vh['port'] = port
-            vh['connect_timeout'] = self.options['connect-timeout']
-            vh['first_byte_timeout'] = self.options['first-byte-timeout']
-            vh['between_bytes_timeout'] = self.options['between-bytes-timeout']
-
-            # set backend if not using virtual hosting
-            if not url:
-                vh['match'] = None
-                if balancer[0] != 'none':
-                    vh['backend'] = 'director_0'
-                else:
-                    vh['backend'] = 'backend_{0:03d}'.format(0)
-
-            # set backed based on virtual hosting options
-            else:
-                if url in vhosting_configured:
-                    # dup
-                    continue
-
-                # set backend based on path only
-                if url[0] in '/:':
-                    path = url.lstrip(':/')
-                    vh['match'].append(
-                        'req.url ~ "^/{0}"'.format(path)
-                    )
-                    vh['lines'].append(
-                        'set req.http.host = "{0}";'.format(
-                            url.split(':')[0].split('/').pop()
-                        )
-                    )
-
-                # set backend based on hostname and path
-                elif url.find(':') != -1:
-                    hostname, path = url.split(':', 1)
-                    vh['match'] = (
-                        'req.http.host ~ "^[{0}](:[0-9]+)?$" && '
-                        'req.url ~ "^/{1}"'.format(
-                            hostname,
-                            path.lstrip(':/')
-                        )
-                    )
-
-                # set backend based on hostname
-                else:
-                    vh['match'] = 'req.http.host ~ "^{0}(:[0-9]+)?$"'.format(
-                        url
-                    )
-
-                # translate into vhm url if defined for hostname
-                if url in zope2_vhm_map:
-                    location = zope2_vhm_map[url].lstrip('/')
-                    external_port = self.options.get(
-                        'zope2_vhm_port',
-                        self.options['bind-port']
-                    )
-                    proto = 'http'
-                    if self.options.get('zope2_vhm_ssl', False) == 'on':
-                        external_port = self.options.get(
-                            'zope2_vhm_ssl_port', '443'
-                        )
-                        proto = 'https'
-                    vh['lines'].append(
-                        'set req.url = "/VirtualHostBase/{0}/{1}:{2}/{3}/'
-                        'VirtualHostRoot"{4}req.url;'.format(
-                            proto, url, external_port, location, str_concat
-                        )
-                    )
-
-                # set backend for the request
-                if balancer[0] != 'none':
-                    vh['backend'] = 'director_0'
-                else:
-                    vh['backend'] = 'backend_{0:d}'.format(idx)
-
-                vhosting_configured.add(url)
-
-        if len(backends[0]) == 3:
-            config['404page'] = True
-
-        #build the purge host string
-        for segment in self.options['purge-hosts'].split():
-            segment = segment.strip()
-            if segment:
-                config['purgehosts'].add(segment)
 
         # enable verbose varnish headers
         config['verbose'] = self.options['verbose-headers'] == 'on'
@@ -418,8 +262,33 @@ class ConfigureRecipe(object):
                      'vcl_deliver', 'vcl_pipe'):
             config['custom'][name] = self.options.get(name, '')
 
-        # render vcl file
-        template = TEMPLATES_BY_MAJORVERSION[major_version]
+        config['backends'] = self._process_backends()
+        config['balancers'] = self._process_balancers(
+            self.options['balancer'].strip(),
+            config['backends']
+        )
+        config['zope2_vhm_maps'] = self._process_zope_vhm_map(
+            config['backends']
+        )
+        config['purgehosts'] = set([])
+
+        # collect already configure vhostings
+        config['vhosting'] = list()
+
+
+        # # if we have backends with 3-tuple style configuration, then
+        # # we need a 404 page at the end
+        # if len(config['backends'][0]) == 3:
+        #     config['code404page'] = True
+
+        # build the purge host string
+        for segment in self.options['purge-hosts'].split():
+            segment = segment.strip()
+            if segment:
+                config['purgehosts'].add(segment)
+
+        vclgenerator = VclGenerator(config)
+        filedata = vclgenerator()
         with open(self.options['config'], 'wt') as fio:
-            fio.write(template.render(**config))
+            fio.write(filedata)
         self.options.created(self.options['config'])

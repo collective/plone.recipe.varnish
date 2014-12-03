@@ -58,7 +58,6 @@ Check the contents of the control script are correct::
 
 Check the config is syntactically correct by compiling it to C::
 
-    >>> interact(locals())
     >>> print system(varnish_bin + ' -C')
     ...
     /*

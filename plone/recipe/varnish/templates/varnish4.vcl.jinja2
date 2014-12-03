@@ -1,18 +1,11 @@
 # This is a basic VCL configuration file for varnish.  See the vcl(7)
 # man page for details on VCL syntax and semantics.
 
-{% if version >= '4' %}
-/*
-* Marker to tell the VCL compiler that this VCL has been adapted to the
-* new 4.0 format.
-* Varnish now requires the first line of VCL to indicate the VCL version number:
-*/
-
 vcl {{version}}.0;
-{% endif %}
 
 import std;
 
+# configure all backends
 {% for vh in vhostings %}
 backend {{vh['name']}} {
    .host = "{{vh['host']}}";
@@ -25,8 +18,11 @@ backend {{vh['name']}} {
 {% endfor %}
 {% if directors %}
 import directors;
+{% endif %}
 
 sub vcl_init {
+    {% if directors %}
+    # configure directors for load balancing
     {% for director in directors %}
     new {{director['name']}} = directors.{{director['type']}}();
     {% for backend in directors['backends'] %}
@@ -34,8 +30,8 @@ sub vcl_init {
     {% endfor %}
 
     {% endfor %}
+    {% endif %}
 }
-{% endif %}
 
 acl purge {
     "localhost";
@@ -45,10 +41,31 @@ acl purge {
 }
 
 sub vcl_recv {
-${vcl_recv}
-${virtal_hosting}
-# set req.backend_hint = cluster1.backend();
-# set req.backend_hint = backend_1;
+#${vcl_recv}
+
+{% if len(vhostings) > 1 %}
+{% for vh in vhostings %}
+    {% if loop.first %}
+    if ({{vh['match']}}) {
+    {% else %}
+    } elseif ({{vh['match']}}) {
+    {% endif %}
+    {% for key, value in vh['setters'].items() %}
+        {{key}} = {{value}};
+    {% endfor %}
+    {% if loop.last %}
+    {% if code404page %}
+    } else {
+        error 404 "Unknown virtual host";
+    {% endif %}
+    }
+    {% endif %}
+{% endfor %}
+{% else %}
+{% for key, value in vhosting[0]['setters'].items() %}
+{{key}} = {{value}};
+{% endfor %}
+{% endif %}
 
     if (req.method == "PURGE") {
         # Not from an allowed IP? Then die with an error.
