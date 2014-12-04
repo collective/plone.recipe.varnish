@@ -62,15 +62,146 @@ Type must match::
 Add some backends::
 
     >>> config['directors'][0]['backends'] = [
-    ...     'backend_1',
-    ...     'backend_2',
+    ...     'backend_001',
+    ...     'backend_002',
     ... ]
     >>> vg = VclGenerator(config)
     >>> pprint(vg._directors())
-    [{'backends': ['backend_1', 'backend_2'],
+    [{'backends': ['backend_001', 'backend_002'],
       'name': 'sellerie',
       'type': 'round-robin'}]
 
-    >>> interact(locals())
+VHostings
+---------
+
+Basic check::
+
+    >>> config = {
+    ...     'major_version': 4,
+    ...     'backends': [],
+    ...     'zope2_vhm_map': {},
+    ... }
+    >>> vg = VclGenerator(config)
+    >>> vg._vhostings([])
+    []
+
+Add one backend as *2-tuple* (w/o url), the one host scenario::
+
+    >>> config['backends'] = [
+    ...     {
+    ...         'name': 'backend_000',
+    ...         'url': None,
+    ...         'host': '10.11.22.33',
+    ...         'port': '8080',
+    ...         'connect_timeout': '10',
+    ...         'first_byte_timeout': '20',
+    ...         'between_bytes_timeout': '30',
+    ...     }
+    ... ]
+    >>> vg = VclGenerator(config)
+    >>> pprint(vg._vhostings([]))
+    [{'setters': OrderedDict([('req.backend_hint', 'backend_000')])}]
 
 
+Two backends, one with host match, other one with url match, third with both,
+also ::
+
+    >>> config['backends'] = [
+    ...     {
+    ...         'name': 'backend_000',
+    ...         'url': 'plone.org',
+    ...         'host': '10.11.22.33',
+    ...         'port': '8080',
+    ...     },
+    ...     {
+    ...         'name': 'backend_001',
+    ...         'url': '/Plone/',
+    ...         'host': '10.12.34.56',
+    ...         'port': '8081',
+    ...     },
+    ...     {
+    ...         'name': 'backend_002',
+    ...         'url': 'zope.org:/foo/bar',
+    ...         'host': '10.23.45.67',
+    ...         'port': '8082',
+    ...     },
+    ... ]
+    >>> config['zope2_vhm_map'] = {
+    ...     'plone.org': {'location': '/PloneOrg', 'proto': 'http', 'external_port': '80'}
+    ... }
+    >>> vg = VclGenerator(config)
+    >>> pprint(vg._vhostings([]))
+    [{'match': 'req.http.host ~ "^plone.org(:[0-9]+)?$"',
+      'setters': OrderedDict([('req.backend_hint', 'backend_000'), ('req.url', '"/VirtualHostBase/http/plone.org:80//PloneOrg/VirtualHostRoot" + req.url;')])},
+     {'match': 'req.url ~ "^/Plone/"',
+      'setters': OrderedDict([('req.backend_hint', 'backend_001')])},
+     {'match': 'req.http.host ~ "^[zope.org](:[0-9]+)?$" && req.url ~ "^/foo/bar"',
+      'setters': OrderedDict([('req.backend_hint', 'backend_002')])}]
+
+
+Combine Backends and directors::
+
+    >>> config['backends'] = [
+    ...     {
+    ...         'name': 'backend_000',
+    ...         'url': 'plone.org',
+    ...         'host': '10.11.22.33',
+    ...         'port': '8080',
+    ...     },
+    ...     {
+    ...         'name': 'backend_001',
+    ...         'url': 'plone.org',
+    ...         'host': '10.11.22.34',
+    ...         'port': '8080',
+    ...     },
+    ...     {
+    ...         'name': 'backend_010',
+    ...         'url': 'python.org',
+    ...         'host': '10.11.22.35',
+    ...         'port': '8080',
+    ...     },
+    ...     {
+    ...         'name': 'backend_011',
+    ...         'url': 'python.org',
+    ...         'host': '10.11.22.36',
+    ...         'port': '8080',
+    ...     },
+    ...     {
+    ...         'name': 'backend_020',
+    ...         'url': 'single.org',
+    ...         'host': '10.11.22.36',
+    ...         'port': '8080',
+    ...     },
+    ... ]
+    >>> config['zope2_vhm_map'] = {
+    ...     'plone.org': {'location': '/PloneOrg', 'proto': 'http', 'external_port': '80'}
+    ... }
+    >>> config['directors'] = [
+    ...     {
+    ...         'type': 'round-robin',
+    ...         'name': 'alpha',
+    ...         'backends': ['backend_000', 'backend_001']
+    ...     },
+    ...     {
+    ...         'type': 'random',
+    ...         'name': 'beta',
+    ...         'backends': ['backend_010', 'backend_011']
+    ...     },
+    ... ]
+    >>> vg = VclGenerator(config)
+    >>> directors = vg._directors()
+    >>> pprint(directors)
+    [{'backends': ['backend_000', 'backend_001'],
+      'name': 'alpha',
+      'type': 'round-robin'},
+     {'backends': ['backend_010', 'backend_011'],
+      'name': 'beta',
+      'type': 'random'}]
+
+    >>> pprint(vg._vhostings(directors))
+    [{'match': 'req.http.host ~ "^plone.org(:[0-9]+)?$"',
+      'setters': OrderedDict([('req.backend_hint', 'alpha.backend()'), ('req.url', '"/VirtualHostBase/http/plone.org:80//PloneOrg/VirtualHostRoot" + req.url;')])},
+     {'match': 'req.http.host ~ "^python.org(:[0-9]+)?$"',
+      'setters': OrderedDict([('req.backend_hint', 'beta.backend()')])},
+     {'match': 'req.http.host ~ "^single.org(:[0-9]+)?$"',
+      'setters': OrderedDict([('req.backend_hint', 'backend_020')])}]

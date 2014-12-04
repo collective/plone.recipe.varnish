@@ -63,7 +63,7 @@ sub vcl_recv {
 {% endfor %}
 {% else %}
 {% for key, value in vhosting[0]['setters'].items() %}
-{{key}} = {{value}};
+    {{key}} = {{value}};
 {% endfor %}
 {% endif %}
 

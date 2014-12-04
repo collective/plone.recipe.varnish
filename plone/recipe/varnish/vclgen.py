@@ -64,18 +64,23 @@ class VclGenerator(object):
 
         return directors
 
-    def _vhosting(self):
+    def _vhostings(self, directors):
         vhosting = []
         vhosting_configured = set()
-
         for idx, backend in enumerate(self.cfg['backends']):
             vh = {}
             vh['setters'] = OrderedDict()
 
-            if self.cfg['balancers']:
-                # we support here at the moment only one balancer
-                vh['setters']['req.backend_hint'] = \
-                    '{0}.backend()'.format(self.cfg['balancers'][0]['name'])
+            use_director = None
+            for director in directors:
+                if backend['name'] in director['backends']:
+                    use_director = director
+                    break
+
+            if use_director:
+                vh['setters']['req.backend_hint'] = '{0}.backend()'.format(
+                    use_director['name']
+                )
             else:
                 vh['setters']['req.backend_hint'] = backend['name']
 
@@ -87,14 +92,10 @@ class VclGenerator(object):
             if backend['url'] in vhosting_configured:
                 # dup
                 continue
-
             if backend['url'][0] in '/:':
                 # match backend based on path only
                 path = backend['url'].lstrip(':/')
-                vh['match'].append('req.url ~ "^/{0}"'.format(path))
-                vh['setters']['req.http.host'] = '"{0}";'.format(
-                    backend['url'].split(':')[0].split('/').pop()
-                )
+                vh['match'] = 'req.url ~ "^/{0}"'.format(path)
             elif backend['url'].find(':') != -1:
                 # match backend based on hostname and path
                 hostname, path = backend['url'].split(':', 1)
@@ -125,6 +126,7 @@ class VclGenerator(object):
                     )
                 )
             vhosting_configured.add(backend['url'])
+            vhosting.append(vh)
         return vhosting
 
     def __call__(self):
@@ -133,8 +135,8 @@ class VclGenerator(object):
         data['directors'] = self._directors()
 
         # collect already configure vhostings
-        data['purgehosts'] = set()
-        data['vhosting'] = self.cfg['vhosting']
+        data['vhosting'] = self._vhostings(data['directors'])
+        data['purgehosts'] = self.cfg
 
         # render vcl file
         template = TEMPLATES_BY_MAJORVERSION[data['version']]
