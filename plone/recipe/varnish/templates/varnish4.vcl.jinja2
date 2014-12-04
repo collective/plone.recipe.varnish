@@ -6,16 +6,16 @@ vcl {{version}}.0;
 import std;
 
 # configure all backends
-{% for vh in vhostings %}
-backend {{vh['name']}} {
-   .host = "{{vh['host']}}";
-   .port = "{{vh['port']}}";
-   .connect_timeout = {{vh['connect_timeout']}};
-   .first_byte_timeout = {{vh['first_byte_timeout']}}s;
-   .between_bytes_timeout  = {{vh['between_bytes_timeout']}}s;
+{% for backend in backends %}
+backend {{backend['name']}} {
+   .host = "{{backend['host']}}";
+   .port = "{{backend['port']}}";
+   .connect_timeout = {{backend['connect_timeout']}};
+   .first_byte_timeout = {{backend['first_byte_timeout']}}s;
+   .between_bytes_timeout  = {{backend['between_bytes_timeout']}}s;
 }
-
 {% endfor %}
+
 {% if directors %}
 import directors;
 {% endif %}
@@ -24,13 +24,12 @@ sub vcl_init {
     {% if directors %}
     # configure directors for load balancing
     {% for director in directors %}
-    new {{director['name']}} = directors.{{director['type']}}();
-    {% for backend in directors['backends'] %}
-    {{director['name']}}.add_backend(backend);
-    {% endfor %}
 
-    {% endfor %}
-    {% endif %}
+    new {{director['name']}} = directors.{{director['type']}}();
+    {% for backend in director['backends'] %}
+    {{director['name']}}.add_backend({{backend}});
+    {% endfor %}{% endfor %}{% endif %}
+    {{custom['vcl_init']}}
 }
 
 acl purge {
@@ -41,30 +40,28 @@ acl purge {
 }
 
 sub vcl_recv {
-#${vcl_recv}
-
-{% if len(vhostings) > 1 %}
-{% for vh in vhostings %}
+{% if vhosting|length > 1 %}
+    # virtual hosting matches
+    {% for vh in vhosting %}
     {% if loop.first %}
     if ({{vh['match']}}) {
     {% else %}
     } elseif ({{vh['match']}}) {
     {% endif %}
     {% for key, value in vh['setters'].items() %}
-        {{key}} = {{value}};
+        set {{key}} = {{value}};
     {% endfor %}
-    {% if loop.last %}
-    {% if code404page %}
+    {% if loop.last %}{% if code404page %}
     } else {
         error 404 "Unknown virtual host";
     {% endif %}
     }
     {% endif %}
-{% endfor %}
+    {% endfor %}
 {% else %}
-{% for key, value in vhosting[0]['setters'].items() %}
+    {% for key, value in vhosting[0]['setters'].items() %}
     {{key}} = {{value}};
-{% endfor %}
+    {% endfor %}
 {% endif %}
 
     if (req.method == "PURGE") {
@@ -136,7 +133,27 @@ sub vcl_recv {
         return(pass);
     }
 
-${vcl_plone_cookie_fixup}
+    if (req.http.Cookie && req.http.Cookie ~ "__ac(|_(name|password|persistent))=") {
+        if (req.url ~ "\.(js|css|kss)") {
+            remove req.http.cookie;
+            return(lookup);
+        }
+        return(pass);
+    }
+    {% if cookiewhitelist|length > 0 %}
+
+    /* Cookie whitelist, remove all not in there */
+    if (req.http.Cookie) {
+        set req.http.Cookie = ";"%(str_concat)sreq.http.Cookie;
+        set req.http.Cookie = regsuball(req.http.Cookie, "; +", ";");
+        set req.http.Cookie = regsuball(req.http.Cookie, ";({% for name in cookiewhitelist %}{{name}}{% if not loop.last %}|{% endif %}{% endfor %})=", "; \1=");
+        set req.http.Cookie = regsuball(req.http.Cookie, ";[^ ][^;]*", "");
+        set req.http.Cookie = regsuball(req.http.Cookie, "^[; ]+|[; ]+$", "");
+        if (req.http.Cookie == "") {
+            remove req.http.Cookie;
+        }
+    }
+    {% endif %}
 
     return(hash);
 }

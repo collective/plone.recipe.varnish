@@ -80,6 +80,7 @@ Basic check::
     ...     'major_version': 4,
     ...     'backends': [],
     ...     'zope2_vhm_map': {},
+    ...     'custom': '',
     ... }
     >>> vg = VclGenerator(config)
     >>> vg._vhostings([])
@@ -169,7 +170,7 @@ Combine Backends and directors::
     ...     {
     ...         'name': 'backend_020',
     ...         'url': 'single.org',
-    ...         'host': '10.11.22.36',
+    ...         'host': '10.11.22.37',
     ...         'port': '8080',
     ...     },
     ... ]
@@ -205,3 +206,20 @@ Combine Backends and directors::
       'setters': OrderedDict([('req.backend_hint', 'beta.backend()')])},
      {'match': 'req.http.host ~ "^single.org(:[0-9]+)?$"',
       'setters': OrderedDict([('req.backend_hint', 'backend_020')])}]
+
+Check purgehosts. add some manual and then all above hosts should be in too::
+
+    >>> config['purgehosts'] = ['192.168.1.2', '123.123.123.123',]
+    >>> vg = VclGenerator(config)
+    >>> pprint(vg._purgehosts())
+    set(['10.11.22.33',
+         '10.11.22.34',
+         '10.11.22.35',
+         '10.11.22.36',
+         '10.11.22.37',
+         '123.123.123.123',
+         '192.168.1.2'])
+
+Generate!
+
+    >>> print vg()

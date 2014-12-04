@@ -20,6 +20,8 @@ CONFIG_EXCLUDES = set(
     ]
 )
 
+COOKIE_WHITELIST_DEFAULT = "statusmessages __ac _ZopeId __cp"
+
 
 class ConfigureRecipe(object):
 
@@ -75,7 +77,7 @@ class ConfigureRecipe(object):
         self.options.setdefault('first-byte-timeout', '300s')
         self.options.setdefault('between-bytes-timeout', '60s')
         self.options.setdefault('purge-hosts', '')
-        self.options.setdefault('cookie-fixup', 'on')
+        self.options.setdefault('cookie-whitelist', COOKIE_WHITELIST_DEFAULT)
 
         # Test for valid bind value
         self.options['bind'] = self.options.get('bind').lstrip(':')
@@ -254,7 +256,9 @@ class ConfigureRecipe(object):
             )
 
         # fixup cookies for better plone caching
-        config['cookiefixup'] = self.options['cookie-fixup'] == 'on'
+        config['cookiewhitelist'] = [
+            _.strip() for _ in self.options['cookie-whitelist'].split()
+        ]
 
         # inject custom vcl
         config['custom'] = {}
@@ -263,25 +267,16 @@ class ConfigureRecipe(object):
             config['custom'][name] = self.options.get(name, '')
 
         config['backends'] = self._process_backends()
-        config['balancers'] = self._process_balancers(
+        config['directors'] = self._process_balancers(
             self.options['balancer'].strip(),
             config['backends']
         )
         config['zope2_vhm_maps'] = self._process_zope_vhm_map(
             config['backends']
         )
-        config['purgehosts'] = set([])
-
-        # collect already configure vhostings
-        config['vhosting'] = list()
-
-
-        # # if we have backends with 3-tuple style configuration, then
-        # # we need a 404 page at the end
-        # if len(config['backends'][0]) == 3:
-        #     config['code404page'] = True
 
         # build the purge host string
+        config['purgehosts'] = set([])
         for segment in self.options['purge-hosts'].split():
             segment = segment.strip()
             if segment:

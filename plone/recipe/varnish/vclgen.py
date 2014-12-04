@@ -8,7 +8,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 jinja2env = Environment(
-    loader=PackageLoader('plone.recipe.varnish', 'templates')
+    loader=PackageLoader('plone.recipe.varnish', 'templates'),
+    trim_blocks=True,
+    lstrip_blocks=True
 )
 TEMPLATES_BY_MAJORVERSION = {
     4: jinja2env.get_template('varnish4.vcl.jinja2'),
@@ -118,7 +120,7 @@ class VclGenerator(object):
                 vhm = self.cfg['zope2_vhm_map'][backend['url']]
                 vh['setters']['req.url'] = (
                     '"/VirtualHostBase/{0}/{1}:{2}/{3}/VirtualHostRoot"'
-                    ' + req.url;'.format(
+                    ' + req.url'.format(
                         vhm['proto'],
                         backend['url'],
                         vhm['external_port'],
@@ -129,17 +131,20 @@ class VclGenerator(object):
             vhosting.append(vh)
         return vhosting
 
+    def _purgehosts(self):
+        purgehosts = set(self.cfg['purgehosts'])
+        purgehosts.update([_['host'] for _ in self.cfg['backends']])
+        return purgehosts
+
     def __call__(self):
         data = {}
         data['version'] = self.cfg['major_version']
+        data['backends'] = self.cfg['backends']
         data['directors'] = self._directors()
-
-        # collect already configure vhostings
         data['vhosting'] = self._vhostings(data['directors'])
-        data['purgehosts'] = self.cfg
-
+        data['purgehosts'] = self._purgehosts()
+        data['custom'] = self.cfg['custom']
+        data['cookiewhitelist'] = self.cfg['cookiewhitelist']
         # render vcl file
         template = TEMPLATES_BY_MAJORVERSION[data['version']]
-        with open(self.options['config'], 'wt') as fio:
-            fio.write(template.render(**data))
-        self.options.created(self.options['config'])
+        return template.render(**data)

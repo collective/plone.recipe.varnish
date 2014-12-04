@@ -10,6 +10,7 @@ Changelog
   - do not generate vcl code in python
   - use jinja2 templates for vcl
   - refactor vcl generation out in own testable class
+  - change fixup cookies into a cookie whitelist
 
   [jensens]
 
