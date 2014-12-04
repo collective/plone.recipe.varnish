@@ -81,6 +81,13 @@ Basic check::
     ...     'backends': [],
     ...     'zope2_vhm_map': {},
     ...     'custom': '',
+    ...     'cookiewhitelist': ['statusmessages', '__ac',],
+    ...     'cookiepass': [
+    ...         {'match': '__ac(|_(name|password|persistent))=',
+    ...          'exclude': '\.(js|css|kss)' }
+    ...     ],
+    ...     'gracehealthy': '10s',
+    ...     'gracesick': '1h',
     ... }
     >>> vg = VclGenerator(config)
     >>> vg._vhostings([])
@@ -133,7 +140,7 @@ also ::
     >>> vg = VclGenerator(config)
     >>> pprint(vg._vhostings([]))
     [{'match': 'req.http.host ~ "^plone.org(:[0-9]+)?$"',
-      'setters': OrderedDict([('req.backend_hint', 'backend_000'), ('req.url', '"/VirtualHostBase/http/plone.org:80//PloneOrg/VirtualHostRoot" + req.url;')])},
+      'setters': OrderedDict([('req.backend_hint', 'backend_000'), ('req.url', '"/VirtualHostBase/http/plone.org:80/PloneOrg/VirtualHostRoot" + req.url')])},
      {'match': 'req.url ~ "^/Plone/"',
       'setters': OrderedDict([('req.backend_hint', 'backend_001')])},
      {'match': 'req.http.host ~ "^[zope.org](:[0-9]+)?$" && req.url ~ "^/foo/bar"',
@@ -148,30 +155,45 @@ Combine Backends and directors::
     ...         'url': 'plone.org',
     ...         'host': '10.11.22.33',
     ...         'port': '8080',
+    ...         'connect_timeout': '0.41s',
+    ...         'first_byte_timeout': '299s',
+    ...         'between_bytes_timeout': '59s',
     ...     },
     ...     {
     ...         'name': 'backend_001',
     ...         'url': 'plone.org',
     ...         'host': '10.11.22.34',
     ...         'port': '8080',
+    ...         'connect_timeout': '0.42s',
+    ...         'first_byte_timeout': '298s',
+    ...         'between_bytes_timeout': '58s',
     ...     },
     ...     {
     ...         'name': 'backend_010',
     ...         'url': 'python.org',
     ...         'host': '10.11.22.35',
     ...         'port': '8080',
+    ...         'connect_timeout': '0.43s',
+    ...         'first_byte_timeout': '297s',
+    ...         'between_bytes_timeout': '57s',
     ...     },
     ...     {
     ...         'name': 'backend_011',
     ...         'url': 'python.org',
     ...         'host': '10.11.22.36',
     ...         'port': '8080',
+    ...         'connect_timeout': '0.44s',
+    ...         'first_byte_timeout': '296s',
+    ...         'between_bytes_timeout': '56s',
     ...     },
     ...     {
     ...         'name': 'backend_020',
     ...         'url': 'single.org',
     ...         'host': '10.11.22.37',
     ...         'port': '8080',
+    ...         'connect_timeout': '0.45',
+    ...         'first_byte_timeout': '295s',
+    ...         'between_bytes_timeout': '55s',
     ...     },
     ... ]
     >>> config['zope2_vhm_map'] = {
@@ -201,7 +223,7 @@ Combine Backends and directors::
 
     >>> pprint(vg._vhostings(directors))
     [{'match': 'req.http.host ~ "^plone.org(:[0-9]+)?$"',
-      'setters': OrderedDict([('req.backend_hint', 'alpha.backend()'), ('req.url', '"/VirtualHostBase/http/plone.org:80//PloneOrg/VirtualHostRoot" + req.url;')])},
+      'setters': OrderedDict([('req.backend_hint', 'alpha.backend()'), ('req.url', '"/VirtualHostBase/http/plone.org:80/PloneOrg/VirtualHostRoot" + req.url')])},
      {'match': 'req.http.host ~ "^python.org(:[0-9]+)?$"',
       'setters': OrderedDict([('req.backend_hint', 'beta.backend()')])},
      {'match': 'req.http.host ~ "^single.org(:[0-9]+)?$"',
@@ -222,4 +244,6 @@ Check purgehosts. add some manual and then all above hosts should be in too::
 
 Generate!
 
-    >>> print vg()
+    >>> result = vg()
+    >>> len(result) > 8000
+    True

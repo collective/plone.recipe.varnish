@@ -27,6 +27,7 @@ Let's create a minimum buildout that uses the current plone.recipe.varnish::
     ... recipe = plone.recipe.varnish
     ... daemon = ${buildout:parts-directory}/varnish-build/sbin/varnishd
     ... backends = 127.0.0.1:8080
+    ... generate_config = false
     ... '''
     >>> write('buildout.cfg', simplest % globals())
 
@@ -124,13 +125,13 @@ Check the contents of the control script reflect our new options::
         -s malloc,2.71G \
     ...
 
-Test the varnish 3 download::
+Test the varnish download::
 
-    >>> varnish_3 = simplest + '''
-    ... varnish_version = 3
-    ... download-url = http://repo.varnish-cache.org/source/varnish-3.0.6.tar.gz
+    >>> varnish_4 = simplest + '''
+    ... varnish_version = 4
+    ... download-url = https://repo.varnish-cache.org/source/varnish-4.0.2.tar.gz
     ... '''
-    >>> write('buildout.cfg', varnish_3 % globals())
+    >>> write('buildout.cfg', varnish_4 % globals())
 
 Let's run it::
 

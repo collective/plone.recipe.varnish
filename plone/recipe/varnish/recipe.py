@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import os
+import re
 import zc.buildout
 from .vclgen import VclGenerator
 
@@ -20,7 +21,17 @@ CONFIG_EXCLUDES = set(
     ]
 )
 
-COOKIE_WHITELIST_DEFAULT = "statusmessages __ac _ZopeId __cp"
+COOKIE_WHITELIST_DEFAULT = """\
+statusmessages
+__ac
+_ZopeId
+__cp
+"""
+
+COOKIE_PASS_DEFAULT = """\
+"__ac(|_(name|password|persistent))=":"\.(js|css|kss)"
+"""
+COOKIE_PASS_RE = re.compile('"(.*)":"(.*)"')
 
 
 class ConfigureRecipe(object):
@@ -38,6 +49,7 @@ class ConfigureRecipe(object):
         # Expose the download url of a known-good Varnish release
         # Set some default options
         self.options.setdefault('varnish_version', '4')
+
         if self.options['varnish_version'] in DOWNLOAD_URLS:
             url = DOWNLOAD_URLS[self.options['varnish_version']]
         else:
@@ -46,6 +58,7 @@ class ConfigureRecipe(object):
                     self.options['varnish_version']
                 )
             )
+
         self.options.setdefault('download-url', url)
         self.options.setdefault('bind', '127.0.0.1:8000')
         self.daemon = self.options['daemon']
@@ -54,8 +67,10 @@ class ConfigureRecipe(object):
             'cache-location',
             os.path.join(self.options['location'], 'storage')
         )
+
         self.options.setdefault('cache-size', '256M')
         self.options.setdefault('runtime-parameters', '')
+
         if 'config' in self.options:
             if set(self.options.keys()).intersection(CONFIG_EXCLUDES):
                 msg = ('When config= option is specified the following '
@@ -77,6 +92,7 @@ class ConfigureRecipe(object):
         self.options.setdefault('first-byte-timeout', '300s')
         self.options.setdefault('between-bytes-timeout', '60s')
         self.options.setdefault('purge-hosts', '')
+        self.options.setdefault('cookie-pass', COOKIE_PASS_DEFAULT)
         self.options.setdefault('cookie-whitelist', COOKIE_WHITELIST_DEFAULT)
 
         # Test for valid bind value
@@ -121,6 +137,7 @@ class ConfigureRecipe(object):
         parameters = self.options['runtime-parameters'].strip().split()
 
         with open(target, 'wt') as tf:
+            # XXX TODO: make this a template
             print >>tf, '#!/bin/sh'
             print >>tf, 'exec %s \\' % self.daemon
             if 'user' in self.options:
@@ -155,7 +172,7 @@ class ConfigureRecipe(object):
         self.options.created(target)
 
     def _process_backends(self):
-        result = {}
+        result = []
         raw_backends = [
             _.rsplit(':', 2)
             for _ in self.options['backends'].strip().split()
@@ -259,6 +276,16 @@ class ConfigureRecipe(object):
         config['cookiewhitelist'] = [
             _.strip() for _ in self.options['cookie-whitelist'].split()
         ]
+        config['cookiepass'] = []
+        for line in self.options['cookie-pass'].split():
+            line = line.strip()
+            match = COOKIE_PASS_RE.match(line)
+            mg = match.group()
+            if not mg and len(mg) != 2:
+                continue
+            config['cookiepass'].append(
+                dict(zip(('match', 'exclude'), mg))
+            )
 
         # inject custom vcl
         config['custom'] = {}
@@ -281,6 +308,8 @@ class ConfigureRecipe(object):
             segment = segment.strip()
             if segment:
                 config['purgehosts'].add(segment)
+
+        config['verbose'] = self.options['verbose-headers'] == 'on'
 
         vclgenerator = VclGenerator(config)
         filedata = vclgenerator()

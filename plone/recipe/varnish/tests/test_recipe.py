@@ -10,7 +10,11 @@ import subprocess
 import sys
 import unittest
 
-FLAGS = (doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+FLAGS = (
+    doctest.ELLIPSIS |
+    doctest.NORMALIZE_WHITESPACE |
+    doctest.REPORT_ONLY_FIRST_FAILURE
+)
 
 ## FIXME - check for other platforms
 MUST_CLOSE_FDS = not sys.platform.startswith('win')
@@ -42,13 +46,14 @@ def exec_system(command, input='', with_exit_code=False):
 
 def setUp(test):
     buildoutSetUp(test)
-    install_develop('plone.recipe.varnish', test)
     install('zc.recipe.cmmi', test)
     install('jinja2', test)
     install('markupsafe', test)
+    install_develop('plone.recipe.varnish', test)
 
 
 def tearDown(test):
+
     buildoutTearDown(test)
     sample_buildout = test.globs['sample_buildout']
     shutil.rmtree(sample_buildout, ignore_errors=True)

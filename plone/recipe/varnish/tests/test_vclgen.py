@@ -4,7 +4,11 @@ from pprint import pprint
 import doctest
 import unittest
 
-FLAGS = (doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
+FLAGS = (
+    doctest.ELLIPSIS |
+    doctest.NORMALIZE_WHITESPACE |
+    doctest.REPORT_ONLY_FIRST_FAILURE
+)
 
 
 def test_suite():

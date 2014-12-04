@@ -13,7 +13,7 @@ jinja2env = Environment(
     lstrip_blocks=True
 )
 TEMPLATES_BY_MAJORVERSION = {
-    4: jinja2env.get_template('varnish4.vcl.jinja2'),
+    '4': jinja2env.get_template('varnish4.vcl.jinja2'),
 }
 
 DIRECTOR_TYPES = [
@@ -26,12 +26,15 @@ class VclGenerator(object):
 
     def __init__(self, cfg):
 
-        if cfg.get('major_version', None) not in TEMPLATES_BY_MAJORVERSION:
+        major = cfg.get('version', None)
+        if major not in TEMPLATES_BY_MAJORVERSION:
             self._log_and_raise(
-                'Varnish version must be one of {0}. '
+                'Varnish version must be one out of {0}. Got: {1}. '
                 'Use an older version of this recipe to support older '
                 'Varnish. Newer versions than listed here are not '
-                'supported.'.format(str(TEMPLATES_BY_MAJORVERSION.keys()))
+                'supported.'.format(
+                    str(TEMPLATES_BY_MAJORVERSION.keys()), major
+                )
             )
         self.cfg = cfg
 
@@ -124,7 +127,7 @@ class VclGenerator(object):
                         vhm['proto'],
                         backend['url'],
                         vhm['external_port'],
-                        vhm['location'],
+                        vhm['location'].lstrip('/'),
                     )
                 )
             vhosting_configured.add(backend['url'])
@@ -138,13 +141,14 @@ class VclGenerator(object):
 
     def __call__(self):
         data = {}
-        data['version'] = self.cfg['major_version']
+        data['version'] = self.cfg['version']
         data['backends'] = self.cfg['backends']
         data['directors'] = self._directors()
         data['vhosting'] = self._vhostings(data['directors'])
         data['purgehosts'] = self._purgehosts()
         data['custom'] = self.cfg['custom']
         data['cookiewhitelist'] = self.cfg['cookiewhitelist']
+        data['cookiepass'] = self.cfg['cookiepass']
         # render vcl file
         template = TEMPLATES_BY_MAJORVERSION[data['version']]
         return template.render(**data)
