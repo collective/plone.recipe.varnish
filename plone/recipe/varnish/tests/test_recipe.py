@@ -65,7 +65,7 @@ def test_suite():
             'recipe.rst',
             optionflags=FLAGS,
             setUp=setUp,
-            tearDown=buildoutTearDown,
+            tearDown=tearDown,
             globs={'interact': interact, 'exec_system': exec_system},
         )
     ]

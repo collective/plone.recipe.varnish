@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
+from plone.recipe.varnish.vclgen import VclGenerator
+from zc.recipe.cmmi import Recipe as CMMIRecipe
+from zc.recipe.cmmi import system
 import logging
 import os
 import re
 import zc.buildout
-from .vclgen import VclGenerator
 
-DOWNLOAD_URLS = {
-    '4': 'https://repo.varnish-cache.org/source/varnish-4.0.0.tar.gz',
+DEFAULT_DOWNLOAD_URLS = {
+    '4': 'https://repo.varnish-cache.org/source/varnish-4.0.2.tar.gz',
 }
+DEFAULT_VERSION = '4'
 
 CONFIG_EXCLUDES = set(
     [
@@ -48,10 +51,10 @@ class ConfigureRecipe(object):
 
         # Expose the download url of a known-good Varnish release
         # Set some default options
-        self.options.setdefault('varnish_version', '4')
+        self.options.setdefault('varnish_version', DEFAULT_VERSION)
 
-        if self.options['varnish_version'] in DOWNLOAD_URLS:
-            url = DOWNLOAD_URLS[self.options['varnish_version']]
+        if self.options['varnish_version'] in DEFAULT_DOWNLOAD_URLS:
+            url = DEFAULT_DOWNLOAD_URLS[self.options['varnish_version']]
         else:
             self._log_and_raise(
                 'Varnish {0} is not supported.'.format(
@@ -122,7 +125,7 @@ class ConfigureRecipe(object):
 
         self.addVarnishRunner()
         if self.options['generate_config'] == 'true':
-            self.createVarnishConfig()
+            self.create_varnish_configuration()
 
         return self.options.created()
 
@@ -259,7 +262,7 @@ class ConfigureRecipe(object):
             result.append(record)
         return result
 
-    def createVarnishConfig(self):
+    def create_varnish_configuration(self):
         major_version = self.options['varnish_version']
         config = {}
         config['version'] = major_version
@@ -279,14 +282,15 @@ class ConfigureRecipe(object):
         config['cookiepass'] = []
         for line in self.options['cookie-pass'].split():
             line = line.strip()
+            if not line:
+                continue
             match = COOKIE_PASS_RE.match(line)
-            mg = match.group()
+            mg = match.groups()
             if not mg and len(mg) != 2:
                 continue
             config['cookiepass'].append(
                 dict(zip(('match', 'exclude'), mg))
             )
-
         # inject custom vcl
         config['custom'] = {}
         for name in ('vcl_recv', 'vcl_hit', 'vcl_miss', 'vcl_fetch',
@@ -316,3 +320,53 @@ class ConfigureRecipe(object):
         with open(self.options['config'], 'wt') as fio:
             fio.write(filedata)
         self.options.created(self.options['config'])
+
+
+class BuildRecipe(CMMIRecipe):
+
+    def __init__(self, buildout, name, options):
+        options.setdefault('varnish_version', DEFAULT_VERSION)
+        if not options['varnish_version'] in DEFAULT_DOWNLOAD_URLS:
+            self._log_and_raise(
+                'Varnish {0} is not supported.'.format(
+                    self.options['varnish_version']
+                )
+            )
+        url = DEFAULT_DOWNLOAD_URLS[options.get('varnish_version')]
+        options.setdefault('url', url)
+        super(BuildRecipe, self).__init__(buildout, name, options)
+        self.options.setdefault('jobs', '4')
+        self.options['daemon'] = os.path.join(
+            self.options['location'],
+            'sbin',
+            'varnishd'
+        )
+
+    def cmmi(self, dest):
+        """Do the 'configure; make; make install' command sequence.
+
+        When this is called, the current working directory is the
+        source directory.  The 'dest' parameter specifies the
+        installation prefix.
+
+        This is overidden in order to make enable parallel jobs in make.
+        """
+        options = self.configure_options
+        if options is None:
+            options = '--prefix="%s"' % dest
+        if self.extra_options:
+            options += ' %s' % self.extra_options
+
+        # C
+        system("%s %s" % (self.configure_cmd, options))
+
+        # M
+        base_make = 'make'
+        if int(self.options.get('jobs')) > 1:
+            base_make += ' -j {0}'.format(self.options.get('jobs'))
+        system(base_make)
+
+        # MI
+        system("make install")
+
+        # future task: integrate vmods

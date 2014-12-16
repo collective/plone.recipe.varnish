@@ -44,16 +44,17 @@ setup(name='plone.recipe.varnish',
           'jinja2',
           'setuptools',
           'zc.buildout',
+          'zc.recipe.cmmi',
       ],
       extras_require = dict(
-          test=['zc.recipe.cmmi', 'interlude', 'ipdb']
+          test=['interlude', 'ipdb']
       ),
       tests_require=['pytest'],
       cmdclass = {'test': PyTest},
       entry_points={
           "zc.buildout": [
               "default = plone.recipe.varnish.recipe:ConfigureRecipe",
-              "instance = plone.recipe.varnish.recipe:ConfigureRecipe",
+              "build = plone.recipe.varnish.recipe:BuildRecipe",
               ],
       },
       )
