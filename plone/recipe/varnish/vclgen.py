@@ -26,16 +26,16 @@ class VclGenerator(object):
 
     def __init__(self, cfg):
 
-        #major = cfg.get('version', None)
-        #if major not in TEMPLATES_BY_MAJORVERSION:
-        #    self._log_and_raise(
-        #        'Varnish version must be one out of {0}. Got: {1}. '
-        #        'Use an older version of this recipe to support older '
-        #        'Varnish. Newer versions than listed here are not '
-        #        'supported.'.format(
-        #            str(TEMPLATES_BY_MAJORVERSION.keys()), major
-        #        )
-        #    )
+        major = cfg.get('version', None)
+        if major not in TEMPLATES_BY_MAJORVERSION:
+           self._log_and_raise(
+               'Varnish version must be one out of {0}. Got: {1}. '
+               'Use an older version of this recipe to support older '
+               'Varnish. Newer versions than listed here are not '
+               'supported.'.format(
+                   str(TEMPLATES_BY_MAJORVERSION.keys()), major
+               )
+           )
         self.cfg = cfg
 
     def _log_and_raise(self, message):

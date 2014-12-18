@@ -12,19 +12,17 @@ Initialization checks
 Check init fails on wrong version::
 
     >>> config = {
-    ...     'major_version': 3
+    ...     'version': '3'
     ... }
     >>> VclGenerator(config)
     Traceback (most recent call last):
     ...
-    UserError: Varnish version must be one of [4]. Use an older version of
-    this recipe to support older Varnish. Newer versions than listed here are
-    not supported.
+    UserError: Varnish version must be one out of ['4']. Got: 3. Use an older version of this recipe to support older Varnish. Newer versions than listed here are not supported.
 
 Correct version::
 
     >>> config = {
-    ...     'major_version': 4
+    ...     'version': '4'
     ... }
     >>> VclGenerator(config)
     <plone.recipe.varnish.vclgen.VclGenerator object at 0x...>
@@ -77,7 +75,7 @@ VHostings
 Basic check::
 
     >>> config = {
-    ...     'major_version': 4,
+    ...     'version': '4',
     ...     'backends': [],
     ...     'zope2_vhm_map': {},
     ...     'custom': '',
