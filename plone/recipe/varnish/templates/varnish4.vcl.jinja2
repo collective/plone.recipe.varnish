@@ -296,7 +296,7 @@ sub vcl_backend_response {
     }
 
     # TODO this one is very plone specific and should be removed, not sure if its needed any more
-    if (bereq.url ~ "createObject") {
+    if (bereq.url ~ "(createObject|@@captcha)") {
         set beresp.uncacheable = true;
         return(deliver);
     }
@@ -315,6 +315,16 @@ sub vcl_deliver {
     } else {
         set resp.http.X-Cache = "MISS";
     }
+    /* Rewrite s-maxage to exclude from intermediary proxies
+      (to cache *everywhere*, just use 'max-age' token in the response to avoid
+      this override) */
+    if (beresp.http.Cache-Control ~ "s-maxage") {
+        set beresp.http.Cache-Control = regsub(beresp.http.Cache-Control, "s-maxage=[0-9]+", "s-maxage=0");
+    }
+    /* Remove proxy-revalidate for intermediary proxies */
+    if (beresp.http.Cache-Control ~ ", proxy-revalidate") {
+        set beresp.http.Cache-Control = regsub(beresp.http.Cache-Control, ", proxy-revalidate", "");
+    }
     {{custom[vcl_deliver]}}
 }
 
@@ -330,7 +340,7 @@ sub vcl_synth {
         <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
         <html>
           <head>
-            <title>"} + resp.status + " " + resp.reason + {"</title>
+            <title>Varnish cache server: "} + resp.status + " " + resp.reason + {" </title>
           </head>
           <body>
             <h1>Error "} + resp.status + " " + resp.reason + {"</h1>

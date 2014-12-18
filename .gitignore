@@ -17,3 +17,10 @@
 /local/
 /parts/
 /var/
+/selfcheck/bin/
+/selfcheck/parts/
+/selfcheck/lib/
+/selfcheck/local/
+/selfcheck/include/
+/selfcheck/develop-eggs/
+/selfcheck/.*

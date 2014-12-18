@@ -37,68 +37,31 @@ COOKIE_PASS_DEFAULT = """\
 COOKIE_PASS_RE = re.compile('"(.*)":"(.*)"')
 
 
-class ConfigureRecipe(object):
+class BaseRecipe(object):
 
     def __init__(self, buildout, name, options):
         self.name = name
         self.options = options
         self.buildout = buildout
         self.logger = logging.getLogger(self.name)
-        self.options.setdefault(
-            'location',
-            os.path.join(buildout['buildout']['parts-directory'], self.name)
-        )
 
-        # Expose the download url of a known-good Varnish release
-        # Set some default options
-        self.options.setdefault('varnish_version', DEFAULT_VERSION)
-
-        if self.options['varnish_version'] in DEFAULT_DOWNLOAD_URLS:
-            url = DEFAULT_DOWNLOAD_URLS[self.options['varnish_version']]
-        else:
+    def _version_check(self):
+        """check if version is supported
+        """
+        if self.options['varnish_version'] not in DEFAULT_DOWNLOAD_URLS:
             self._log_and_raise(
                 'Varnish {0} is not supported.'.format(
                     self.options['varnish_version']
                 )
             )
 
-        self.options.setdefault('download-url', url)
-        self.options.setdefault('bind', '127.0.0.1:8000')
-        self.daemon = self.options['daemon']
-        self.options.setdefault('cache-type', 'file')
-        self.options.setdefault(
-            'cache-location',
-            os.path.join(self.options['location'], 'storage')
-        )
+    def _log_and_raise(self, message):
+        """log error first and then raise buildout Exception
+        """
+        self.logger.error(message)
+        raise zc.buildout.UserError(message)
 
-        self.options.setdefault('cache-size', '256M')
-        self.options.setdefault('runtime-parameters', '')
-
-        if 'config' in self.options:
-            if set(self.options.keys()).intersection(CONFIG_EXCLUDES):
-                msg = ('When config= option is specified the following '
-                       'options cant be used: ')
-                msg += ' '.join(CONFIG_EXCLUDES)
-                self.logger.error(msg)
-                raise zc.buildout.UserError(msg)
-            self.options['generate_config'] = 'false'
-        else:
-            self.options['generate_config'] = 'true'
-            self.options.setdefault('verbose-headers', 'off')
-            self.options.setdefault('saint-mode', 'off')
-            self.options.setdefault('balancer', 'none')
-            self.options.setdefault('backends', '127.0.0.1:8080')
-            self.options['config'] = os.path.join(self.options['location'],
-                                                  'varnish.vcl')
-
-        self.options.setdefault('connect-timeout', '0.4s')
-        self.options.setdefault('first-byte-timeout', '300s')
-        self.options.setdefault('between-bytes-timeout', '60s')
-        self.options.setdefault('purge-hosts', '')
-        self.options.setdefault('cookie-pass', COOKIE_PASS_DEFAULT)
-        self.options.setdefault('cookie-whitelist', COOKIE_WHITELIST_DEFAULT)
-
-        # Test for valid bind value
+    def _process_bind(self):
         self.options['bind'] = self.options.get('bind').lstrip(':')
         bind = self.options['bind'].split(':')
         if len(bind) == 1 and bind[0].isdigit():
@@ -109,70 +72,109 @@ class ConfigureRecipe(object):
             self.options['bind-host'] = bind[0]
             self.options['bind-port'] = bind[1]
         else:
-            self.logger.error('Invalid syntax for bind')
-            raise zc.buildout.UserError('Invalid syntax for bind')
+            self._log_and_raise('Invalid syntax for bind')
 
-    def _log_and_raise(self, message):
-        self.logger.error(message)
-        raise zc.buildout.UserError(message)
+    def get_from_section(self, part, key, default):
+        if part not in self.buildout:
+            return default
+        if key not in self.buildout[part]:
+            return default
+        return self.buildout[part][key]
 
     def install(self):
-        location = self.options['location']
-
-        if not os.path.exists(location):
-            os.mkdir(location)
-        self.options.created(location)
-
-        self.addVarnishRunner()
-        if self.options['generate_config'] == 'true':
-            self.create_varnish_configuration()
-
-        return self.options.created()
+        pass
 
     def update(self):
         pass
 
-    def addVarnishRunner(self):
-        target = os.path.join(
-            self.buildout['buildout']['bin-directory'],
-            self.name
-        )
-        parameters = self.options['runtime-parameters'].strip().split()
 
-        with open(target, 'wt') as tf:
-            # XXX TODO: make this a template
-            print >>tf, '#!/bin/sh'
-            print >>tf, 'exec %s \\' % self.daemon
-            if 'user' in self.options:
-                print >>tf, '    -p user=%s \\' % self.options['user']
-            if 'group' in self.options:
-                print >>tf, '    -p group=%s \\' % self.options['group']
-            print >>tf, '    -f "%s" \\' % self.options['config']
-            print >>tf, '    -P "%s" \\' % \
-                os.path.join(self.options['location'], 'varnish.pid')
-            print >>tf, '    -a %s \\' % self.options['bind']
-            if self.options.get('telnet', None):
-                print >>tf, '    -T %s \\' % self.options['telnet']
-            if self.options['cache-type'] == 'malloc':
-                print >>tf, '    -s %s,%s \\' % (
-                    self.options['cache-type'],
-                    self.options['cache-size']
-                )
-            else:
-                print >>tf, '    -s %s,"%s",%s \\' % (
-                    self.options['cache-type'],
-                    self.options['cache-location'],
-                    self.options['cache-size']
-                )
-            if self.options.get('mode', 'daemon') == 'foreground':
-                print >>tf, '    -F \\'
-            if self.options.get('name', None):
-                print >>tf, '    -n %s \\' % self.options['name']
-            for parameter in parameters:
-                print >>tf, '    -p %s \\' % (parameter)
-            print >>tf, '    "$@"'
-        os.chmod(target, 0755)
-        self.options.created(target)
+class BuildRecipe(CMMIRecipe, BaseRecipe):
+
+    def __init__(self, buildout, name, options):
+        BaseRecipe.__init__(self, buildout, name, options)
+        self.options.setdefault('varnish_version', DEFAULT_VERSION)
+        self._version_check()
+        self.options.setdefault(
+            'url',
+            DEFAULT_DOWNLOAD_URLS[options.get('varnish_version')]
+        )
+        self.options.setdefault('jobs', '4')
+        CMMIRecipe.__init__(self, buildout, name, self.options)
+
+    def cmmi(self, dest):
+        """Do the 'configure; make; make install' command sequence.
+
+        When this is called, the current working directory is the
+        source directory.  The 'dest' parameter specifies the
+        installation prefix.
+
+        This is overidden in order to enable parallel jobs in make.
+        """
+        options = self.configure_options
+        if options is None:
+            options = '--prefix="%s"' % dest
+        if self.extra_options:
+            options += ' %s' % self.extra_options
+
+        # C
+        system("%s %s" % (self.configure_cmd, options))
+
+        # M
+        base_make = 'make'
+        if int(self.options.get('jobs')) > 1:
+            base_make += ' -j {0}'.format(self.options.get('jobs'))
+        system(base_make)
+
+        # MI
+        system("make install")
+
+        # TODO: future task: integrate vmods
+
+        # set daemon location
+        self.options['daemon'] = os.path.join(
+            self.options['location'],
+            'sbin',
+            'varnishd'
+        )
+
+
+class ConfigureRecipe(BaseRecipe):
+
+    def __init__(self, buildout, name, options):
+        super(ConfigureRecipe, self).__init__(buildout, name, options)
+
+        self.options.setdefault('build-part', 'varnish-build')
+        self.options.setdefault(
+            'varnish_version',
+            self.get_from_section(
+                self.options['build-part'],
+                'varnish_version',
+                DEFAULT_VERSION
+            )
+        )
+        self._version_check()
+
+        self.options.setdefault(
+            'location',
+            os.path.join(buildout['buildout']['parts-directory'], self.name)
+        )
+        self.options.setdefault('verbose-headers', 'off')
+        self.options.setdefault('saint-mode', 'off')
+        self.options.setdefault('balancer', 'none')
+        self.options.setdefault('backends', '127.0.0.1:8080')
+        self.options.setdefault(
+            'config-file',
+            os.path.join(self.options['location'], 'varnish.vcl')
+        )
+        self.options.setdefault('connect-timeout', '0.4s')
+        self.options.setdefault('first-byte-timeout', '300s')
+        self.options.setdefault('between-bytes-timeout', '60s')
+        self.options.setdefault('purge-hosts', '')
+        self.options.setdefault('cookie-pass', COOKIE_PASS_DEFAULT)
+        self.options.setdefault('cookie-whitelist', COOKIE_WHITELIST_DEFAULT)
+        # set and test for valid bind value
+        self.options.setdefault('bind', '127.0.0.1:8000')
+        self._process_bind()
 
     def _process_backends(self):
         result = []
@@ -262,6 +264,18 @@ class ConfigureRecipe(object):
             result.append(record)
         return result
 
+    def install(self):
+        if 'configuration-file' not in self.options:
+            if not os.path.exists(self.options['location']):
+                os.mkdir(self.options['location'])
+                self.options.created(self.options['location'])
+            self.options['configuration-file'] = os.path.join(
+                self.options['location'],
+                'varnish.vcl'
+            )
+        self.create_varnish_configuration()
+        return self.options.created()
+
     def create_varnish_configuration(self):
         major_version = self.options['varnish_version']
         config = {}
@@ -317,56 +331,110 @@ class ConfigureRecipe(object):
 
         vclgenerator = VclGenerator(config)
         filedata = vclgenerator()
-        with open(self.options['config'], 'wt') as fio:
+        with open(self.options['configuration-file'], 'wt') as fio:
             fio.write(filedata)
-        self.options.created(self.options['config'])
+        self.options.created(self.options['configuration-file'])
 
 
-class BuildRecipe(CMMIRecipe):
+class ScriptRecipe(BaseRecipe):
 
     def __init__(self, buildout, name, options):
-        options.setdefault('varnish_version', DEFAULT_VERSION)
-        if not options['varnish_version'] in DEFAULT_DOWNLOAD_URLS:
-            self._log_and_raise(
-                'Varnish {0} is not supported.'.format(
-                    self.options['varnish_version']
-                )
+        super(ScriptRecipe, self).__init__(buildout, name, options)
+
+        self.options.setdefault('build-part', 'varnish-build')
+        self.options.setdefault('configuration-part', 'varnish-configuration')
+
+        self.options.setdefault(
+            'daemon',
+            self.get_from_section(
+                self.options['build-part'],
+                'daemon',
+                '/usr/sbin/varnishd'
             )
-        url = DEFAULT_DOWNLOAD_URLS[options.get('varnish_version')]
-        options.setdefault('url', url)
-        super(BuildRecipe, self).__init__(buildout, name, options)
-        self.options.setdefault('jobs', '4')
-        self.options['daemon'] = os.path.join(
-            self.options['location'],
-            'sbin',
-            'varnishd'
         )
 
-    def cmmi(self, dest):
-        """Do the 'configure; make; make install' command sequence.
+        self.options.setdefault(
+            'bind',
+            self.get_from_section(
+                self.options['configuration-part'],
+                'bind',
+                '127.0.0.1:8000'
+            )
+        )
+        self.options.setdefault(
+            'configuration-file',
+            self.get_from_section(
+                self.options['configuration-part'],
+                'config-file',
+                ''
+            )
+        )
+        if not self.options['configuration-file']:
+            self._log_and_raise('No configuration file found')
+        self._process_bind()
 
-        When this is called, the current working directory is the
-        source directory.  The 'dest' parameter specifies the
-        installation prefix.
+        self.options.setdefault(
+            'location',
+            os.path.join(buildout['buildout']['parts-directory'], self.name)
+        )
+        self.options.setdefault('cache-type', 'file')
+        self.options.setdefault('cache-size', '256M')
+        self.options.setdefault('runtime-parameters', '')
 
-        This is overidden in order to make enable parallel jobs in make.
-        """
-        options = self.configure_options
-        if options is None:
-            options = '--prefix="%s"' % dest
-        if self.extra_options:
-            options += ' %s' % self.extra_options
+    def install(self):
+        if 'cache-location' not in self.options:
+            if not os.path.exists(self.options['location']):
+                os.mkdir(self.options['location'])
+                self.options.created(self.options['location'])
+            self.options['cache-location'] = os.path.join(
+                self.options['location'],
+                'storage'
+            )
+            if not os.path.exists(self.options['cache-location']):
+                os.mkdir(self.options['cache-location'])
+                self.options.created(self.options['cache-location'])
 
-        # C
-        system("%s %s" % (self.configure_cmd, options))
+        self.create_varnish_script()
+        return self.options.created()
 
-        # M
-        base_make = 'make'
-        if int(self.options.get('jobs')) > 1:
-            base_make += ' -j {0}'.format(self.options.get('jobs'))
-        system(base_make)
+    def create_varnish_script(self):
+        target = os.path.join(
+            self.buildout['buildout']['bin-directory'],
+            self.name
+        )
+        parameters = self.options['runtime-parameters'].strip().split()
 
-        # MI
-        system("make install")
-
-        # future task: integrate vmods
+        with open(target, 'wt') as tf:
+            # XXX TODO: refactor me! make this a template.
+            print >>tf, '#!/bin/sh'
+            print >>tf, 'exec %s \\' % self.options['daemon']
+            if 'user' in self.options:
+                print >>tf, '    -p user=%s \\' % self.options['user']
+            if 'group' in self.options:
+                print >>tf, '    -p group=%s \\' % self.options['group']
+            print >>tf, '    -f "%s" \\' % self.options['configuration-file']
+            print >>tf, '    -P "%s" \\' % \
+                os.path.join(self.options['location'], 'varnish.pid')
+            print >>tf, '    -a %s \\' % self.options['bind']
+            if self.options.get('telnet', None):
+                print >>tf, '    -T %s \\' % self.options['telnet']
+            if self.options['cache-type'] == 'malloc':
+                print >>tf, '    -s %s,%s \\' % (
+                    self.options['cache-type'],
+                    self.options['cache-size']
+                )
+            else:
+                print >>tf, '    -s %s,"%s",%s \\' % (
+                    self.options['cache-type'],
+                    self.options['cache-location'],
+                    self.options['cache-size']
+                )
+            if self.options.get('mode', 'daemon') == 'foreground':
+                print >>tf, '    -F \\'
+            if self.options.get('name', None):
+                print >>tf, '    -n %s \\' % self.options['name']
+            for parameter in parameters:
+                print >>tf, '    -p %s \\' % (parameter)
+            print >>tf, '    "$@"'
+        os.chmod(target, 0755)
+        self.options.created(target)

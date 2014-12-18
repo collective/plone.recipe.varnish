@@ -10,11 +10,10 @@ import subprocess
 import sys
 import unittest
 
-FLAGS = (
-    doctest.ELLIPSIS |
-    doctest.NORMALIZE_WHITESPACE |
+FLAGS = \
+    doctest.ELLIPSIS | \
+    doctest.NORMALIZE_WHITESPACE | \
     doctest.REPORT_ONLY_FIRST_FAILURE
-)
 
 ## FIXME - check for other platforms
 MUST_CLOSE_FDS = not sys.platform.startswith('win')

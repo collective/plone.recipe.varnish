@@ -27,7 +27,6 @@ Let's create a minimum buildout that uses the current plone.recipe.varnish::
     ... recipe = plone.recipe.varnish
     ... daemon = ${varnish-build:location}/sbin/varnishd
     ... backends = 127.0.0.1:8080
-    ... generate_config = false
     ... '''
     >>> write('buildout.cfg', simplest % globals())
 

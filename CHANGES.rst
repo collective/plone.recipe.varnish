@@ -4,13 +4,15 @@ Changelog
 2.0 (unreleased)
 ----------------
 
-- cleanup of the whole vcl generation:
+- refactoring and cleanup of the whole recipe and vcl generation:
 
   - skip support of varnish < v4.0, use 1.x series for older varnish support.
   - do not generate vcl code in python
   - use jinja2 templates for vcl
   - refactor vcl generation out in own testable class
   - change fixup cookies into a cookie whitelist
+  - split up recipe in 3 parts: build, configuration generation and script 
+    generation.
 
   [jensens]
 
