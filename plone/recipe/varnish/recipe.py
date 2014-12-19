@@ -179,7 +179,7 @@ class ConfigureRecipe(BaseRecipe):
     def _process_backends(self):
         result = []
         raw_backends = [
-            _.rsplit(':', 2)
+            _.rsplit(':', 3)
             for _ in self.options['backends'].strip().split()
         ]
         # consistency checks
@@ -196,7 +196,7 @@ class ConfigureRecipe(BaseRecipe):
 
             }
             try:
-                if len(backend) == 3:
+                if len(raw_backend) == 3:
                     url, host, port = raw_backend
                 else:
                     host, port = raw_backend
@@ -316,7 +316,7 @@ class ConfigureRecipe(BaseRecipe):
             self.options['balancer'].strip(),
             config['backends']
         )
-        config['zope2_vhm_maps'] = self._process_zope_vhm_map(
+        config['zope2_vhm_map'] = self._process_zope_vhm_map(
             config['backends']
         )
 

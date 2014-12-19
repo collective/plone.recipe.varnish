@@ -18,7 +18,7 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 
-version = '2.0.alpha1.dev0'
+version = '2.0.a1.dev0'
 
 setup(
     name='plone.recipe.varnish',
@@ -46,7 +46,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'jinja2',
+        'jinja2>=2.7.3',
         'setuptools',
         'zc.buildout',
         'zc.recipe.cmmi',
