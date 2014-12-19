@@ -276,6 +276,9 @@ class ConfigureRecipe(BaseRecipe):
         self.create_varnish_configuration()
         return self.options.created()
 
+    def update(self):
+        self.install()
+
     def create_varnish_configuration(self):
         major_version = self.options['varnish_version']
         config = {}
@@ -319,6 +322,7 @@ class ConfigureRecipe(BaseRecipe):
         config['zope2_vhm_map'] = self._process_zope_vhm_map(
             config['backends']
         )
+        config['code404page'] = True
 
         # build the purge host string
         config['purgehosts'] = set([])

@@ -67,7 +67,7 @@ sub vcl_recv {
     {% endfor %}
     {% if loop.last %}{% if code404page %}
     } else {
-        error 404 "Unknown virtual host";
+        return (synth(404, "Unknown virtual host."));
     {% endif %}
     }
     {% endif %}
