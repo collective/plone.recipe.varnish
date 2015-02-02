@@ -318,12 +318,12 @@ sub vcl_deliver {
     /* Rewrite s-maxage to exclude from intermediary proxies
       (to cache *everywhere*, just use 'max-age' token in the response to avoid
       this override) */
-    if (beresp.http.Cache-Control ~ "s-maxage") {
-        set beresp.http.Cache-Control = regsub(beresp.http.Cache-Control, "s-maxage=[0-9]+", "s-maxage=0");
+    if (resp.http.Cache-Control ~ "s-maxage") {
+        set resp.http.Cache-Control = regsub(resp.http.Cache-Control, "s-maxage=[0-9]+", "s-maxage=0");
     }
     /* Remove proxy-revalidate for intermediary proxies */
-    if (beresp.http.Cache-Control ~ ", proxy-revalidate") {
-        set beresp.http.Cache-Control = regsub(beresp.http.Cache-Control, ", proxy-revalidate", "");
+    if (resp.http.Cache-Control ~ ", proxy-revalidate") {
+        set resp.http.Cache-Control = regsub(resp.http.Cache-Control, ", proxy-revalidate", "");
     }
     {{custom[vcl_deliver]}}
 }
