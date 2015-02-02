@@ -136,7 +136,7 @@ sub vcl_recv {
     if (req.http.Cookie && req.http.Cookie ~ "{{rule['match']}}") {
         if (req.url ~ "{{rule['exclude']}}") {
             unset req.http.cookie;
-            return(lookup);
+            return(pipe);
         }
         return(pass);
     }
