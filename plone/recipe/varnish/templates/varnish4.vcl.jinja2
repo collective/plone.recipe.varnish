@@ -258,33 +258,45 @@ sub vcl_backend_fetch{
 }
 
 sub vcl_backend_response {
-    {{custom[vcl_deliver]}}
+    {{custom[vcl_backend_response]}}
 
-    # Varnish determined the object was not cacheable
-    if (beresp.ttl <= 0s) {
-        set beresp.http.X-Cacheable = "NO:Not Cacheable";
-    # You are respecting the Cache-Control=private header from the backend
+    # The object is not cacheable
+    if (beresp.http.Set-Cookie) {
+        set beresp.http.X-Cacheable = "NO - Set Cookie";
+        set beresp.ttl = 0s;
+        set beresp.uncacheable = true;
     } elsif (beresp.http.Cache-Control ~ "private") {
-        set beresp.http.X-Cacheable = "NO:Cache-Control=private";
+        set beresp.http.X-Cacheable = "NO - Cache-Control=private";
         set beresp.uncacheable = true;
         set beresp.ttl = 120s;
+    } elsif (beresp.http.Surrogate-control ~ "no-store") {
+        set beresp.http.X-Cacheable = "NO - Surrogate-control=no-store";
+        set beresp.uncacheable = true;
+        set beresp.ttl = 120s;
+    } elsif (!beresp.http.Surrogate-Control && beresp.http.Cache-Control ~ "no-cache|no-store") {
+        set beresp.http.X-Cacheable = "NO - Cache-Control=no-cache|no-store";
+        set beresp.uncacheable = true;
+        set beresp.ttl = 120s;
+    } elsif (beresp.http.Vary == "*") {
+        set beresp.http.X-Cacheable = "NO - Vary=*";
+        set beresp.uncacheable = true;
+        set beresp.ttl = 120s;
+
+
+    # ttl handling
+    } elsif (beresp.ttl < 0s) {
+        set beresp.http.X-Cacheable = "NO - TTL < 0";
+        set beresp.uncacheable = true;
+    } elsif (beresp.ttl == 0s) {
+        set beresp.http.X-Cacheable = "NO - TTL = 0";
+        set beresp.uncacheable = true;
+
     # Varnish determined the object was cacheable
     } else {
         set beresp.http.X-Cacheable = "YES";
     }
 
-    # Grace in the scope of Varnish means delivering otherwise expired objects
-    # when circumstances call for it.
-
-    if (beresp.ttl <= 0s
-        || beresp.http.Set-Cookie
-        || beresp.http.Surrogate-control ~ "no-store"
-        || (!beresp.http.Surrogate-Control && beresp.http.Cache-Control ~ "no-cache|no-store|private")
-        || beresp.http.Vary == "*") {
-            /* * Mark as "Hit-For-Pass" for the next 2 minutes */
-            set beresp.ttl = 120s;
-            set beresp.uncacheable = true;
-    }
+    # Do not cache 5xx errors
     if (beresp.status >= 500 && beresp.status < 600) {
         unset beresp.http.Cache-Control;
         set beresp.http.X-Cache = "NOCACHE";
