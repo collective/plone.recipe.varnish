@@ -161,7 +161,7 @@ sub vcl_recv {
     # Large static files should be piped, so they are delivered directly to the end-user without
     # waiting for Varnish to fully read the file first.
 
-    # TODO: make this configureable. better use Content-Type and/or size here.
+    # TODO: make this configureable.
 
     if (req.url ~ "^[^?]*\.(mp3,mp4|rar|tar|tgz|gz|wav|zip)(\?.*)?$") {
         return(pipe);
