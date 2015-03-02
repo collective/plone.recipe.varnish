@@ -1,8 +1,8 @@
 Changelog
 =========
 
-2.0 (unreleased)
-----------------
+2.0a1 (2015-03-02)
+------------------
 
 - refactoring and cleanup of the whole recipe and vcl generation:
 
