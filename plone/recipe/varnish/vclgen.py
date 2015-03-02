@@ -149,6 +149,7 @@ class VclGenerator(object):
         data['custom'] = self.cfg['custom']
         data['cookiewhitelist'] = self.cfg['cookiewhitelist']
         data['cookiepass'] = self.cfg['cookiepass']
+        data['code404page'] = self.cfg['code404page']
         # render vcl file
         template = TEMPLATES_BY_MAJORVERSION[data['version']]
         return template.render(**data)

@@ -67,7 +67,7 @@ sub vcl_recv {
     {% endfor %}
     {% if loop.last %}{% if code404page %}
     } else {
-        error 404 "Unknown virtual host";
+        return (synth(404, "Unknown virtual host."));
     {% endif %}
     }
     {% endif %}
@@ -136,7 +136,7 @@ sub vcl_recv {
     if (req.http.Cookie && req.http.Cookie ~ "{{rule['match']}}") {
         if (req.url ~ "{{rule['exclude']}}") {
             unset req.http.cookie;
-            return(lookup);
+            return(pipe);
         }
         return(pass);
     }
@@ -258,33 +258,45 @@ sub vcl_backend_fetch{
 }
 
 sub vcl_backend_response {
-    {{custom[vcl_deliver]}}
+    {{custom[vcl_backend_response]}}
 
-    # Varnish determined the object was not cacheable
-    if (beresp.ttl <= 0s) {
-        set beresp.http.X-Cacheable = "NO:Not Cacheable";
-    # You are respecting the Cache-Control=private header from the backend
+    # The object is not cacheable
+    if (beresp.http.Set-Cookie) {
+        set beresp.http.X-Cacheable = "NO - Set Cookie";
+        set beresp.ttl = 0s;
+        set beresp.uncacheable = true;
     } elsif (beresp.http.Cache-Control ~ "private") {
-        set beresp.http.X-Cacheable = "NO:Cache-Control=private";
+        set beresp.http.X-Cacheable = "NO - Cache-Control=private";
         set beresp.uncacheable = true;
         set beresp.ttl = 120s;
+    } elsif (beresp.http.Surrogate-control ~ "no-store") {
+        set beresp.http.X-Cacheable = "NO - Surrogate-control=no-store";
+        set beresp.uncacheable = true;
+        set beresp.ttl = 120s;
+    } elsif (!beresp.http.Surrogate-Control && beresp.http.Cache-Control ~ "no-cache|no-store") {
+        set beresp.http.X-Cacheable = "NO - Cache-Control=no-cache|no-store";
+        set beresp.uncacheable = true;
+        set beresp.ttl = 120s;
+    } elsif (beresp.http.Vary == "*") {
+        set beresp.http.X-Cacheable = "NO - Vary=*";
+        set beresp.uncacheable = true;
+        set beresp.ttl = 120s;
+
+
+    # ttl handling
+    } elsif (beresp.ttl < 0s) {
+        set beresp.http.X-Cacheable = "NO - TTL < 0";
+        set beresp.uncacheable = true;
+    } elsif (beresp.ttl == 0s) {
+        set beresp.http.X-Cacheable = "NO - TTL = 0";
+        set beresp.uncacheable = true;
+
     # Varnish determined the object was cacheable
     } else {
         set beresp.http.X-Cacheable = "YES";
     }
 
-    # Grace in the scope of Varnish means delivering otherwise expired objects
-    # when circumstances call for it.
-
-    if (beresp.ttl <= 0s
-        || beresp.http.Set-Cookie
-        || beresp.http.Surrogate-control ~ "no-store"
-        || (!beresp.http.Surrogate-Control && beresp.http.Cache-Control ~ "no-cache|no-store|private")
-        || beresp.http.Vary == "*") {
-            /* * Mark as "Hit-For-Pass" for the next 2 minutes */
-            set beresp.ttl = 120s;
-            set beresp.uncacheable = true;
-    }
+    # Do not cache 5xx errors
     if (beresp.status >= 500 && beresp.status < 600) {
         unset beresp.http.Cache-Control;
         set beresp.http.X-Cache = "NOCACHE";
@@ -318,12 +330,12 @@ sub vcl_deliver {
     /* Rewrite s-maxage to exclude from intermediary proxies
       (to cache *everywhere*, just use 'max-age' token in the response to avoid
       this override) */
-    if (beresp.http.Cache-Control ~ "s-maxage") {
-        set beresp.http.Cache-Control = regsub(beresp.http.Cache-Control, "s-maxage=[0-9]+", "s-maxage=0");
+    if (resp.http.Cache-Control ~ "s-maxage") {
+        set resp.http.Cache-Control = regsub(resp.http.Cache-Control, "s-maxage=[0-9]+", "s-maxage=0");
     }
     /* Remove proxy-revalidate for intermediary proxies */
-    if (beresp.http.Cache-Control ~ ", proxy-revalidate") {
-        set beresp.http.Cache-Control = regsub(beresp.http.Cache-Control, ", proxy-revalidate", "");
+    if (resp.http.Cache-Control ~ ", proxy-revalidate") {
+        set resp.http.Cache-Control = regsub(resp.http.Cache-Control, ", proxy-revalidate", "");
     }
     {{custom[vcl_deliver]}}
 }
