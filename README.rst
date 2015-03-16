@@ -258,9 +258,10 @@ VCL Configuration Generator
     as haproxy. Defaults to 443.
 
 ``varnish_version``
-    Varnish target version. It looks vor the buildout-part given in ``build``
-    setting in this buildout-part. If it is found it takes the version number
-    from the given build part. Otherwise it defaults to ``4``.
+    Varnish target version. If not given, 
+    it looks for the ``varnish_version`` setting in the build part 
+    (see the ``build-part`` setting).
+    If not given there either, it defaults to ``4``.
 
 To test the generated configuration - for syntactics - run
 ``varnishd -C -f ./parts/varnis-configuration/varnish.vcl``.
