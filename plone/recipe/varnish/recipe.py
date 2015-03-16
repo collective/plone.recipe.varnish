@@ -12,18 +12,6 @@ DEFAULT_DOWNLOAD_URLS = {
 }
 DEFAULT_VERSION = '4'
 
-CONFIG_EXCLUDES = set(
-    [
-        'zope2_vhm_map',
-        'zope2_vhm_port',
-        'zope2_vhm_ssl',
-        'zope2_vhm_ssl_port',
-        'backends',
-        'verbose-headers',
-        'saint-mode',
-    ]
-)
-
 COOKIE_WHITELIST_DEFAULT = """\
 statusmessages
 __ac
