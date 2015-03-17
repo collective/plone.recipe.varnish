@@ -274,11 +274,13 @@ class ConfigureRecipe(BaseRecipe):
 
         # enable verbose varnish headers
         config['verbose'] = self.options['verbose-headers'] == 'on'
-        config['saint'] = self.options['saint-mode'] == 'on'
-        if config['saint'] and config['verbose']:
-            self._log_and_raise(
-                'When using saint-mode verbose headers must be off'
-            )
+
+        # Deprecated; see https://www.varnish-cache.org/forum/topic/2777
+        # config['saint'] = self.options['saint-mode'] == 'on'
+        # if config['saint'] and config['verbose']:
+        #     self._log_and_raise(
+        #         'When using saint-mode verbose headers must be off'
+        #     )
 
         config['gracehealthy'] = self.options.get('grace-healthy', None)
         config['gracesick'] = self.options.get('grace-sick', 600)
@@ -321,8 +323,6 @@ class ConfigureRecipe(BaseRecipe):
             segment = segment.strip()
             if segment:
                 config['purgehosts'].add(segment)
-
-        config['verbose'] = self.options['verbose-headers'] == 'on'
 
         vclgenerator = VclGenerator(config)
         filedata = vclgenerator()
