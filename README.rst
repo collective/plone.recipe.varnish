@@ -265,7 +265,7 @@ VCL Configuration Generator
     If not given there either, it defaults to ``4``.
 
 To test the generated configuration for syntactic correctness, run
-``varnishd -C -f ./parts/varnis-configuration/varnish.vcl``.
+``varnishd -C -f ./parts/varnish-configuration/varnish.vcl``.
 
 
 Create script to start varnish
@@ -336,9 +336,12 @@ Start varnish as a daemon or in foreground with the given settings.
     feature is disabled.
 
 ``grace-sick``
-    If the backend is sick, accept objects that are this number of seconds old.
+    If the backend is sick, accept objects that are this old.
     See also ``grace-healthy``.
-    Defaults to ``600``. Should be greater than ``grace-healthy``.
+
+    Format: number followed by a time unit: ms, s, m, h.
+
+    Defaults to ``600s``. Should be greater than ``grace-healthy``.
 
 ``group``
     The name of the group that varnish should switch to before accepting any
