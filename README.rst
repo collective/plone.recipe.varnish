@@ -319,7 +319,7 @@ Start varnish as a daemon or in foreground with the given settings.
     most common place
     where it's found on many Unix systems. Adjust it if needed.
 
-``grace-healty``
+``grace-healthy``
     Grace in the context of Varnish means delivering otherwise expired objects
     when circumstances call for it. This can happen because: 
     (1) the backend-director selected is down, or 
@@ -337,8 +337,8 @@ Start varnish as a daemon or in foreground with the given settings.
 
 ``grace-sick``
     If the backend is sick, accept objects that are this number of seconds old.
-    See also ``grace-healty``.
-    Defaults to ``600``. Should be greater than ``grace-healty``.
+    See also ``grace-healthy``.
+    Defaults to ``600``. Should be greater than ``grace-healthy``.
 
 ``group``
     The name of the group that varnish should switch to before accepting any
