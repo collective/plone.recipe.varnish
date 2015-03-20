@@ -3,9 +3,9 @@ python:
   - 2.7
 install:
   - mkdir -p buildout-cache/{eggs,downloads}
-  - python bootstrap.py -c travis.cfg
-  - bin/buildout -Nc travis.cfg annotate
-  - bin/buildout -Nc travis.cfg
+  - pip install zc.buildout
+  - buildout -Nc travis.cfg annotate
+  - buildout -Nc travis.cfg
 script:
   - bin/test
 
