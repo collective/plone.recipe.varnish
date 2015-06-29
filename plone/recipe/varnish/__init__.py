@@ -90,7 +90,7 @@ class ConfigureRecipe:
         self.buildout = buildout
         self.logger = logging.getLogger(self.name)
 
-    self.options.setdefault('location', os.path.join(
+        self.options.setdefault('location', os.path.join(
                 buildout['buildout']['parts-directory'], self.name))
 
         # Expose the download url of a known-good Varnish release
