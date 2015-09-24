@@ -16,24 +16,26 @@ Let's create a minimum buildout that uses the current plone.recipe.varnish::
 
     >>> simplest = '''
     ... [buildout]
-    ... parts = varnish-build varnish
+    ... parts = varnish-build varnish-configuration varnish
     ... find-links = %(sample_buildout)s/eggs
     ...
     ... [varnish-build]
     ... recipe = plone.recipe.varnish:build
     ... jobs = 4
     ...
-    ... [varnish]
-    ... recipe = plone.recipe.varnish
+    ... [varnish-configuration]
+    ... recipe = plone.recipe.varnish:configuration
     ... daemon = ${varnish-build:location}/sbin/varnishd
-    ... backends = 127.0.0.1:8080
-    ... '''
+    ... backends = 127.0.0.1:8081
+    ...
+    ... [varnish]
+    ... recipe = plone.recipe.varnish:script'''
     >>> write('buildout.cfg', simplest % globals())
 
 Let's run it::
 
     >>> print system(buildout_bin)
-    Installing varnish.    Installing varnish-build.
+    Installing varnish-build.
     varnish-build: Downloading ...
     varnish-build: Unpacking and configuring
     ...
