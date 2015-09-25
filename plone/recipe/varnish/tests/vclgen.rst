@@ -86,6 +86,7 @@ Basic check::
     ...     ],
     ...     'gracehealthy': '10s',
     ...     'gracesick': '1h',
+    ...     'code404page' : True,
     ... }
     >>> vg = VclGenerator(config)
     >>> vg._vhostings([])

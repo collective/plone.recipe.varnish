@@ -50,7 +50,7 @@ Check the contents of the control script are correct::
     >>> print open(varnish_bin).read()
     #!/bin/sh
     exec ...sample-buildout/parts/varnish-build/sbin/varnishd \
-        -f "...sample-buildout/parts/varnish/varnish.vcl" \
+        -f "...sample-buildout/parts/varnish-configuration/varnish.vcl" \
         -P "...sample-buildout/parts/varnish/varnish.pid" \
         -a 127.0.0.1:8000 \
         -s file,"...sample-buildout/parts/varnish/storage",256M \
@@ -60,7 +60,8 @@ Check the contents of the control script are correct::
 Check the config is syntactically correct by compiling it to C::
 
     >>> print system(varnish_bin + ' -C')
-    ...
+    /* ---===### include/vcl.h ###===--- */
+    <BLANKLINE>
     /*
      * NB:  This file is machine generated, DO NOT EDIT!
      *
@@ -84,8 +85,10 @@ Let's run it::
 
     >>> print system(buildout_bin)
     Uninstalling varnish.
-    Installing varnish.
     Updating varnish-build.
+    Updating varnish-configuration.
+    Installing varnish.
+    ...
 
 Check the contents of the control script are correct::
 
@@ -111,9 +114,11 @@ Let's run it::
 
     >>> print system(buildout_bin)
     Uninstalling varnish.
-    Installing varnish.
     Updating varnish-build.
-
+    Updating varnish-configuration.
+    Installing varnish.
+    ...
+    
 Check the contents of the control script reflect our new options::
 
     >>> 'varnish' in os.listdir('bin')
@@ -125,7 +130,7 @@ Check the contents of the control script reflect our new options::
         -s malloc,2.71G \
     ...
 
-Test the varnish download::
+Test the varnish download with an older version::
 
     >>> varnish_4 = simplest + '''
     ... varnish_version = 4
@@ -137,8 +142,7 @@ Let's run it::
 
     >>> print system(buildout_bin)
     Uninstalling varnish.
-    Installing varnish.
     Updating varnish-build.
-
-
-
+    Updating varnish-configuration.
+    Installing varnish.
+    ...
