@@ -4,8 +4,12 @@ Changelog
 2.0a2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix daemon location of script part of the recipe (/usr/bin/varnishd was
+  always used. 
+  [fredvd]
 
+- Fix tests,  download Varnish 4.0.3 as download.
+  [fredvd]
 
 2.0a1 (2015-03-02)
 ------------------
