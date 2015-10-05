@@ -16,24 +16,26 @@ Let's create a minimum buildout that uses the current plone.recipe.varnish::
 
     >>> simplest = '''
     ... [buildout]
-    ... parts = varnish-build varnish
+    ... parts = varnish-build varnish-configuration varnish
     ... find-links = %(sample_buildout)s/eggs
     ...
     ... [varnish-build]
     ... recipe = plone.recipe.varnish:build
     ... jobs = 4
     ...
-    ... [varnish]
-    ... recipe = plone.recipe.varnish
+    ... [varnish-configuration]
+    ... recipe = plone.recipe.varnish:configuration
     ... daemon = ${varnish-build:location}/sbin/varnishd
-    ... backends = 127.0.0.1:8080
-    ... '''
+    ... backends = 127.0.0.1:8081
+    ...
+    ... [varnish]
+    ... recipe = plone.recipe.varnish:script'''
     >>> write('buildout.cfg', simplest % globals())
 
 Let's run it::
 
     >>> print system(buildout_bin)
-    Installing varnish.    Installing varnish-build.
+    Installing varnish-build.
     varnish-build: Downloading ...
     varnish-build: Unpacking and configuring
     ...
@@ -48,7 +50,7 @@ Check the contents of the control script are correct::
     >>> print open(varnish_bin).read()
     #!/bin/sh
     exec ...sample-buildout/parts/varnish-build/sbin/varnishd \
-        -f "...sample-buildout/parts/varnish/varnish.vcl" \
+        -f "...sample-buildout/parts/varnish-configuration/varnish.vcl" \
         -P "...sample-buildout/parts/varnish/varnish.pid" \
         -a 127.0.0.1:8000 \
         -s file,"...sample-buildout/parts/varnish/storage",256M \
@@ -58,7 +60,8 @@ Check the contents of the control script are correct::
 Check the config is syntactically correct by compiling it to C::
 
     >>> print system(varnish_bin + ' -C')
-    ...
+    /* ---===### include/vcl.h ###===--- */
+    <BLANKLINE>
     /*
      * NB:  This file is machine generated, DO NOT EDIT!
      *
@@ -82,8 +85,10 @@ Let's run it::
 
     >>> print system(buildout_bin)
     Uninstalling varnish.
-    Installing varnish.
     Updating varnish-build.
+    Updating varnish-configuration.
+    Installing varnish.
+    ...
 
 Check the contents of the control script are correct::
 
@@ -109,9 +114,11 @@ Let's run it::
 
     >>> print system(buildout_bin)
     Uninstalling varnish.
-    Installing varnish.
     Updating varnish-build.
-
+    Updating varnish-configuration.
+    Installing varnish.
+    ...
+    
 Check the contents of the control script reflect our new options::
 
     >>> 'varnish' in os.listdir('bin')
@@ -123,7 +130,7 @@ Check the contents of the control script reflect our new options::
         -s malloc,2.71G \
     ...
 
-Test the varnish download::
+Test the varnish download with an older version::
 
     >>> varnish_4 = simplest + '''
     ... varnish_version = 4
@@ -135,8 +142,7 @@ Let's run it::
 
     >>> print system(buildout_bin)
     Uninstalling varnish.
-    Installing varnish.
     Updating varnish-build.
-
-
-
+    Updating varnish-configuration.
+    Installing varnish.
+    ...

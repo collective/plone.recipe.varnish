@@ -8,7 +8,7 @@ import re
 import zc.buildout
 
 DEFAULT_DOWNLOAD_URLS = {
-    '4': 'https://repo.varnish-cache.org/source/varnish-4.0.2.tar.gz',
+    '4': 'https://repo.varnish-cache.org/source/varnish-4.0.3.tar.gz',
 }
 DEFAULT_VERSION = '4'
 
@@ -352,9 +352,9 @@ class ScriptRecipe(BaseRecipe):
             'daemon',
             self.get_from_section(
                 self.options['build-part'],
-                'daemon',
-                '/usr/sbin/varnishd'
-            )
+                'location',
+                '/usr'
+            ) + '/sbin/varnishd'
         )
 
         self.options.setdefault(
