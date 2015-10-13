@@ -2,6 +2,12 @@ sudo: false
 language: python
 python:
   - 2.7
+env:
+  - PLONE_VERSION=4.3.x
+  - PLONE_VERSION=5.0.x
+matrix:
+  allow_failures:
+    - env: PLONE_VERSION=5.0.x
 addons:
   apt:
     packages:
@@ -9,11 +15,12 @@ addons:
     - libpcre3
     - libpcre3-dev
     - pkg-config
-install:
+before_install:
   - mkdir -p buildout-cache/{eggs,downloads}
+install:
+  - sed -ie "s#plone-4.3.x.cfg#plone-$PLONE_VERSION.cfg#" travis.cfg
   - pip install zc.buildout
   - buildout -Nc travis.cfg annotate
   - buildout -Nc travis.cfg
 script:
   - bin/test
-
