@@ -10,7 +10,7 @@ Configuring it is very simple. For example::
     [varnish-build]
     recipe = plone.recipe.varnish:build
 
-    [varnish-instance]
+    [varnish-configuration]
     recipe = plone.recipe.varnish:configuration
     backends = 127.0.0.1:8081
 
