@@ -48,7 +48,7 @@ Varnish supports virtual hosting by selecting a different backend server
 based on headers on the incoming request. You can configure the backends
 through the backends option::
 
-  [varnish-instance]
+  [varnish-configuration]
   backends =
      plone.org:127.0.0.1:8000
      plone.net:127.0.0.1:9000
@@ -83,7 +83,7 @@ Varnish configuration is needed as long as the original hostname is still retain
 in the URL. If the hostname is not retained, you can tell Varnish to direct requests
 based on the "path" instead of the hostname.  For example::
 
-  [varnish-instance]
+  [varnish-configuration]
   backends =
     /VirtualHostBase/http/plone.org:80/Plone:127.0.0.1:8000
     /VirtualHostBase/http/plone.net:80/Plone:127.0.0.1:9000
@@ -100,7 +100,7 @@ To have Varnish generate these VHM-style URLs, you can use the
 ``zope2_vhm_map`` option.
 Here is an example::
 
-  [varnish-instance]
+  [varnish-configuration]
   zope2_vhm_map =
       plone.org:/plone
       plone.net:/plone
@@ -118,7 +118,7 @@ This director sends the incoming requests that cannot be fulfilled by varnish to
 backends in the pool in either random or round robin fashion. You can configure
 the director via the ``balancer`` option::
 
-  [varnish-instance]
+  [varnish-configuration]
   balancer = random
 
 This will generate a configuration which sends all traffic to the director,
