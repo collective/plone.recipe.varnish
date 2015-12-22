@@ -4,7 +4,8 @@ Changelog
 2.0a4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix: Split at max on two ':' to get a max of 3 parts as raw_backends
+  [jensens]
 
 
 2.0a3 (2015-12-22)

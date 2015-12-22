@@ -167,7 +167,7 @@ class ConfigureRecipe(BaseRecipe):
     def _process_backends(self):
         result = []
         raw_backends = [
-            _.rsplit(':', 3)
+            _.rsplit(':', 2)
             for _ in self.options['backends'].strip().split()
         ]
         # consistency checks
