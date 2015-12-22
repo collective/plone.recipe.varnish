@@ -1,7 +1,13 @@
 Changelog
 =========
 
-2.0a2 (unreleased)
+2.0a3 (unreleased)
+------------------
+
+- re-release: 2.0a2 was a brown bag release
+  [jensens]
+
+2.0a2 (2015-12-22)
 ------------------
 
 - Fix daemon location of script part of the recipe (/usr/bin/varnishd was
