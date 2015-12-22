@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0a3 (unreleased)
+2.0a3 (2015-12-22)
 ------------------
 
 - re-release: 2.0a2 was a brown bag release
