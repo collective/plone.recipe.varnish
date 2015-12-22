@@ -35,5 +35,5 @@ script:
 after_success:
   - bin/createcoverage
   - python -m coverage.pickle2json
-  - bin/coveralls
+  - coveralls
 
