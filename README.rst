@@ -1,3 +1,9 @@
+.. image:: https://travis-ci.org/collective/plone.recipe.varnish.svg?branch=master
+    :target: https://travis-ci.org/collective/plone.recipe.varnish
+
+.. image:: https://coveralls.io/repos/collective/plone.recipe.varnish/badge.svg?branch=master&service=github
+    :target: https://coveralls.io/github/collective/plone.recipe.varnish?branch=master
+
 Varnish recipe for buildout
 ===========================
 
@@ -23,7 +29,7 @@ Configuring it is very simple. For example::
 This configures three buildout parts:
 
 ``varnish-build``
-    which will download, compile and install varnish, 
+    which will download, compile and install varnish,
 
 ``varnish-configuration``
     which generates the VCL configuration file,
@@ -96,7 +102,7 @@ running at 127.0.0.1 on port 8000, while request paths starting with
 Option 3 (rewrites within Varnish)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To have Varnish generate these VHM-style URLs, you can use the 
+To have Varnish generate these VHM-style URLs, you can use the
 ``zope2_vhm_map`` option.
 Here is an example::
 
@@ -195,7 +201,7 @@ VCL Configuration Generator
 
 ``bind``
     Hostname and port on which Varnish will listen for requests. Defaults
-    to ``127.0.0.1:8000``. 
+    to ``127.0.0.1:8000``.
 
 ``connect-timeout``
     If specified, this option configures the connection timeout (in seconds)
@@ -259,8 +265,8 @@ VCL Configuration Generator
     as haproxy. Defaults to 443.
 
 ``varnish_version``
-    Varnish target version. If not given, 
-    it looks for the ``varnish_version`` setting in the build part 
+    Varnish target version. If not given,
+    it looks for the ``varnish_version`` setting in the build part
     (see the ``build-part`` setting).
     If not given there either, it defaults to ``4``.
 
@@ -286,7 +292,7 @@ Start varnish as a daemon or in foreground with the given settings.
     when used with ``file`` or ``persistent`` cache-type options.  Defaults to
     using a file named ``storage`` inside the relevant parts directory
     (eg ``parts/varnish/storage``).  Changing the default location can be
-    useful in putting the storage somewhere with quicker read speeds 
+    useful in putting the storage somewhere with quicker read speeds
     (e.g. RAM disk).
 
 ``cache-size``
@@ -298,7 +304,7 @@ Start varnish as a daemon or in foreground with the given settings.
     Possible values: ``file`` (storage for each object is allocated from an
     arena backed by a file),
     ``malloc`` (storage for each object is allocated with malloc; in memory),
-    or ``persistent`` (experimental as at Varnish 2.1.4). 
+    or ``persistent`` (experimental as at Varnish 2.1.4).
     Defaults to ``file``.
 
 ``configuration-file``
@@ -311,9 +317,9 @@ Start varnish as a daemon or in foreground with the given settings.
     Defaults to ``varnish-configuration``.
 
 ``daemon``
-    The file and path of the varnish daemon ``varnishd`` to use. 
-    If not given, it looks for the build part 
-    (see the ``build-part`` setting) 
+    The file and path of the varnish daemon ``varnishd`` to use.
+    If not given, it looks for the build part
+    (see the ``build-part`` setting)
     and uses its ``location`` setting plus the string ``/sbin/varnishd``.
     If there is no build part, it defaults to ``/usr/sbin/varnishd`` - the
     most common place
@@ -321,8 +327,8 @@ Start varnish as a daemon or in foreground with the given settings.
 
 ``grace-healthy``
     Grace in the context of Varnish means delivering otherwise expired objects
-    when circumstances call for it. This can happen because: 
-    (1) the backend-director selected is down, or 
+    when circumstances call for it. This can happen because:
+    (1) the backend-director selected is down, or
     (2) a different thread has already made a request to the backend that's
     not yet finished.
 
@@ -377,8 +383,8 @@ Start varnish as a daemon or in foreground with the given settings.
     requests. Defaults to ``nobody``.
 
 ``varnish_version``
-    Varnish target version. If not given, 
-    it looks for the ``varnish_version`` setting in the build part 
+    Varnish target version. If not given,
+    it looks for the ``varnish_version`` setting in the build part
     (see the ``build-part`` setting).
     If not given there either, it defaults to ``4``.
 

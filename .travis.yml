@@ -1,7 +1,17 @@
-sudo: false
 language: python
+sudo: false
+cache:
+  pip: true
+  directories:
+    - $HOME/buildout-cache
 python:
   - 2.7
+env:
+  - PLONE_VERSION=4.3.x
+  - PLONE_VERSION=5.0.x
+matrix:
+  allow_failures:
+    - env: PLONE_VERSION=5.0.x
 addons:
   apt:
     packages:
@@ -9,11 +19,21 @@ addons:
     - libpcre3
     - libpcre3-dev
     - pkg-config
+before_install:
+  - mkdir -p $HOME/buildout-cache/{eggs,downloads}
+  - mkdir $HOME/.buildout
+  - echo "[buildout]" > $HOME/.buildout/default.cfg
+  - echo "download-cache = $HOME/buildout-cache/downloads" >> $HOME/.buildout/default.cfg
+  - echo "eggs-directory = $HOME/buildout-cache/eggs" >> $HOME/.buildout/default.cfg
+  - pip install --upgrade pip setuptools zc.buildout coveralls
 install:
-  - mkdir -p buildout-cache/{eggs,downloads}
-  - pip install zc.buildout
-  - buildout -Nc travis.cfg annotate
-  - buildout -Nc travis.cfg
+  - sed -ie "s#plone-4.3.x.cfg#plone-$PLONE_VERSION.cfg#" travis.cfg
+  - buildout -N -t 3 -c travis.cfg
 script:
+  - bin/code-analysis
   - bin/test
+after_success:
+  - bin/createcoverage
+  - python -m coverage.pickle2json
+  - coveralls
 

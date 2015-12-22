@@ -15,7 +15,7 @@ FLAGS = \
     doctest.NORMALIZE_WHITESPACE | \
     doctest.REPORT_ONLY_FIRST_FAILURE
 
-## FIXME - check for other platforms
+# FIXME - check for other platforms
 MUST_CLOSE_FDS = not sys.platform.startswith('win')
 
 
