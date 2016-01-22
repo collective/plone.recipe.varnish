@@ -155,7 +155,7 @@ Build varnish from sources
 
 ``build`` is based on
 `zc.recipe.cmmi <https://pypi.python.org/pypi/zc.recipe.cmmi>`_ - so all
-parameters from there are available here too (but are rarely used).
+parameters from that recipe are available here too (but rarely used). These options are available for the recipe part plone.recipe.varnish:build.
 
 Two parameters are different/ extra:
 
@@ -173,6 +173,8 @@ Two parameters are different/ extra:
 
 VCL Configuration Generator
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+These options are available for the recipe part plone.recipe.varnish:configuration.
 
 ``backends``
     Specifies the backend or backends which will process the (uncached)
@@ -277,7 +279,7 @@ To test the generated configuration for syntactic correctness, run
 Create script to start varnish
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Start varnish as a daemon or in foreground with the given settings.
+Start varnish as a daemon or in foreground with the given settings. These options are available for the recipe part plone.recipe.varnish:script.
 
 ``bind``
     Hostname and port on which Varnish will listen for requests. Defaults
