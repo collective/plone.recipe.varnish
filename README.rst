@@ -380,6 +380,34 @@ Start varnish as a daemon or in foreground with the given settings. These option
     If specified sets the hostname and port on which Varnish will listen
     for commands using its telnet interface.
 
+``secret-file``
+
+    In Varnish 4.X the telnet interface is no longer usable without
+    authentication by default. A pre shared key mechanism has been put in place
+    which requires both the varnish daemon and a client connection over telnet
+    (like the varnishadm tool) to have a shared key to authenticate. By default
+    if no secret-file is specified, it's no longer possible to authenticate to
+    the telnet interface.
+    
+    To disable this security feature (and go back to the dark Varnish 2 & 3
+    days) use ``secret-file = disabled``. This is discouraged.
+    
+    To enable the secret-file, give the path to a file on the filesystem that
+    preferably has random content and is both accessible to the varnish daemon
+    and a command line utility like varnishadm.
+
+    An example buildout part to generate such a file could be::
+    
+        [varnish-secret]
+        recipe = plone.recipe.command
+        command = dd if=/dev/random of=${buildout:directory}/var/varnish_secret count=1
+                  chmod 600 ${buildout:directory}/var/varnish_secret
+
+    Giving secret-file the location of this file will pass on the secret to
+    the varnish daemon when it starts up. Afterwards you can use varnishadm
+    with the parameters -T host:port -S /path/to/varnish_secret to connect to
+    the admin telnet interface.  
+
 ``user``
     The name of the user varnish should switch to before accepting any
     requests. Defaults to ``nobody``.
@@ -389,7 +417,6 @@ Start varnish as a daemon or in foreground with the given settings. These option
     it looks for the ``varnish_version`` setting in the build part
     (see the ``build-part`` setting).
     If not given there either, it defaults to ``4``.
-
 
 .. _Varnish: http://varnish-cache.org/
 .. _zc.buildout: http://cheeseshop.python.org/pypi/zc.buildout
