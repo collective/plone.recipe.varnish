@@ -429,7 +429,7 @@ class ScriptRecipe(BaseRecipe):
                 print >>tf, '    -F \\'
             if self.options.get('name', None):
                 print >>tf, '    -n %s \\' % self.options['name']
-            if not self.options.get('secret-file','nosecret') == 'nosecret':
+            if not self.options.get('secret-file', 'nosecret') == 'nosecret':
                 if self.options['secret-file'].lower() == "disabled":
                     # disable authentication on admin interface, dangerous
                     print >>tf, '    -S \\'
