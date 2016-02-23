@@ -1,7 +1,13 @@
 Changelog
 =========
 
-2.0a4 (unreleased)
+2.0a5 (unreleased)
+------------------
+
+- Nothing changed yet.
+
+
+2.0a4 (2016-02-23)
 ------------------
 
 - New: add option for secret-file in the script part so you can communicate to
