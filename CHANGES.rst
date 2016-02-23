@@ -4,6 +4,10 @@ Changelog
 2.0a4 (unreleased)
 ------------------
 
+- New: add option for secret-file in the script part so you can communicate to
+  varnish with varnishadm. See docs for usage and secret-file generation.
+  [fredvd]
+
 - Fix: Split at max on two ':' to get a max of 3 parts as raw_backends
   [jensens]
 

@@ -130,6 +130,60 @@ Check the contents of the control script reflect our new options::
         -s malloc,2.71G \
     ...
 
+Check if we can disable the pre shared key secret file for varnishadm access::
+
+    >>> disable_secret = simplest + '''
+    ... secret-file = disabled
+    ... '''
+    >>> write('buildout.cfg', disable_secret % globals())
+
+Let's run it::
+
+    >>> print system(buildout_bin)
+    Uninstalling varnish.
+    Updating varnish-build.
+    Updating varnish-configuration.
+    Installing varnish.
+    ...
+    
+Check the contents of the control script reflect our new options::
+
+    >>> 'varnish' in os.listdir('bin')
+    True
+
+    >>> print open(varnish_bin).read()
+    #!/bin/sh
+    ...
+        -S \
+    ...
+
+Check if we can specify a key file for varnishadm access::
+
+    >>> enable_secret = simplest + '''
+    ... secret-file = ${buildout:directory}/var/varnish-secret
+    ... '''
+    >>> write('buildout.cfg', enable_secret % globals())
+
+Let's run it::
+
+    >>> print system(buildout_bin)
+    Uninstalling varnish.
+    Updating varnish-build.
+    Updating varnish-configuration.
+    Installing varnish.
+    ...
+    
+Check the contents of the control script reflect our new options::
+
+    >>> 'varnish' in os.listdir('bin')
+    True
+
+    >>> print open(varnish_bin).read()
+    #!/bin/sh
+    ...
+        -S .../sample-buildout/var/varnish-secret \
+    ...
+
 Test the varnish download with an older version::
 
     >>> varnish_4 = simplest + '''

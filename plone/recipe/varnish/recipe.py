@@ -375,6 +375,7 @@ class ScriptRecipe(BaseRecipe):
         self.options.setdefault('cache-type', 'file')
         self.options.setdefault('cache-size', '256M')
         self.options.setdefault('runtime-parameters', '')
+        self.options.setdefault('secret-file', 'nosecret')
 
     def install(self):
         if 'cache-location' not in self.options:
@@ -428,6 +429,13 @@ class ScriptRecipe(BaseRecipe):
                 print >>tf, '    -F \\'
             if self.options.get('name', None):
                 print >>tf, '    -n %s \\' % self.options['name']
+            if not self.options.get('secret-file', 'nosecret') == 'nosecret':
+                if self.options['secret-file'].lower() == "disabled":
+                    # disable authentication on admin interface, dangerous
+                    print >>tf, '    -S \\'
+                else:
+                    # use shared secret file for admin auth
+                    print >>tf, '    -S %s \\' % self.options['secret-file']
             for parameter in parameters:
                 print >>tf, '    -p %s \\' % (parameter)
             print >>tf, '    "$@"'
