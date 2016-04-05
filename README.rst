@@ -431,7 +431,7 @@ Use system varnish at ``/usr/sbin/varnishd``, generate start script in
     [buildout]
     parts =
         varnish-script
-        varnis-configuration
+        varnish-configuration
 
     [varnish-script]
     recipe = plone.recipe.varnish:script
