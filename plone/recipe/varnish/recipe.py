@@ -8,9 +8,13 @@ import re
 import zc.buildout
 
 DEFAULT_DOWNLOAD_URLS = {
-    '4': 'https://repo.varnish-cache.org/source/varnish-4.0.3.tar.gz',
+    '4.0': 'https://repo.varnish-cache.org/source/varnish-4.0.3.tar.gz',
+    '4.1': 'https://repo.varnish-cache.org/source/varnish-4.1.3.tar.gz',
+    '4':   'https://repo.varnish-cache.org/source/varnish-4.1.3.tar.gz',
 }
-DEFAULT_VERSION = '4'
+# Testing gives no output for 4.1, waiting for input for some reason.
+# So we stick to 4.0 as default for the moment.
+DEFAULT_VERSION = '4.0'
 
 COOKIE_WHITELIST_DEFAULT = """\
 statusmessages
@@ -268,7 +272,7 @@ class ConfigureRecipe(BaseRecipe):
         self.install()
 
     def create_varnish_configuration(self):
-        major_version = self.options['varnish_version']
+        major_version = self.options['varnish_version'][0]
         config = {}
         config['version'] = major_version
 
