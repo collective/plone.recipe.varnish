@@ -151,11 +151,8 @@ Check the contents of the control script reflect our new options::
     >>> 'varnish' in os.listdir('bin')
     True
 
-    >>> print open(varnish_bin).read()
-    #!/bin/sh
-    ...
-        -S \
-    ...
+    >>> '-S' in open(varnish_bin).read()
+    False
 
 Check if we can specify a key file for varnishadm access::
 
