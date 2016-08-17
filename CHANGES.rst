@@ -4,7 +4,9 @@ Changelog
 2.0a5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix: to disable the secret-file authentication, an empty parameter should be
+  passed to varnishd on startup.
+  [fredvd, nutjob4life]    
 
 
 2.0a4 (2016-02-23)

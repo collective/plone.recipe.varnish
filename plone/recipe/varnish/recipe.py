@@ -432,7 +432,7 @@ class ScriptRecipe(BaseRecipe):
             if not self.options.get('secret-file', 'nosecret') == 'nosecret':
                 if self.options['secret-file'].lower() == "disabled":
                     # disable authentication on admin interface, dangerous
-                    print >>tf, '    -S \\'
+                    print >>tf, '    -S "" \\'
                 else:
                     # use shared secret file for admin auth
                     print >>tf, '    -S %s \\' % self.options['secret-file']

@@ -154,7 +154,7 @@ Check the contents of the control script reflect our new options::
     >>> print open(varnish_bin).read()
     #!/bin/sh
     ...
-        -S \
+        -S "" \
     ...
 
 Check if we can specify a key file for varnishadm access::
