@@ -5,6 +5,8 @@
 *.pyo
 .installed.cfg
 .mr.developer.cfg
+buildout.cfg
+pip-selfcheck.json
 /bin/
 /build/
 /develop-eggs/
