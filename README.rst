@@ -168,7 +168,14 @@ Two parameters are different/ extra:
     needed to your CPU resources.
 
 ``varnish_version``
-    Varnish target version. Default is ``4``.
+    Varnish target version. Default is ``4.0``.  Options are:
+
+    - 4.0: uses 4.0.3, will stick to 4.0.x
+    - 4.1: uses 4.1.3, will stick to 4.1.x
+    - 4: uses 4.1.3, will stick to 4.x
+
+    The exact version and the default version may be changed in future release of this recipe.
+    4.1 seems fine, but gives problems with the tests, so it is not the default yet.
 
 
 VCL Configuration Generator
@@ -388,16 +395,16 @@ Start varnish as a daemon or in foreground with the given settings. These option
     (like the varnishadm tool) to have a shared key to authenticate. By default
     if no secret-file is specified, it's no longer possible to authenticate to
     the telnet interface.
-    
+
     To disable this security feature (and go back to the dark Varnish 2 & 3
     days) use ``secret-file = disabled``. This is discouraged.
-    
+
     To enable the secret-file, give the path to a file on the filesystem that
     preferably has random content and is both accessible to the varnish daemon
     and a command line utility like varnishadm.
 
     An example buildout part to generate such a file could be::
-    
+
         [varnish-secret]
         recipe = plone.recipe.command
         command = dd if=/dev/random of=${buildout:directory}/var/varnish_secret count=1
@@ -406,7 +413,7 @@ Start varnish as a daemon or in foreground with the given settings. These option
     Giving secret-file the location of this file will pass on the secret to
     the varnish daemon when it starts up. Afterwards you can use varnishadm
     with the parameters -T host:port -S /path/to/varnish_secret to connect to
-    the admin telnet interface.  
+    the admin telnet interface.
 
 ``user``
     The name of the user varnish should switch to before accepting any

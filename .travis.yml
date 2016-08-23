@@ -19,6 +19,7 @@ addons:
     - libpcre3
     - libpcre3-dev
     - pkg-config
+    - graphviz
 before_install:
   - mkdir -p $HOME/buildout-cache/{eggs,downloads}
   - mkdir $HOME/.buildout
@@ -36,4 +37,3 @@ after_success:
   - bin/createcoverage
   - python -m coverage.pickle2json
   - coveralls
-
