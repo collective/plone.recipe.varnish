@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0a5 (unreleased)
+2.0a5 (2016-08-29)
 ------------------
 
 - Made three possible values for the ``varnish_version`` option.  4.0
