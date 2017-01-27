@@ -1,0 +1,7 @@
+[report]
+omit =
+    */bin/test
+    */eggs/*
+    */lib/python*
+    */parts/*
+    */usr/*
