@@ -17,7 +17,7 @@ TEMPLATES_BY_MAJORVERSION = {
 }
 
 DIRECTOR_TYPES = [
-    'round-robin',
+    'round_robin',
     'random',
 ]
 
