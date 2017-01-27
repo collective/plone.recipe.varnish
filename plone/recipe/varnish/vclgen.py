@@ -3,7 +3,9 @@ from collections import OrderedDict
 from jinja2 import Environment
 from jinja2 import PackageLoader
 from zc.buildout import UserError
+
 import logging
+
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +53,7 @@ class VclGenerator(object):
         for director_cfg in self.cfg['directors']:
             if 'name' not in director_cfg:
                 self._log_and_raise(
-                    'director has no name.'.format(
+                    'director has no name {0}'.format(
                         director_cfg['type']
                     )
                 )
