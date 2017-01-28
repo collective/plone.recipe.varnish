@@ -21,5 +21,6 @@ def test_suite():
     ]
     return unittest.TestSuite(suite)
 
+
 if __name__ == '__main__':
     unittest.main()

@@ -196,9 +196,9 @@ These options are available for the recipe part plone.recipe.varnish:configurati
     ``127.0.0.1:8080``.
 
 ``balancer``
-    If included and set to either ``random`` or ``round-robin``, this option
+    If included and set to either ``random`` or ``round_robin``, this option
     configures varnish to load balance the servers specified by the ``backends``
-    directive. Possible values: ``none`` (default), ``round-robin`` or
+    directive. Possible values: ``none`` (default), ``round_robin`` or
     ``random``.
 
 ``between-bytes-timeout``

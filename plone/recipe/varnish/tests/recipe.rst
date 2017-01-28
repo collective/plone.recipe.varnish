@@ -118,7 +118,7 @@ Let's run it::
     Updating varnish-configuration.
     Installing varnish.
     ...
-    
+
 Check the contents of the control script reflect our new options::
 
     >>> 'varnish' in os.listdir('bin')
@@ -145,7 +145,7 @@ Let's run it::
     Updating varnish-configuration.
     Installing varnish.
     ...
-    
+
 Check the contents of the control script reflect our new options::
 
     >>> 'varnish' in os.listdir('bin')
@@ -172,7 +172,7 @@ Let's run it::
     Updating varnish-configuration.
     Installing varnish.
     ...
-    
+
 Check the contents of the control script reflect our new options::
 
     >>> 'varnish' in os.listdir('bin')

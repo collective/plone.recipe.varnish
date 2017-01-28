@@ -2,15 +2,17 @@
 from plone.recipe.varnish.vclgen import VclGenerator
 from zc.recipe.cmmi import Recipe as CMMIRecipe
 from zc.recipe.cmmi import system
+
 import logging
 import os
 import re
 import zc.buildout
 
+
 DEFAULT_DOWNLOAD_URLS = {
     '4.0': 'https://repo.varnish-cache.org/source/varnish-4.0.3.tar.gz',
     '4.1': 'https://repo.varnish-cache.org/source/varnish-4.1.3.tar.gz',
-    '4':   'https://repo.varnish-cache.org/source/varnish-4.1.3.tar.gz',
+    '4': 'https://repo.varnish-cache.org/source/varnish-4.1.3.tar.gz',
 }
 # Testing gives no output for 4.1, waiting for input for some reason.
 # So we stick to 4.0 as default for the moment.
@@ -109,7 +111,7 @@ class BuildRecipe(CMMIRecipe, BaseRecipe):
             options += ' %s' % self.extra_options
 
         # C
-        system("%s %s" % (self.configure_cmd, options))
+        system('%s %s' % (self.configure_cmd, options))
 
         # M
         base_make = 'make'
@@ -118,7 +120,7 @@ class BuildRecipe(CMMIRecipe, BaseRecipe):
         system(base_make)
 
         # MI
-        system("make install")
+        system('make install')
 
         # TODO: future task: integrate vmods
 
@@ -434,7 +436,7 @@ class ScriptRecipe(BaseRecipe):
             if self.options.get('name', None):
                 print >>tf, '    -n %s \\' % self.options['name']
             if not self.options.get('secret-file', 'nosecret') == 'nosecret':
-                if self.options['secret-file'].lower() == "disabled":
+                if self.options['secret-file'].lower() == 'disabled':
                     # disable authentication on admin interface, dangerous
                     print >>tf, '    -S "" \\'
                 else:

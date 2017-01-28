@@ -4,11 +4,13 @@ from zc.buildout.testing import buildoutSetUp
 from zc.buildout.testing import buildoutTearDown
 from zc.buildout.testing import install
 from zc.buildout.testing import install_develop
+
 import doctest
 import shutil
 import subprocess
 import sys
 import unittest
+
 
 FLAGS = \
     doctest.ELLIPSIS | \
@@ -70,6 +72,7 @@ def test_suite():
     ]
 
     return unittest.TestSuite(suite)
+
 
 if __name__ == '__main__':
     unittest.main()

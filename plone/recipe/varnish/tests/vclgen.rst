@@ -48,13 +48,13 @@ Type must match::
 Type must match::
 
     >>> config['directors'] = [
-    ...     {'type': 'round-robin', 'name': 'sellerie'}
+    ...     {'type': 'round_robin', 'name': 'sellerie'}
     ... ]
     >>> config['directors'][0]['backends'] = [
     ... ]
     >>> vg = VclGenerator(config)
     >>> pprint(vg._directors())
-    [{'backends': [], 'name': 'sellerie', 'type': 'round-robin'}]
+    [{'backends': [], 'name': 'sellerie', 'type': 'round_robin'}]
 
 
 Add some backends::
@@ -67,7 +67,7 @@ Add some backends::
     >>> pprint(vg._directors())
     [{'backends': ['backend_001', 'backend_002'],
       'name': 'sellerie',
-      'type': 'round-robin'}]
+      'type': 'round_robin'}]
 
 VHostings
 ---------
@@ -200,7 +200,7 @@ Combine Backends and directors::
     ... }
     >>> config['directors'] = [
     ...     {
-    ...         'type': 'round-robin',
+    ...         'type': 'round_robin',
     ...         'name': 'alpha',
     ...         'backends': ['backend_000', 'backend_001']
     ...     },
@@ -215,7 +215,7 @@ Combine Backends and directors::
     >>> pprint(directors)
     [{'backends': ['backend_000', 'backend_001'],
       'name': 'alpha',
-      'type': 'round-robin'},
+      'type': 'round_robin'},
      {'backends': ['backend_010', 'backend_011'],
       'name': 'beta',
       'type': 'random'}]
