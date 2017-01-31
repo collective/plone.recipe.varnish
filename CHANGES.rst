@@ -4,7 +4,8 @@ Changelog
 2.0a6 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix VCL director: from round-robin to round_robin, tests refactored.
+  [cleberjsantos]
 
 
 2.0a5 (2016-08-29)
