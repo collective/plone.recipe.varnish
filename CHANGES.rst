@@ -4,6 +4,9 @@ Changelog
 2.0a6 (unreleased)
 ------------------
 
+- Add tgz of varnish 5, update to latest varnish 4.
+  [jensens]
+
 - Fix VCL director: from round-robin to round_robin, tests refactored.
   [cleberjsantos]
 
