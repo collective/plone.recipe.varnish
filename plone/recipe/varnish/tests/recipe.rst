@@ -38,12 +38,11 @@ Let's run it::
     Installing varnish-build.
     varnish-build: Downloading ...
     varnish-build: Unpacking and configuring
-    ...
 
 A control script got created::
 
-    >>> 'varnish' in os.listdir('bin')
-    True
+    >>> os.listdir('bin')
+    [...'varnish'...]
 
 Check the contents of the control script are correct::
 

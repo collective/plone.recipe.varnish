@@ -10,7 +10,7 @@ import zc.buildout
 
 
 DEFAULT_DOWNLOAD_URLS = {
-    '4.0': 'https://repo.varnish-cache.org/source/varnish-4.0.5.tar.gz',
+    '4.0': 'https://repo.varnish-cache.org/source/varnish-4.0.4.tar.gz',
     '4.1': 'https://repo.varnish-cache.org/source/varnish-4.1.5.tar.gz',
     '4': 'https://repo.varnish-cache.org/source/varnish-4.1.5.tar.gz',
     '5.0': 'https://repo.varnish-cache.org/source/varnish-5.0.0.tar.gz',
@@ -19,7 +19,7 @@ DEFAULT_DOWNLOAD_URLS = {
 }
 # Testing gives no output for 4.1, waiting for input for some reason.
 # So we stick to 4.0 as default for the moment.
-DEFAULT_VERSION = '4.0'
+DEFAULT_VERSION = '5'
 
 COOKIE_WHITELIST_DEFAULT = """\
 statusmessages

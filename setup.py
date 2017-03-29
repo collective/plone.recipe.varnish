@@ -52,7 +52,7 @@ setup(
         'zc.recipe.cmmi',
     ],
     extras_require = dict(
-        test=['interlude', 'ipdb']
+        test=['interlude' ]
     ),
     tests_require=['pytest'],
     cmdclass = {'test': PyTest},
