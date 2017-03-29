@@ -4,6 +4,9 @@ Changelog
 2.0a6 (unreleased)
 ------------------
 
+- Use ``deliver`` in vcl_hit, fetch is no longer allowed (varnish 5.x at least).
+  [jensens]
+
 - Add tgz of varnish 5, update to latest varnish 4.
   [jensens]
 

@@ -212,18 +212,18 @@ sub vcl_hit {
             return (deliver);
         } else {
             # No candidate for grace. Fetch a fresh object.
-            return(fetch);
+            return(deliver);
         }
     } else {
         # backend is sick - use full grace
         // Object is in grace, deliver it
-        // Automatically triggers a background fetch
+        // Automatically triggers a background deliver
         if (obj.ttl + obj.grace > 0s) {
             set req.http.grace = "full";
             return (deliver);
         } else {
             # no graced object.
-            return (fetch);
+            return (deliver);
         }
     }
     {% endif %}
@@ -234,8 +234,8 @@ sub vcl_hit {
         return(synth(200, "Purged. in hit " + req.url));
     }
 
-    // fetch & deliver once we get the result
-    return (fetch);
+    // deliver once we get the result
+    return (deliver);
 }
 
 sub vcl_miss {
