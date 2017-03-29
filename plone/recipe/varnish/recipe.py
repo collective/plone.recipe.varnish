@@ -20,6 +20,7 @@ DEFAULT_DOWNLOAD_URLS = {
 # Testing gives no output for 4.1, waiting for input for some reason.
 # So we stick to 4.0 as default for the moment.
 DEFAULT_VERSION = '5'
+DEFAULT_VCL_VERSION = '4.0'
 
 COOKIE_WHITELIST_DEFAULT = """\
 statusmessages
@@ -142,15 +143,13 @@ class ConfigureRecipe(BaseRecipe):
 
         self.options.setdefault('build-part', 'varnish-build')
         self.options.setdefault(
-            'varnish_version',
+            'vcl-version',
             self.get_from_section(
                 self.options['build-part'],
-                'varnish_version',
-                DEFAULT_VERSION
+                'vcl-version',
+                DEFAULT_VCL_VERSION
             )
         )
-        self._version_check()
-
         self.options.setdefault(
             'location',
             os.path.join(buildout['buildout']['parts-directory'], self.name)
@@ -277,9 +276,8 @@ class ConfigureRecipe(BaseRecipe):
         self.install()
 
     def create_varnish_configuration(self):
-        major_version = self.options['varnish_version'][0]
         config = {}
-        config['version'] = major_version
+        config['version'] = self.options['vcl-version']
 
         # enable verbose varnish headers
         config['verbose'] = self.options['verbose-headers'] == 'on'

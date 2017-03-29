@@ -38,6 +38,7 @@ Let's run it::
     Installing varnish-build.
     varnish-build: Downloading ...
     varnish-build: Unpacking and configuring
+    ...
 
 A control script got created::
 

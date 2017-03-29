@@ -168,14 +168,14 @@ Two parameters are different/ extra:
     needed to your CPU resources.
 
 ``varnish_version``
-    Varnish target version. Default is ``4.0``.  Options are:
+    Varnish target version. Default is ``5``.  Options are:
 
-    - 4.0: uses 4.0.3, will stick to 4.0.x
-    - 4.1: uses 4.1.3, will stick to 4.1.x
-    - 4: uses 4.1.3, will stick to 4.x
-
-    The exact version and the default version may be changed in future release of this recipe.
-    4.1 seems fine, but gives problems with the tests, so it is not the default yet.
+    - 4.0: uses 4.0.4, will stick to 4.0.x
+    - 4.1: uses 4.1.5, will stick to 4.1.x
+    - 4: uses 4.1.5, will stick to 4.x
+    - 5.0: uses 5.0.0, will stick to 5.0.x
+    - 5.1: uses 5.1.1, will stick to 5.1.x
+    - 5: uses 5.1.1, will stick to 5.x
 
 
 VCL Configuration Generator
@@ -273,11 +273,9 @@ These options are available for the recipe part plone.recipe.varnish:configurati
     clients. Useful if there is another port mapping in front of varnish, such
     as haproxy. Defaults to 443.
 
-``varnish_version``
-    Varnish target version. If not given,
-    it looks for the ``varnish_version`` setting in the build part
-    (see the ``build-part`` setting).
-    If not given there either, it defaults to ``4``.
+``vcl-version``
+    Varnish VCL format version.
+    If not given it defaults to ``4.0``.
 
 To test the generated configuration for syntactic correctness, run
 ``varnishd -C -f ./parts/varnish-configuration/varnish.vcl``.

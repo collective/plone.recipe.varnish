@@ -4,6 +4,10 @@ Changelog
 2.0a6 (unreleased)
 ------------------
 
+- Make a difference between the vcl format version and the varnish program version.
+  Eg. while varnish is at 5.1 it uses the vcl 4.0 format.
+  [jensens]
+
 - Use ``deliver`` in vcl_hit, fetch is no longer allowed (varnish 5.x at least).
   [jensens]
 
