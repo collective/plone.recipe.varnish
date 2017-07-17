@@ -310,7 +310,7 @@ class ConfigureRecipe(BaseRecipe):
         # inject custom vcl
         config['custom'] = {}
         for name in ('vcl_recv', 'vcl_hit', 'vcl_miss', 'vcl_fetch',
-                     'vcl_deliver', 'vcl_pipe'):
+                     'vcl_deliver', 'vcl_pipe', 'vcl_backend_response'):
             config['custom'][name] = self.options.get(name, '')
 
         config['backends'] = self._process_backends()
