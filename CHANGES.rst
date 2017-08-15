@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0a6 (unreleased)
+2.0a6 (2017-08-15)
 ------------------
 
 - Updated default urls to `varnish security releases <https://varnish-cache.org/security/VSV00001.html>`_.
