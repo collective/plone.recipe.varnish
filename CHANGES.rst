@@ -4,6 +4,11 @@ Changelog
 2.0a6 (unreleased)
 ------------------
 
+- Updated default urls to `varnish security releases <https://varnish-cache.org/security/VSV00001.html>`_.
+  Also updated these urls to not use the ``repo.varnish-cache.org`` domain,
+  because those links will stop working at `31 August 2017 <https://varnish-cache.org/news/index.html#package-repository-status>`_.
+  [maurits]
+
 - Fix VCL director: from round-robin to round_robin, tests refactored.
   [cleberjsantos]
 
