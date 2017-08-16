@@ -4,7 +4,9 @@ Changelog
 2.0a7 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Changed default downloads to ``.tgz`` instead of ``.tar.gz``.
+  For some reason they were renamed after the last release of this recipe.
+  [maurits]
 
 
 2.0a6 (2017-08-15)
