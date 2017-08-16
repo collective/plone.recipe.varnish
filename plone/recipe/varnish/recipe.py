@@ -10,9 +10,9 @@ import zc.buildout
 
 
 DEFAULT_DOWNLOAD_URLS = {
-    '4.0': 'http://varnish-cache.org/_downloads/varnish-4.0.5.tar.gz',
-    '4.1': 'http://varnish-cache.org/_downloads/varnish-4.1.8.tar.gz',
-    '4': 'http://varnish-cache.org/_downloads/varnish-4.1.8.tar.gz',
+    '4.0': 'http://varnish-cache.org/_downloads/varnish-4.0.5.tgz',
+    '4.1': 'http://varnish-cache.org/_downloads/varnish-4.1.8.tgz',
+    '4': 'http://varnish-cache.org/_downloads/varnish-4.1.8.tgz',
 }
 # Testing gives no output for 4.1, waiting for input for some reason.
 # So we stick to 4.0 as default for the moment.
