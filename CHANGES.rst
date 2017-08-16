@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0a7 (unreleased)
+2.0a7 (2017-08-16)
 ------------------
 
 - Changed default downloads to ``.tgz`` instead of ``.tar.gz``.
