@@ -133,8 +133,9 @@ sub vcl_recv {
     /* cookies for pass */
     {% for rule in cookiepass %}
     {# this part need review #}
+    set req.http.UrlNoQs = regsub(req.url, "\?.*$", "");
     if (req.http.Cookie && req.http.Cookie ~ "{{rule['match']}}") {
-        if (req.url ~ "{{rule['exclude']}}") {
+        if (req.http.UrlNoQs ~ "{{rule['exclude']}}") {
             unset req.http.cookie;
             return(pipe);
         }

@@ -4,7 +4,8 @@ Changelog
 2.0a8 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Stripped query string before testing which urls to strip cookies on.
+  https://github.com/collective/plone.recipe.varnish/issues/42 [instification]
 
 
 2.0a7 (2017-08-16)
