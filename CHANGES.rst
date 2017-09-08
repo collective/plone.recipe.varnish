@@ -4,6 +4,8 @@ Changelog
 2.0a8 (unreleased)
 ------------------
 
+- Fix to failing travis tests, ``bin/createcoverage`` tries to open browser.
+  [instification]
 - Stripped query string before testing which urls to strip cookies on.
   https://github.com/collective/plone.recipe.varnish/issues/42 [instification]
 
