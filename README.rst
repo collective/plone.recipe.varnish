@@ -1,8 +1,9 @@
 .. image:: https://travis-ci.org/collective/plone.recipe.varnish.svg?branch=master
     :target: https://travis-ci.org/collective/plone.recipe.varnish
 
-.. image:: https://coveralls.io/repos/collective/plone.recipe.varnish/badge.svg?branch=master&service=github
+.. image:: https://coveralls.io/repos/github/collective/plone.recipe.varnish/badge.svg?branch=master
     :target: https://coveralls.io/github/collective/plone.recipe.varnish?branch=master
+
 
 Varnish recipe for buildout
 ===========================

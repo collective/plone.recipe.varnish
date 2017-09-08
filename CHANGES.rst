@@ -4,7 +4,8 @@ Changelog
 2.0a8 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix to failing travis tests, ``bin/createcoverage`` tries to open browser.
+  [instification]
 
 
 2.0a7 (2017-08-16)
