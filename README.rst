@@ -178,6 +178,8 @@ Two parameters are different/ extra:
     The exact version and the default version may be changed in future release of this recipe.
     4.1 seems fine, but gives problems with the tests, so it is not the default yet.
 
+    This version is also used for the configuration and script part.
+
 
 VCL Configuration Generator
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -273,12 +275,6 @@ These options are available for the recipe part plone.recipe.varnish:configurati
     Defines a virtual host mapping port to use in the VHM URL to send back to
     clients. Useful if there is another port mapping in front of varnish, such
     as haproxy. Defaults to 443.
-
-``varnish_version``
-    Varnish target version. If not given,
-    it looks for the ``varnish_version`` setting in the build part
-    (see the ``build-part`` setting).
-    If not given there either, it defaults to ``4``.
 
 To test the generated configuration for syntactic correctness, run
 ``varnishd -C -f ./parts/varnish-configuration/varnish.vcl``.
@@ -420,11 +416,6 @@ Start varnish as a daemon or in foreground with the given settings. These option
     The name of the user varnish should switch to before accepting any
     requests. Defaults to ``nobody``.
 
-``varnish_version``
-    Varnish target version. If not given,
-    it looks for the ``varnish_version`` setting in the build part
-    (see the ``build-part`` setting).
-    If not given there either, it defaults to ``4``.
 
 .. _Varnish: http://varnish-cache.org/
 .. _zc.buildout: http://cheeseshop.python.org/pypi/zc.buildout

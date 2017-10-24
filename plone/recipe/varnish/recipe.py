@@ -346,6 +346,15 @@ class ScriptRecipe(BaseRecipe):
         self.options.setdefault('configuration-part', 'varnish-configuration')
 
         self.options.setdefault(
+            'varnish_version',
+            self.get_from_section(
+                self.options['build-part'],
+                'varnish_version',
+                DEFAULT_VERSION
+            )
+        )
+
+        self.options.setdefault(
             'daemon',
             self.get_from_section(
                 self.options['build-part'],
@@ -411,7 +420,10 @@ class ScriptRecipe(BaseRecipe):
             print >>tf, '#!/bin/sh'
             print >>tf, 'exec %s \\' % self.options['daemon']
             if 'user' in self.options:
-                print >>tf, '    -p user=%s \\' % self.options['user']
+                if self.options['varnish_version'] == '4.0':
+                    print >>tf, '    -p user=%s \\' % self.options['user']
+                else:
+                    print >>tf, '    -j unix,user=%s \\' % self.options['user']
             if 'group' in self.options:
                 print >>tf, '    -p group=%s \\' % self.options['group']
             print >>tf, '    -f "%s" \\' % self.options['configuration-file']
