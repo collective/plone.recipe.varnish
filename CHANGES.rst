@@ -8,6 +8,9 @@ Changelog
   [instification]
 - Stripped query string before testing which urls to strip cookies on.
   https://github.com/collective/plone.recipe.varnish/issues/42 [instification]
+- Fix custom vcl code insertion for ``vcl_backend_fetch`` and ``vcl_backend_response``
+  Update documentation
+  [petschki]
 
 
 2.0a7 (2017-08-16)
