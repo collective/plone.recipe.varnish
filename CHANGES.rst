@@ -4,15 +4,22 @@ Changelog
 2.0a8 (unreleased)
 ------------------
 
+- New: refactor start script as Jinja2 template
+  [petschki]
+
 - Fix to failing travis tests, ``bin/createcoverage`` tries to open browser.
   [instification]
+
 - Stripped query string before testing which urls to strip cookies on.
   https://github.com/collective/plone.recipe.varnish/issues/42 [instification]
+
 - Fix custom vcl code insertion for ``vcl_backend_fetch`` and ``vcl_backend_response``
   Update documentation
   [petschki]
+
 - Fix parameter for jailed user in ``varnish_version=4.1``
   [petschki]
+
 - update documentation for ``varnish_version`` which only makes sense to be set in
   the build-part.
   [petschki]

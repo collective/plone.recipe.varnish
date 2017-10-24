@@ -384,6 +384,10 @@ Start varnish as a daemon or in foreground with the given settings. These option
     If specified sets the hostname and port on which Varnish will listen
     for commands using its telnet interface.
 
+``script-filename``
+    Name of the start script file in ``buildout:bin-directory``.
+    Defaults to the name of this buildout part.
+
 ``secret-file``
 
     In Varnish 4.X the telnet interface is no longer usable without

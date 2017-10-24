@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from . import jinja2env
 from plone.recipe.varnish.vclgen import VclGenerator
 from zc.recipe.cmmi import Recipe as CMMIRecipe
 from zc.recipe.cmmi import system
@@ -391,6 +392,10 @@ class ScriptRecipe(BaseRecipe):
         self.options.setdefault('cache-size', '256M')
         self.options.setdefault('runtime-parameters', '')
         self.options.setdefault('secret-file', 'nosecret')
+        self.options.setdefault('script-filename', os.path.join(
+            self.buildout['buildout']['bin-directory'],
+            self.name
+        ))
 
     def install(self):
         if 'cache-location' not in self.options:
@@ -405,63 +410,31 @@ class ScriptRecipe(BaseRecipe):
                 os.mkdir(self.options['cache-location'])
                 self.options.created(self.options['cache-location'])
 
-        self.create_varnish_script()
+        script = self.create_varnish_script()
+        with open(self.options['script-filename'], 'wt') as fio:
+            fio.write(script)
+        os.chmod(self.options['script-filename'], 0755)
+        self.options.created(self.options['script-filename'])
         return self.options.created()
 
     def create_varnish_script(self):
-        target = os.path.join(
-            self.buildout['buildout']['bin-directory'],
-            self.name
-        )
-        parameters = self.options['runtime-parameters'].strip().split()
-        v_40 = self.options['varnish_version'] == '4.0'
+        # render script file
+        data = {}
+        data['version'] = self.options['varnish_version']
+        data['daemon'] = self.options['daemon']
+        data['user'] = self.options.get('user')
+        data['group'] = self.options.get('group')
+        data['cfg_file'] = self.options['configuration-file']
+        data['pid_file'] = os.path.join(
+            self.options['location'], 'varnish.pid')
+        data['bind'] = self.options['bind']
+        data['cache_type'] = self.options['cache-type'].lower()
+        data['cache_location'] = self.options['cache-location']
+        data['cache_size'] = self.options['cache-size']
+        data['mode'] = self.options.get('mode', 'daemon')
+        data['name'] = self.options.get('name')
+        data['secret'] = self.options.get('secret-file', 'nosecret').lower()
+        data['parameters'] = self.options['runtime-parameters'].strip().split()
 
-        with open(target, 'wt') as tf:
-            # XXX TODO: refactor me! make this a template.
-            print >>tf, '#!/bin/sh'
-            print >>tf, 'exec %s \\' % self.options['daemon']
-            # build user and group parameters
-            if 'user' in self.options:
-                if v_40:
-                    print >>tf, '    -p user=%s \\' % self.options['user']
-                else:
-                    if 'group' in self.options:
-                        print >>tf, '    -j unix,user=%s,ccgroup=%s \\' % (
-                            self.options['user'], self.options['group'])
-                    else:
-                        print >>tf, '    -j unix,user=%s\\' % self.options['user']  # noqa
-            if 'group' in self.options and v_40:
-                print >>tf, '    -p group=%s \\' % self.options['group']
-            print >>tf, '    -f "%s" \\' % self.options['configuration-file']
-            print >>tf, '    -P "%s" \\' % \
-                os.path.join(self.options['location'], 'varnish.pid')
-            print >>tf, '    -a %s \\' % self.options['bind']
-            if self.options.get('telnet', None):
-                print >>tf, '    -T %s \\' % self.options['telnet']
-            if self.options['cache-type'] == 'malloc':
-                print >>tf, '    -s %s,%s \\' % (
-                    self.options['cache-type'],
-                    self.options['cache-size']
-                )
-            else:
-                print >>tf, '    -s %s,"%s",%s \\' % (
-                    self.options['cache-type'],
-                    self.options['cache-location'],
-                    self.options['cache-size']
-                )
-            if self.options.get('mode', 'daemon') == 'foreground':
-                print >>tf, '    -F \\'
-            if self.options.get('name', None):
-                print >>tf, '    -n %s \\' % self.options['name']
-            if not self.options.get('secret-file', 'nosecret') == 'nosecret':
-                if self.options['secret-file'].lower() == 'disabled':
-                    # disable authentication on admin interface, dangerous
-                    print >>tf, '    -S "" \\'
-                else:
-                    # use shared secret file for admin auth
-                    print >>tf, '    -S %s \\' % self.options['secret-file']
-            for parameter in parameters:
-                print >>tf, '    -p %s \\' % (parameter)
-            print >>tf, '    "$@"'
-        os.chmod(target, 0755)
-        self.options.created(target)
+        template = jinja2env.get_template('start_script.jinja2')
+        return template.render(data)
