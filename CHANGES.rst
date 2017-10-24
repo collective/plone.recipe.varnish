@@ -11,6 +11,11 @@ Changelog
 - Fix custom vcl code insertion for ``vcl_backend_fetch`` and ``vcl_backend_response``
   Update documentation
   [petschki]
+- Fix parameter for jailed user in ``varnish_version=4.1``
+  [petschki]
+- update documentation for ``varnish_version`` which only makes sense to be set in
+  the build-part.
+  [petschki]
 
 
 2.0a7 (2017-08-16)

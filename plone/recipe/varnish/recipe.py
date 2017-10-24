@@ -346,6 +346,15 @@ class ScriptRecipe(BaseRecipe):
         self.options.setdefault('configuration-part', 'varnish-configuration')
 
         self.options.setdefault(
+            'varnish_version',
+            self.get_from_section(
+                self.options['build-part'],
+                'varnish_version',
+                DEFAULT_VERSION
+            )
+        )
+
+        self.options.setdefault(
             'daemon',
             self.get_from_section(
                 self.options['build-part'],
@@ -405,14 +414,23 @@ class ScriptRecipe(BaseRecipe):
             self.name
         )
         parameters = self.options['runtime-parameters'].strip().split()
+        v_40 = self.options['varnish_version'] == '4.0'
 
         with open(target, 'wt') as tf:
             # XXX TODO: refactor me! make this a template.
             print >>tf, '#!/bin/sh'
             print >>tf, 'exec %s \\' % self.options['daemon']
+            # build user and group parameters
             if 'user' in self.options:
-                print >>tf, '    -p user=%s \\' % self.options['user']
-            if 'group' in self.options:
+                if v_40:
+                    print >>tf, '    -p user=%s \\' % self.options['user']
+                else:
+                    if 'group' in self.options:
+                        print >>tf, '    -j unix,user=%s,ccgroup=%s \\' % (
+                            self.options['user'], self.options['group'])
+                    else:
+                        print >>tf, '    -j unix,user=%s\\' % self.options['user']  # noqa
+            if 'group' in self.options and v_40:
                 print >>tf, '    -p group=%s \\' % self.options['group']
             print >>tf, '    -f "%s" \\' % self.options['configuration-file']
             print >>tf, '    -P "%s" \\' % \
