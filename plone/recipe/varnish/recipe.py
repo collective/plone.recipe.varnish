@@ -414,17 +414,23 @@ class ScriptRecipe(BaseRecipe):
             self.name
         )
         parameters = self.options['runtime-parameters'].strip().split()
+        v_40 = self.options['varnish_version'] == '4.0'
 
         with open(target, 'wt') as tf:
             # XXX TODO: refactor me! make this a template.
             print >>tf, '#!/bin/sh'
             print >>tf, 'exec %s \\' % self.options['daemon']
+            # build user and group parameters
             if 'user' in self.options:
-                if self.options['varnish_version'] == '4.0':
+                if v_40:
                     print >>tf, '    -p user=%s \\' % self.options['user']
                 else:
-                    print >>tf, '    -j unix,user=%s \\' % self.options['user']
-            if 'group' in self.options:
+                    if 'group' in self.options:
+                        print >>tf, '    -j unix,user=%s,ccgroup=%s \\' % (
+                            self.options['user'], self.options['group'])
+                    else:
+                        print >>tf, '    -j unix,user=%s\\' % self.options['user']  # noqa
+            if 'group' in self.options and v_40:
                 print >>tf, '    -p group=%s \\' % self.options['group']
             print >>tf, '    -f "%s" \\' % self.options['configuration-file']
             print >>tf, '    -P "%s" \\' % \
