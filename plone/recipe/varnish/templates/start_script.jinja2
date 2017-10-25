@@ -10,7 +10,7 @@ exec {{daemon}} \
 {% endif %}
 {% if version in ('4', '4.1') %}
 {% if user %}
-    -j unix,user={{user}}{% if group %},{{group}}{% endif %} \
+    -j unix,user={{user}}{% if group %},ccgroup={{group}}{% endif %} \
 {% endif %}
 {% endif %}
     -f "{{cfg_file}}" \
