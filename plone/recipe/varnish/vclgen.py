@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
+from . import jinja2env
 from collections import OrderedDict
-from jinja2 import Environment
-from jinja2 import PackageLoader
 from zc.buildout import UserError
 
 import logging
@@ -9,11 +8,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-jinja2env = Environment(
-    loader=PackageLoader('plone.recipe.varnish', 'templates'),
-    trim_blocks=True,
-    lstrip_blocks=True
-)
 TEMPLATES_BY_MAJORVERSION = {
     '4': jinja2env.get_template('varnish4.vcl.jinja2'),
 }

@@ -1,0 +1,35 @@
+#!/bin/sh
+exec {{daemon}} \
+{% if version == '4.0' %}
+{% if user %}
+    -p user={{user}} \
+{% endif %}
+{% if group %}
+    -p group={{group}} \
+{% endif %}
+{% endif %}
+{% if version in ('4', '4.1') and user %}
+    -j unix,user={{user}}{% if group %},ccgroup={{group}}{% endif %} \
+{% endif %}
+    -f "{{cfg_file}}" \
+    -P "{{pid_file}}" \
+    -a {{bind}} \
+{% if telnet %}
+    -T {{telnet}} \
+{% endif %}
+    -s {{cache_type}},{% if cache_type != 'malloc' %}"{{cache_location}}",{% endif %}{{cache_size}} \
+{% if mode == 'foreground' %}
+    -F \
+{% endif %}
+{% if name %}
+    -n {{name}} \
+{% endif %}
+{% if secret == 'disabled' %}
+    -S "" \
+{% elif secret != 'nosecret' %}
+    -S {{secret}} \
+{% endif %}
+{% for parameter in parameters %}
+    -p {{parameter}} \
+{% endfor %}
+    "$@"
