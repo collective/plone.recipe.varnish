@@ -434,6 +434,7 @@ class ScriptRecipe(BaseRecipe):
         data['mode'] = self.options.get('mode', 'daemon')
         data['name'] = self.options.get('name')
         data['secret'] = self.options.get('secret-file', 'nosecret').lower()
+        data['telnet'] = self.options.get('telnet')
         data['parameters'] = self.options['runtime-parameters'].strip().split()
 
         template = jinja2env.get_template('start_script.jinja2')

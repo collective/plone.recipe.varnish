@@ -8,19 +8,16 @@ exec {{daemon}} \
     -p group={{group}} \
 {% endif %}
 {% endif %}
-{% if version in ('4', '4.1') %}
-{% if user %}
+{% if version in ('4', '4.1') and user %}
     -j unix,user={{user}}{% if group %},ccgroup={{group}}{% endif %} \
-{% endif %}
 {% endif %}
     -f "{{cfg_file}}" \
     -P "{{pid_file}}" \
     -a {{bind}} \
-{% if cache_type == 'malloc' %}
-    -s {{cache_type}},{{cache_size}} \
-{% else %}
-    -s {{cache_type}},"{{cache_location}}",{{cache_size}} \
+{% if telnet %}
+    -T {{telnet}} \
 {% endif %}
+    -s {{cache_type}},{% if cache_type != 'malloc' %}"{{cache_location}}",{% endif %}{{cache_size}} \
 {% if mode == 'foreground' %}
     -F \
 {% endif %}
