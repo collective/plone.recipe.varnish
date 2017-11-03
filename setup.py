@@ -34,6 +34,8 @@ setup(
         "Intended Audience :: System Administrators",
         "License :: OSI Approved :: BSD License",
         "Operating System :: POSIX",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 2.7",
         "Topic :: Internet :: Proxy Servers",
     ],
     keywords='buildout varnish cache proxy',
