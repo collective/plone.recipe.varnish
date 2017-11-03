@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0a8 (unreleased)
+2.0a8 (2017-11-03)
 ------------------
 
 - New: refactor start script as Jinja2 template
