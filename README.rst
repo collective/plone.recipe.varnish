@@ -236,7 +236,7 @@ These options are available for the recipe part plone.recipe.varnish:configurati
     directly to the configured backend bypassing any caching. But if cookie
     applies and url matches urlexcludes, then a lookup is forced. Defaults are
     optimized for Plone, one line:
-    ``"__ac(|_(name|password|persistent))=":"\.(js|css|kss)"``
+    ``"__ac(|_(name|password|persistent))=":"\.(js|css|kss)$"``
 
 ``first-byte-timeout``
     If specified, this option configures the timeout (in seconds) for Varnish
