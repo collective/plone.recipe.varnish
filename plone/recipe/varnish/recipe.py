@@ -27,7 +27,7 @@ __cp
 """
 
 COOKIE_PASS_DEFAULT = """\
-"__ac(|_(name|password|persistent))=":"\.(js|css|kss)"
+"__ac(|_(name|password|persistent))=":"\.(js|css|kss)$"
 """
 COOKIE_PASS_RE = re.compile('"(.*)":"(.*)"')
 

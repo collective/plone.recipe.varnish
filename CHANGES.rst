@@ -4,7 +4,9 @@ Changelog
 2.0a9.0 (unreleased)
 --------------------
 
-- Nothing changed yet.
+- fix default value for ``COOKIE_PASS_DEFAULT`` not matching any other
+  urls than the intended static resources.
+  [petschki]
 
 
 2.0a8 (2017-11-03)
