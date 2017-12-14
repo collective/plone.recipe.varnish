@@ -11,8 +11,8 @@ import zc.buildout
 
 DEFAULT_DOWNLOAD_URLS = {
     '4.0': 'https://repo.varnish-cache.org/source/varnish-4.0.5.tar.gz',
-    '4.1': 'https://repo.varnish-cache.org/source/varnish-4.1.8.tar.gz',
-    '4': 'https://repo.varnish-cache.org/source/varnish-4.1.8.tar.gz',
+    '4.1': 'https://repo.varnish-cache.org/source/varnish-4.1.9.tar.gz',
+    '4': 'https://repo.varnish-cache.org/source/varnish-4.1.9.tar.gz',
     '5.0': 'https://repo.varnish-cache.org/source/varnish-5.0.0.tar.gz',
     '5.1': 'https://repo.varnish-cache.org/source/varnish-5.1.3.tar.gz',
     '5.2': 'https://repo.varnish-cache.org/source/varnish-5.2.1.tar.gz',
