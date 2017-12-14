@@ -3,6 +3,7 @@
 *.mo
 *.pyc
 *.pyo
+.Python
 .installed.cfg
 .mr.developer.cfg
 buildout.cfg
