@@ -413,7 +413,7 @@ class ScriptRecipe(BaseRecipe):
         script = self.create_varnish_script()
         with open(self.options['script-filename'], 'wt') as fio:
             fio.write(script)
-        os.chmod(self.options['script-filename'], 0755)
+        os.chmod(self.options['script-filename'], 0o755)
         self.options.created(self.options['script-filename'])
         return self.options.created()
 
