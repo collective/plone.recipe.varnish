@@ -62,13 +62,7 @@ Check the contents of the control script are correct::
 Check the config is syntactically correct by compiling it to C::
 
     >>> print system(varnish_bin + ' -C')
-    /* ---===### include/vcl.h ###===--- */
-    <BLANKLINE>
-    /*
-     * NB:  This file is machine generated, DO NOT EDIT!
-     *
-     * Edit and run generate.py instead
-     */
+    /* ---===### include/vdef.h ###===--- */
     <BLANKLINE>
     ...
     const struct VCL_conf VCL_conf = {
