@@ -34,11 +34,13 @@ Let's create a minimum buildout that uses the current plone.recipe.varnish::
 
 Let's run it::
 
-    >>> print system(buildout_bin)
-    Installing varnish-build.
-    varnish-build: Downloading ...
-    varnish-build: Unpacking and configuring
-    ...
+    >>> output = system(buildout_bin)
+    >>> if 'Installing varnish-build.' not in output:
+    ...     print(output)
+    >>> if 'varnish-build: Downloading' not in output:
+    ...     print(output)
+    >>> if 'varnish-build: Unpacking and configuring' not in output:
+    ...     print(output)
 
 A control script got created::
 
@@ -83,12 +85,15 @@ Test out customising the storage options with a new test buildout::
 
 Let's run it::
 
-    >>> print system(buildout_bin)
-    Uninstalling varnish.
-    Updating varnish-build.
-    Updating varnish-configuration.
-    Installing varnish.
-    ...
+    >>> output = system(buildout_bin)
+    >>> if 'Uninstalling varnish.' not in output:
+    ...     print(output)
+    >>> if 'Updating varnish-build.' not in output:
+    ...     print(output)
+    >>> if 'Updating varnish-configuration.' not in output:
+    ...     print(output)
+    >>> if 'Installing varnish.' not in output:
+    ...     print(output)
 
 Check the contents of the control script are correct::
 
@@ -112,12 +117,15 @@ well::
 
 Let's run it::
 
-    >>> print system(buildout_bin)
-    Uninstalling varnish.
-    Updating varnish-build.
-    Updating varnish-configuration.
-    Installing varnish.
-    ...
+    >>> output = system(buildout_bin)
+    >>> if 'Uninstalling varnish.' not in output:
+    ...     print(output)
+    >>> if 'Updating varnish-build.' not in output:
+    ...     print(output)
+    >>> if 'Updating varnish-configuration.' not in output:
+    ...     print(output)
+    >>> if 'Installing varnish.' not in output:
+    ...     print(output)
 
 Check the contents of the control script reflect our new options::
 
@@ -139,12 +147,15 @@ Check if we can disable the pre shared key secret file for varnishadm access::
 
 Let's run it::
 
-    >>> print system(buildout_bin)
-    Uninstalling varnish.
-    Updating varnish-build.
-    Updating varnish-configuration.
-    Installing varnish.
-    ...
+    >>> output = system(buildout_bin)
+    >>> if 'Uninstalling varnish.' not in output:
+    ...     print(output)
+    >>> if 'Updating varnish-build.' not in output:
+    ...     print(output)
+    >>> if 'Updating varnish-configuration.' not in output:
+    ...     print(output)
+    >>> if 'Installing varnish.' not in output:
+    ...     print(output)
 
 Check the contents of the control script reflect our new options::
 
@@ -166,12 +177,15 @@ Check if we can specify a key file for varnishadm access::
 
 Let's run it::
 
-    >>> print system(buildout_bin)
-    Uninstalling varnish.
-    Updating varnish-build.
-    Updating varnish-configuration.
-    Installing varnish.
-    ...
+    >>> output = system(buildout_bin)
+    >>> if 'Uninstalling varnish.' not in output:
+    ...     print(output)
+    >>> if 'Updating varnish-build.' not in output:
+    ...     print(output)
+    >>> if 'Updating varnish-configuration.' not in output:
+    ...     print(output)
+    >>> if 'Installing varnish.' not in output:
+    ...     print(output)
 
 Check the contents of the control script reflect our new options::
 
@@ -194,9 +208,12 @@ Test the varnish download with an older version::
 
 Let's run it::
 
-    >>> print system(buildout_bin)
-    Uninstalling varnish.
-    Updating varnish-build.
-    Updating varnish-configuration.
-    Installing varnish.
-    ...
+    >>> output = system(buildout_bin)
+    >>> if 'Uninstalling varnish.' not in output:
+    ...     print(output)
+    >>> if 'Updating varnish-build.' not in output:
+    ...     print(output)
+    >>> if 'Updating varnish-configuration.' not in output:
+    ...     print(output)
+    >>> if 'Installing varnish.' not in output:
+    ...     print(output)
