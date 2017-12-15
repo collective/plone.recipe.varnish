@@ -4,6 +4,8 @@ Changelog
 2.0a9.0 (unreleased)
 --------------------
 
+- Use varnish 4.1.9.  [cleberjsantos, maurits]
+
 - fix default value for ``COOKIE_PASS_DEFAULT`` not matching any other
   urls than the intended static resources.
   [petschki]
