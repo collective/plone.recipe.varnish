@@ -1,8 +1,8 @@
 Changelog
 =========
 
-2.0a9.0 (unreleased)
---------------------
+2.0 (2017-12-15)
+----------------
 
 - Use varnish 4.1.9.  [cleberjsantos, maurits]
 
