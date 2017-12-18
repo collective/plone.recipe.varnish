@@ -15,9 +15,7 @@ DEFAULT_DOWNLOAD_URLS = {
     '4.1': 'http://varnish-cache.org/_downloads/varnish-4.1.9.tgz',
     '4': 'http://varnish-cache.org/_downloads/varnish-4.1.9.tgz',
 }
-# Testing gives no output for 4.1, waiting for input for some reason.
-# So we stick to 4.0 as default for the moment.
-DEFAULT_VERSION = '4.0'
+DEFAULT_VERSION = '4.1'
 
 COOKIE_WHITELIST_DEFAULT = """\
 statusmessages
