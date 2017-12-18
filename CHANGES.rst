@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.1.0 (unreleased)
+2.1.0 (2017-12-18)
 ------------------
 
 - Use 4.1 version by default (4.0 was default until now).  [maurits]

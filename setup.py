@@ -18,7 +18,7 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 
-version = '2.1.0.dev0'
+version = '2.1.0'
 
 setup(
     name='plone.recipe.varnish',
