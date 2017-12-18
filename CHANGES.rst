@@ -10,7 +10,8 @@ Changelog
 2.0 (2017-12-15)
 ----------------
 
-- Use varnish 4.1.9.  [cleberjsantos, maurits]
+- When using varnish 4.1, use varnish 4.1.9.
+  4.0 is still the default.  [cleberjsantos, maurits]
 
 - fix default value for ``COOKIE_PASS_DEFAULT`` not matching any other
   urls than the intended static resources.
