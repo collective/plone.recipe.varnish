@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
+from . import jinja2env
 from collections import OrderedDict
-from jinja2 import Environment
-from jinja2 import PackageLoader
 from zc.buildout import UserError
 
 import logging
@@ -9,13 +8,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-jinja2env = Environment(
-    loader=PackageLoader('plone.recipe.varnish', 'templates'),
-    trim_blocks=True,
-    lstrip_blocks=True
-)
-TEMPLATES_BY_VCLVERSION = {
-    '4.0': jinja2env.get_template('vcl-4.0.jinja2'),
+TEMPLATES_BY_MAJORVERSION = {
+    '4': jinja2env.get_template('varnish4.vcl.jinja2'),
 }
 
 DIRECTOR_TYPES = [
@@ -28,15 +22,15 @@ class VclGenerator(object):
 
     def __init__(self, cfg):
 
-        version = cfg.get('version', None)
-        if version not in TEMPLATES_BY_VCLVERSION:
+        major = cfg.get('version', None)
+        if major not in TEMPLATES_BY_MAJORVERSION:
             self._log_and_raise(
-                'VCL version must be one out of {0}. Got: {1}. '
+                'Varnish version must be one out of {0}. Got: {1}. '
                 'Use an older version of this recipe to support older '
                 'Varnish. Newer versions than listed here are not '
                 'supported.'.format(
-                    str(TEMPLATES_BY_VCLVERSION.keys()),
-                    version
+                    str(TEMPLATES_BY_MAJORVERSION.keys()),
+                    major
                 )
             )
         self.cfg = cfg
@@ -156,5 +150,5 @@ class VclGenerator(object):
         data['gracehealthy'] = self.cfg['gracehealthy']
         data['gracesick'] = self.cfg['gracesick']
         # render vcl file
-        template = TEMPLATES_BY_VCLVERSION[data['version']]
+        template = TEMPLATES_BY_MAJORVERSION[data['version']]
         return template.render(**data)

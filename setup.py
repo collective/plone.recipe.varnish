@@ -18,7 +18,7 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 
-version = '2.0a6.dev0'
+version = '2.1.1.dev0'
 
 setup(
     name='plone.recipe.varnish',
@@ -34,6 +34,8 @@ setup(
         "Intended Audience :: System Administrators",
         "License :: OSI Approved :: BSD License",
         "Operating System :: POSIX",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 2.7",
         "Topic :: Internet :: Proxy Servers",
     ],
     keywords='buildout varnish cache proxy',
@@ -52,7 +54,7 @@ setup(
         'zc.recipe.cmmi',
     ],
     extras_require = dict(
-        test=['interlude' ]
+        test=['interlude', 'ipdb']
     ),
     tests_require=['pytest'],
     cmdclass = {'test': PyTest},

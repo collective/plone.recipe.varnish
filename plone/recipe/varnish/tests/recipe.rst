@@ -34,16 +34,18 @@ Let's create a minimum buildout that uses the current plone.recipe.varnish::
 
 Let's run it::
 
-    >>> print system(buildout_bin)
-    Installing varnish-build.
-    varnish-build: Downloading ...
-    varnish-build: Unpacking and configuring
-    ...
+    >>> output = system(buildout_bin)
+    >>> if 'Installing varnish-build.' not in output:
+    ...     print(output)
+    >>> if 'varnish-build: Downloading' not in output:
+    ...     print(output)
+    >>> if 'varnish-build: Unpacking and configuring' not in output:
+    ...     print(output)
 
 A control script got created::
 
-    >>> os.listdir('bin')
-    [...'varnish'...]
+    >>> 'varnish' in os.listdir('bin')
+    True
 
 Check the contents of the control script are correct::
 
@@ -60,13 +62,7 @@ Check the contents of the control script are correct::
 Check the config is syntactically correct by compiling it to C::
 
     >>> print system(varnish_bin + ' -C')
-    /* ---===### include/vcl.h ###===--- */
-    <BLANKLINE>
-    /*
-     * NB:  This file is machine generated, DO NOT EDIT!
-     *
-     * Edit and run generate.py instead
-     */
+    /* ---===### include/vdef.h ###===--- */
     <BLANKLINE>
     ...
     const struct VCL_conf VCL_conf = {
@@ -83,12 +79,15 @@ Test out customising the storage options with a new test buildout::
 
 Let's run it::
 
-    >>> print system(buildout_bin)
-    Uninstalling varnish.
-    Updating varnish-build.
-    Updating varnish-configuration.
-    Installing varnish.
-    ...
+    >>> output = system(buildout_bin)
+    >>> if 'Uninstalling varnish.' not in output:
+    ...     print(output)
+    >>> if 'Updating varnish-build.' not in output:
+    ...     print(output)
+    >>> if 'Updating varnish-configuration.' not in output:
+    ...     print(output)
+    >>> if 'Installing varnish.' not in output:
+    ...     print(output)
 
 Check the contents of the control script are correct::
 
@@ -112,12 +111,15 @@ well::
 
 Let's run it::
 
-    >>> print system(buildout_bin)
-    Uninstalling varnish.
-    Updating varnish-build.
-    Updating varnish-configuration.
-    Installing varnish.
-    ...
+    >>> output = system(buildout_bin)
+    >>> if 'Uninstalling varnish.' not in output:
+    ...     print(output)
+    >>> if 'Updating varnish-build.' not in output:
+    ...     print(output)
+    >>> if 'Updating varnish-configuration.' not in output:
+    ...     print(output)
+    >>> if 'Installing varnish.' not in output:
+    ...     print(output)
 
 Check the contents of the control script reflect our new options::
 
@@ -139,12 +141,15 @@ Check if we can disable the pre shared key secret file for varnishadm access::
 
 Let's run it::
 
-    >>> print system(buildout_bin)
-    Uninstalling varnish.
-    Updating varnish-build.
-    Updating varnish-configuration.
-    Installing varnish.
-    ...
+    >>> output = system(buildout_bin)
+    >>> if 'Uninstalling varnish.' not in output:
+    ...     print(output)
+    >>> if 'Updating varnish-build.' not in output:
+    ...     print(output)
+    >>> if 'Updating varnish-configuration.' not in output:
+    ...     print(output)
+    >>> if 'Installing varnish.' not in output:
+    ...     print(output)
 
 Check the contents of the control script reflect our new options::
 
@@ -166,12 +171,15 @@ Check if we can specify a key file for varnishadm access::
 
 Let's run it::
 
-    >>> print system(buildout_bin)
-    Uninstalling varnish.
-    Updating varnish-build.
-    Updating varnish-configuration.
-    Installing varnish.
-    ...
+    >>> output = system(buildout_bin)
+    >>> if 'Uninstalling varnish.' not in output:
+    ...     print(output)
+    >>> if 'Updating varnish-build.' not in output:
+    ...     print(output)
+    >>> if 'Updating varnish-configuration.' not in output:
+    ...     print(output)
+    >>> if 'Installing varnish.' not in output:
+    ...     print(output)
 
 Check the contents of the control script reflect our new options::
 
@@ -188,15 +196,18 @@ Test the varnish download with an older version::
 
     >>> varnish_4 = simplest + '''
     ... varnish_version = 4
-    ... download-url = https://repo.varnish-cache.org/source/varnish-4.0.2.tar.gz
+    ... download-url = http://varnish-cache.org/_downloads/varnish-4.0.5.tgz
     ... '''
     >>> write('buildout.cfg', varnish_4 % globals())
 
 Let's run it::
 
-    >>> print system(buildout_bin)
-    Uninstalling varnish.
-    Updating varnish-build.
-    Updating varnish-configuration.
-    Installing varnish.
-    ...
+    >>> output = system(buildout_bin)
+    >>> if 'Uninstalling varnish.' not in output:
+    ...     print(output)
+    >>> if 'Updating varnish-build.' not in output:
+    ...     print(output)
+    >>> if 'Updating varnish-configuration.' not in output:
+    ...     print(output)
+    >>> if 'Installing varnish.' not in output:
+    ...     print(output)

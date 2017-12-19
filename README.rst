@@ -1,8 +1,9 @@
 .. image:: https://travis-ci.org/collective/plone.recipe.varnish.svg?branch=master
     :target: https://travis-ci.org/collective/plone.recipe.varnish
 
-.. image:: https://coveralls.io/repos/collective/plone.recipe.varnish/badge.svg?branch=master&service=github
+.. image:: https://coveralls.io/repos/github/collective/plone.recipe.varnish/badge.svg?branch=master
     :target: https://coveralls.io/github/collective/plone.recipe.varnish?branch=master
+
 
 Varnish recipe for buildout
 ===========================
@@ -168,14 +169,16 @@ Two parameters are different/ extra:
     needed to your CPU resources.
 
 ``varnish_version``
-    Varnish target version. Default is ``5``.  Options are:
+    Varnish target version. Default is ``4.1``.  Options are:
 
-    - 4.0: uses 4.0.4, will stick to 4.0.x
-    - 4.1: uses 4.1.5, will stick to 4.1.x
-    - 4: uses 4.1.5, will stick to 4.x
+    - 4.0: uses 4.0.5, will stick to 4.0.x
+    - 4.1: uses 4.1.9, will stick to 4.1.x
+    - 4: uses 4.1.9, will stick to 4.x
     - 5.0: uses 5.0.0, will stick to 5.0.x
-    - 5.1: uses 5.1.1, will stick to 5.1.x
-    - 5: uses 5.1.1, will stick to 5.x
+    - 5.1: uses 5.1.3, will stick to 5.1.x
+    - 5: uses 5.2.1, will stick to 5.x
+
+    The exact version and the default version may be changed in future release of this recipe.
 
 
 VCL Configuration Generator
@@ -233,7 +236,7 @@ These options are available for the recipe part plone.recipe.varnish:configurati
     directly to the configured backend bypassing any caching. But if cookie
     applies and url matches urlexcludes, then a lookup is forced. Defaults are
     optimized for Plone, one line:
-    ``"__ac(|_(name|password|persistent))=":"\.(js|css|kss)"``
+    ``"__ac(|_(name|password|persistent))=":"\.(js|css|kss)$"``
 
 ``first-byte-timeout``
     If specified, this option configures the timeout (in seconds) for Varnish
@@ -245,7 +248,7 @@ These options are available for the recipe part plone.recipe.varnish:configurati
     Specifies hostnames or IP addresses for purge ACL. By default ``localhost`` and
     the backends are allowed to purge. Additional allowed hosts are listed here.
 
-``vcl_recv``, ``vcl_hit``, ``vcl_miss``, ``vcl_fetch``, ``vcl_deliver``, ``vcl_pipe``
+``vcl_recv``, ``vcl_hit``, ``vcl_miss``, ``vcl_backend_fetch``, ``vcl_backend_response``, ``vcl_deliver``, ``vcl_pipe``
     Insert arbitrary VCL code into the generated config.
 
 ``verbose-headers``
@@ -272,10 +275,6 @@ These options are available for the recipe part plone.recipe.varnish:configurati
     Defines a virtual host mapping port to use in the VHM URL to send back to
     clients. Useful if there is another port mapping in front of varnish, such
     as haproxy. Defaults to 443.
-
-``vcl-version``
-    Varnish VCL format version.
-    If not given it defaults to ``4.0``.
 
 To test the generated configuration for syntactic correctness, run
 ``varnishd -C -f ./parts/varnish-configuration/varnish.vcl``.
@@ -385,6 +384,10 @@ Start varnish as a daemon or in foreground with the given settings. These option
     If specified sets the hostname and port on which Varnish will listen
     for commands using its telnet interface.
 
+``script-filename``
+    Name of the start script file in ``buildout:bin-directory``.
+    Defaults to the name of this buildout part.
+
 ``secret-file``
 
     In Varnish 4.X the telnet interface is no longer usable without
@@ -417,11 +420,6 @@ Start varnish as a daemon or in foreground with the given settings. These option
     The name of the user varnish should switch to before accepting any
     requests. Defaults to ``nobody``.
 
-``varnish_version``
-    Varnish target version. If not given,
-    it looks for the ``varnish_version`` setting in the build part
-    (see the ``build-part`` setting).
-    If not given there either, it defaults to ``4``.
 
 .. _Varnish: http://varnish-cache.org/
 .. _zc.buildout: http://cheeseshop.python.org/pypi/zc.buildout

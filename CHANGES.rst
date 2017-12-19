@@ -1,18 +1,68 @@
 Changelog
 =========
 
-2.0a6 (unreleased)
+2.1.1 (unreleased)
 ------------------
 
-- Make a difference between the vcl format version and the varnish program version.
-  Eg. while varnish is at 5.1 it uses the vcl 4.0 format.
-  [jensens]
+- Nothing changed yet.
 
-- Use ``deliver`` in vcl_hit, fetch is no longer allowed (varnish 5.x at least).
-  [jensens]
 
-- Add tgz of varnish 5, update to latest varnish 4.
-  [jensens]
+2.1.0 (2017-12-18)
+------------------
+
+- Use 4.1 version by default (4.0 was default until now).  [maurits]
+
+
+2.0 (2017-12-15)
+----------------
+
+- When using varnish 4.1, use varnish 4.1.9.
+  4.0 is still the default.  [cleberjsantos, maurits]
+
+- fix default value for ``COOKIE_PASS_DEFAULT`` not matching any other
+  urls than the intended static resources.
+  [petschki]
+
+
+2.0a8 (2017-11-03)
+------------------
+
+- New: refactor start script as Jinja2 template
+  [petschki]
+
+- Fix to failing travis tests, ``bin/createcoverage`` tries to open browser.
+  [instification]
+
+- Stripped query string before testing which urls to strip cookies on.
+  https://github.com/collective/plone.recipe.varnish/issues/42 [instification]
+
+- Fix custom vcl code insertion for ``vcl_backend_fetch`` and ``vcl_backend_response``
+  Update documentation
+  [petschki]
+
+- Fix parameter for jailed user in ``varnish_version=4.1``
+  [petschki]
+
+- update documentation for ``varnish_version`` which only makes sense to be set in
+  the build-part.
+  [petschki]
+
+
+2.0a7 (2017-08-16)
+------------------
+
+- Changed default downloads to ``.tgz`` instead of ``.tar.gz``.
+  For some reason they were renamed after the last release of this recipe.
+  [maurits]
+
+
+2.0a6 (2017-08-15)
+------------------
+
+- Updated default urls to `varnish security releases <https://varnish-cache.org/security/VSV00001.html>`_.
+  Also updated these urls to not use the ``repo.varnish-cache.org`` domain,
+  because those links will stop working at `31 August 2017 <https://varnish-cache.org/news/index.html#package-repository-status>`_.
+  [maurits]
 
 - Fix VCL director: from round-robin to round_robin, tests refactored.
   [cleberjsantos]
