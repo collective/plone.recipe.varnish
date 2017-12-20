@@ -169,16 +169,13 @@ Two parameters are different/ extra:
     needed to your CPU resources.
 
 ``varnish_version``
-    Varnish target version. Default is ``4.0``.  Options are:
+    Varnish target version. Default is ``4.1``.  Options are:
 
-    - 4.0: uses 4.0.3, will stick to 4.0.x
-    - 4.1: uses 4.1.3, will stick to 4.1.x
-    - 4: uses 4.1.3, will stick to 4.x
+    - 4.0: uses 4.0.5, will stick to 4.0.x
+    - 4.1: uses 4.1.9, will stick to 4.1.x
+    - 4: uses 4.1.9, will stick to 4.x
 
     The exact version and the default version may be changed in future release of this recipe.
-    4.1 seems fine, but gives problems with the tests, so it is not the default yet.
-
-    This version is also used for the configuration and script part.
 
 
 VCL Configuration Generator

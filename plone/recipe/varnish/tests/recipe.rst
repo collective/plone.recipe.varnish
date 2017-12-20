@@ -196,7 +196,7 @@ Test the varnish download with an older version::
 
     >>> varnish_4 = simplest + '''
     ... varnish_version = 4
-    ... download-url = http://varnish-cache.org/_downloads/varnish-4.0.2.tgz
+    ... download-url = http://varnish-cache.org/_downloads/varnish-4.0.5.tgz
     ... '''
     >>> write('buildout.cfg', varnish_4 % globals())
 
