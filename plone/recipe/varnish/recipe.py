@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from . import jinja2env
 from plone.recipe.varnish.vclgen import VclGenerator
 from zc.recipe.cmmi import Recipe as CMMIRecipe
 from zc.recipe.cmmi import system
@@ -19,7 +18,10 @@ DEFAULT_DOWNLOAD_URLS = {
     '5.2': 'http://varnish-cache.org/_downloads/varnish-5.2.1.tgz',
     '5': 'http://varnish-cache.org/_downloads/varnish-5.2.1.tgz',
 }
-DEFAULT_VERSION = '4.1'
+# Testing gives no output for 4.1, waiting for input for some reason.
+# So we stick to 4.0 as default for the moment.
+DEFAULT_VERSION = '5'
+DEFAULT_VCL_VERSION = '4.0'
 
 COOKIE_WHITELIST_DEFAULT = """\
 statusmessages
@@ -29,7 +31,7 @@ __cp
 """
 
 COOKIE_PASS_DEFAULT = """\
-"__ac(|_(name|password|persistent))=":"\.(js|css|kss)$"
+"__ac(|_(name|password|persistent))=":"\.(js|css|kss)"
 """
 COOKIE_PASS_RE = re.compile('"(.*)":"(.*)"')
 
@@ -142,16 +144,13 @@ class ConfigureRecipe(BaseRecipe):
 
         self.options.setdefault('build-part', 'varnish-build')
         self.options.setdefault(
-            'varnish_version',
+            'vcl-version',
             self.get_from_section(
                 self.options['build-part'],
-                'varnish_version',
-                DEFAULT_VERSION
+                'vcl-version',
+                DEFAULT_VCL_VERSION
             )
         )
-        self._version_check()
-        self.options.setdefault('vcl-version', '4.0')
-
         self.options.setdefault(
             'location',
             os.path.join(buildout['buildout']['parts-directory'], self.name)
@@ -278,19 +277,8 @@ class ConfigureRecipe(BaseRecipe):
         self.install()
 
     def create_varnish_configuration(self):
-        major_version = self.options['varnish_version'][0]
-        minor_version = self.options['varnish_version'][-1]
         config = {}
-
-        config['version'] = major_version
-
-        # Preparing for new releases of VCL versions, default is 'vcl 4.0'
-        config['vcl_version'] = self.options.get('vcl-version', '4.0')
-
-        # We use to define the use of the standard purge
-        # module from varnish 5.2, See:
-        # https://varnish-cache.org/docs/5.2/whats-new/changes-5.2.html#vmod-purge
-        config['minor_version'] = minor_version
+        config['version'] = self.options['vcl-version']
 
         # enable verbose varnish headers
         config['verbose'] = self.options['verbose-headers'] == 'on'
@@ -301,6 +289,7 @@ class ConfigureRecipe(BaseRecipe):
         #     self._log_and_raise(
         #         'When using saint-mode verbose headers must be off'
         #     )
+
         config['gracehealthy'] = self.options.get('grace-healthy', None)
         config['gracesick'] = self.options.get('grace-sick', 600)
 
@@ -322,8 +311,8 @@ class ConfigureRecipe(BaseRecipe):
             )
         # inject custom vcl
         config['custom'] = {}
-        for name in ('vcl_recv', 'vcl_hit', 'vcl_miss', 'vcl_backend_fetch',
-                     'vcl_deliver', 'vcl_pipe', 'vcl_backend_response'):
+        for name in ('vcl_recv', 'vcl_hit', 'vcl_miss', 'vcl_fetch',
+                     'vcl_deliver', 'vcl_pipe'):
             config['custom'][name] = self.options.get(name, '')
 
         config['backends'] = self._process_backends()
@@ -357,15 +346,6 @@ class ScriptRecipe(BaseRecipe):
 
         self.options.setdefault('build-part', 'varnish-build')
         self.options.setdefault('configuration-part', 'varnish-configuration')
-
-        self.options.setdefault(
-            'varnish_version',
-            self.get_from_section(
-                self.options['build-part'],
-                'varnish_version',
-                DEFAULT_VERSION
-            )
-        )
 
         self.options.setdefault(
             'daemon',
@@ -404,10 +384,6 @@ class ScriptRecipe(BaseRecipe):
         self.options.setdefault('cache-size', '256M')
         self.options.setdefault('runtime-parameters', '')
         self.options.setdefault('secret-file', 'nosecret')
-        self.options.setdefault('script-filename', os.path.join(
-            self.buildout['buildout']['bin-directory'],
-            self.name
-        ))
 
     def install(self):
         if 'cache-location' not in self.options:
@@ -422,32 +398,54 @@ class ScriptRecipe(BaseRecipe):
                 os.mkdir(self.options['cache-location'])
                 self.options.created(self.options['cache-location'])
 
-        script = self.create_varnish_script()
-        with open(self.options['script-filename'], 'wt') as fio:
-            fio.write(script)
-        os.chmod(self.options['script-filename'], 0o755)
-        self.options.created(self.options['script-filename'])
+        self.create_varnish_script()
         return self.options.created()
 
     def create_varnish_script(self):
-        # render script file
-        data = {}
-        data['version'] = self.options['varnish_version']
-        data['daemon'] = self.options['daemon']
-        data['user'] = self.options.get('user')
-        data['group'] = self.options.get('group')
-        data['cfg_file'] = self.options['configuration-file']
-        data['pid_file'] = os.path.join(
-            self.options['location'], 'varnish.pid')
-        data['bind'] = self.options['bind']
-        data['cache_type'] = self.options['cache-type'].lower()
-        data['cache_location'] = self.options['cache-location']
-        data['cache_size'] = self.options['cache-size']
-        data['mode'] = self.options.get('mode', 'daemon')
-        data['name'] = self.options.get('name')
-        data['secret'] = self.options.get('secret-file', 'nosecret').lower()
-        data['telnet'] = self.options.get('telnet')
-        data['parameters'] = self.options['runtime-parameters'].strip().split()
+        target = os.path.join(
+            self.buildout['buildout']['bin-directory'],
+            self.name
+        )
+        parameters = self.options['runtime-parameters'].strip().split()
 
-        template = jinja2env.get_template('start_script.jinja2')
-        return template.render(data)
+        with open(target, 'wt') as tf:
+            # XXX TODO: refactor me! make this a template.
+            print >>tf, '#!/bin/sh'
+            print >>tf, 'exec %s \\' % self.options['daemon']
+            if 'user' in self.options:
+                print >>tf, '    -p user=%s \\' % self.options['user']
+            if 'group' in self.options:
+                print >>tf, '    -p group=%s \\' % self.options['group']
+            print >>tf, '    -f "%s" \\' % self.options['configuration-file']
+            print >>tf, '    -P "%s" \\' % \
+                os.path.join(self.options['location'], 'varnish.pid')
+            print >>tf, '    -a %s \\' % self.options['bind']
+            if self.options.get('telnet', None):
+                print >>tf, '    -T %s \\' % self.options['telnet']
+            if self.options['cache-type'] == 'malloc':
+                print >>tf, '    -s %s,%s \\' % (
+                    self.options['cache-type'],
+                    self.options['cache-size']
+                )
+            else:
+                print >>tf, '    -s %s,"%s",%s \\' % (
+                    self.options['cache-type'],
+                    self.options['cache-location'],
+                    self.options['cache-size']
+                )
+            if self.options.get('mode', 'daemon') == 'foreground':
+                print >>tf, '    -F \\'
+            if self.options.get('name', None):
+                print >>tf, '    -n %s \\' % self.options['name']
+            if not self.options.get('secret-file', 'nosecret') == 'nosecret':
+                if self.options['secret-file'].lower() == 'disabled':
+                    # disable authentication on admin interface, dangerous
+                    print >>tf, '    -S "" \\'
+                else:
+                    # use shared secret file for admin auth
+                    print >>tf, '    -S %s \\' % self.options['secret-file']
+            for parameter in parameters:
+                print >>tf, '    -p %s \\' % (parameter)
+            print >>tf, '    "$@"'
+        os.chmod(target, 0755)
+        self.options.created(target)
