@@ -60,9 +60,10 @@ Check the contents of the control script are correct::
         "$@"
     <BLANKLINE>
 
-Check the config is syntactically correct by compiling it to C::
-
+Check the config with Varnish 5 is syntactically correct by compiling it to C::
     >>> print system(varnish_bin + ' -C')
+    /* VCC_INFO VMOD...
+    /* VCC_INFO VMOD...
     /* ---===### include/vdef.h ###===--- */
     <BLANKLINE>
     ...
@@ -193,10 +194,10 @@ Check the contents of the control script reflect our new options::
         -S .../sample-buildout/var/varnish-secret \
     ...
 
-Check if Varnish version's 4.x::
+Check if Varnish version's 5.2.x::
 
     >>> output = system(varnishd + ' -V')
-    >>> if 'varnishd (varnish-4.' not in output:
+    >>> if 'varnishd (varnish-5.2.' not in output:
     ...     print(output)
 
 
@@ -209,7 +210,7 @@ Test the varnish download with an older version::
     ...
     ... [varnish-build]
     ... recipe = plone.recipe.varnish:build
-    ... varnish_version = 4
+    ... varnish_version = 4.0
     ... url = http://varnish-cache.org/_downloads/varnish-4.0.5.tgz
     ... jobs = 4
     ...
@@ -236,7 +237,6 @@ Let's run it::
     >>> if 'Installing varnish.' not in output.replace('\n',''):
     ...     print(output)
 
-
 Check if Varnish version's old 4.0.5::
 
     >>> output = system(varnishd + ' -V')
@@ -252,7 +252,7 @@ Test with Varnish 5::
     ...
     ... [varnish-build]
     ... recipe = plone.recipe.varnish:build
-    ... varnish_version = 5
+    ... varnish_version = 5.1
     ... jobs = 4
     ...
     ... [varnish-configuration]
@@ -279,8 +279,8 @@ Let's run it::
     >>> if 'Installing varnish.' not in output:
     ...     print(output)
 
-Check if Varnish version's 5::
+Check if Varnish version's 5.1.x::
 
     >>> output = system(varnishd + ' -V')
-    >>> if 'varnishd (varnish-5.' not in output:
+    >>> if 'varnishd (varnish-5.1.' not in output:
     ...     print(output)

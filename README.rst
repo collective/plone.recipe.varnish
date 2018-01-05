@@ -176,7 +176,7 @@ Two parameters are different/ extra:
     - 4: uses 4.1.9, will stick to 4.x
     - 5.0: uses 5.0.0, will stick to 5.0.x
     - 5.1: uses 5.1.3, will stick to 5.1.x
-    - 5.2: uses 5.1.3, will stick to 5.2.x
+    - 5.2: uses 5.2.1, will stick to 5.2.x
     - 5: uses 5.2.1, will stick to 5.x
 
     The exact version and the default version may be changed in future release of this recipe.

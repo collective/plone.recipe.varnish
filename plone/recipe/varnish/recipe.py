@@ -286,7 +286,10 @@ class ConfigureRecipe(BaseRecipe):
         config['version'] = major_version
 
         # Preparing for new releases of VCL versions, default is 'vcl 4.0'
-        config['vcl_version'] = self.options.get('vcl-version', DEFAULT_VCL_VERSION )
+        config['vcl_version'] = self.options.get(
+            'vcl-version',
+            DEFAULT_VCL_VERSION
+        )
 
         # We use to define the use of the standard purge
         # module from varnish 5.2, See:
