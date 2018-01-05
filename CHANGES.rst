@@ -4,7 +4,10 @@ Changelog
 2.1.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Initial Varnish 5 support.
+  vcl-version parameter has been added to control
+  `Varnish VCL Syntax format version <https://book.varnish-software.com/4.0/chapters/VCL_Basics.html#vcl-syntax>`_.
+  [maurits, jensens, cleberjsantos]
 
 
 2.1.0 (2017-12-18)
