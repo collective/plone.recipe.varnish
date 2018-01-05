@@ -36,6 +36,8 @@ Let's create a minimum buildout that uses the current plone.recipe.varnish::
 Let's run it::
 
     >>> output = system(buildout_bin)
+    >>> if 'Traceback' in output:
+    ...     print(output)
     >>> if 'Installing varnish-build.' not in output:
     ...     print(output)
     >>> if 'varnish-build: Downloading' not in output:
@@ -82,6 +84,8 @@ Test out customising the storage options with a new test buildout::
 Let's run it::
 
     >>> output = system(buildout_bin)
+    >>> if 'Traceback' in output:
+    ...     print(output)
     >>> if 'Uninstalling varnish.' not in output:
     ...     print(output)
     >>> if 'Updating varnish-build.' not in output:
@@ -114,6 +118,8 @@ well::
 Let's run it::
 
     >>> output = system(buildout_bin)
+    >>> if 'Traceback' in output:
+    ...     print(output)
     >>> if 'Uninstalling varnish.' not in output:
     ...     print(output)
     >>> if 'Updating varnish-build.' not in output:
@@ -144,6 +150,8 @@ Check if we can disable the pre shared key secret file for varnishadm access::
 Let's run it::
 
     >>> output = system(buildout_bin)
+    >>> if 'Traceback' in output:
+    ...     print(output)
     >>> if 'Uninstalling varnish.' not in output:
     ...     print(output)
     >>> if 'Updating varnish-build.' not in output:
@@ -174,6 +182,8 @@ Check if we can specify a key file for varnishadm access::
 Let's run it::
 
     >>> output = system(buildout_bin)
+    >>> if 'Traceback' in output:
+    ...     print(output)
     >>> if 'Uninstalling varnish.' not in output:
     ...     print(output)
     >>> if 'Updating varnish-build.' not in output:
@@ -226,6 +236,8 @@ Test the varnish download with an older version::
 Let's run it::
 
     >>> output = system(buildout_bin)
+    >>> if 'Traceback' in output:
+    ...     print(output)
     >>> if 'Uninstalling varnish.' not in output.replace('\n',''):
     ...     print(output)
     >>> if 'Uninstalling varnish-configuration.' not in output.replace('\n',''):
@@ -268,6 +280,8 @@ Test with Varnish 5::
 Let's run it::
 
     >>> output = system(buildout_bin)
+    >>> if 'Traceback' in output:
+    ...     print(output)
     >>> if 'Uninstalling varnish.' not in output:
     ...     print(output)
     >>> if 'Uninstalling varnish-configuration.' not in output:
