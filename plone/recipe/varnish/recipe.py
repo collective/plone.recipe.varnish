@@ -14,8 +14,13 @@ DEFAULT_DOWNLOAD_URLS = {
     '4.0': 'http://varnish-cache.org/_downloads/varnish-4.0.5.tgz',
     '4.1': 'http://varnish-cache.org/_downloads/varnish-4.1.9.tgz',
     '4': 'http://varnish-cache.org/_downloads/varnish-4.1.9.tgz',
+    '5.0': 'http://varnish-cache.org/_downloads/varnish-5.0.0.tgz',
+    '5.1': 'http://varnish-cache.org/_downloads/varnish-5.1.3.tgz',
+    '5.2': 'http://varnish-cache.org/_downloads/varnish-5.2.1.tgz',
+    '5': 'http://varnish-cache.org/_downloads/varnish-5.2.1.tgz',
 }
-DEFAULT_VERSION = '4.1'
+DEFAULT_VERSION = '5'
+DEFAULT_VCL_VERSION = '4.0'
 
 COOKIE_WHITELIST_DEFAULT = """\
 statusmessages
@@ -146,6 +151,7 @@ class ConfigureRecipe(BaseRecipe):
             )
         )
         self._version_check()
+        self.options.setdefault('vcl-version', DEFAULT_VCL_VERSION)
 
         self.options.setdefault(
             'location',
@@ -274,8 +280,21 @@ class ConfigureRecipe(BaseRecipe):
 
     def create_varnish_configuration(self):
         major_version = self.options['varnish_version'][0]
+        minor_version = self.options['varnish_version'][-1]
         config = {}
+
         config['version'] = major_version
+
+        # Preparing for new releases of VCL versions, default is 'vcl 4.0'
+        config['vcl_version'] = self.options.get(
+            'vcl-version',
+            DEFAULT_VCL_VERSION
+        )
+
+        # We use to define the use of the standard purge
+        # module from varnish 5.2, See:
+        # https://varnish-cache.org/docs/5.2/whats-new/changes-5.2.html#vmod-purge
+        config['minor_version'] = minor_version
 
         # enable verbose varnish headers
         config['verbose'] = self.options['verbose-headers'] == 'on'
@@ -286,7 +305,6 @@ class ConfigureRecipe(BaseRecipe):
         #     self._log_and_raise(
         #         'When using saint-mode verbose headers must be off'
         #     )
-
         config['gracehealthy'] = self.options.get('grace-healthy', None)
         config['gracesick'] = self.options.get('grace-sick', 600)
 

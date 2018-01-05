@@ -169,11 +169,15 @@ Two parameters are different/ extra:
     needed to your CPU resources.
 
 ``varnish_version``
-    Varnish target version. Default is ``4.1``.  Options are:
+    Varnish target version. Default is ``5.2``.  Options are:
 
     - 4.0: uses 4.0.5, will stick to 4.0.x
     - 4.1: uses 4.1.9, will stick to 4.1.x
     - 4: uses 4.1.9, will stick to 4.x
+    - 5.0: uses 5.0.0, will stick to 5.0.x
+    - 5.1: uses 5.1.3, will stick to 5.1.x
+    - 5.2: uses 5.2.1, will stick to 5.2.x
+    - 5: uses 5.2.1, will stick to 5.x
 
     The exact version and the default version may be changed in future release of this recipe.
 
@@ -272,6 +276,10 @@ These options are available for the recipe part plone.recipe.varnish:configurati
     Defines a virtual host mapping port to use in the VHM URL to send back to
     clients. Useful if there is another port mapping in front of varnish, such
     as haproxy. Defaults to 443.
+
+``vcl-version``
+    Varnish VCL format version.
+    If not given it defaults to ``4.0``.
 
 To test the generated configuration for syntactic correctness, run
 ``varnishd -C -f ./parts/varnish-configuration/varnish.vcl``.

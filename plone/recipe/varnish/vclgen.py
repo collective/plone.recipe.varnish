@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 TEMPLATES_BY_MAJORVERSION = {
     '4': jinja2env.get_template('varnish4.vcl.jinja2'),
+    '5': jinja2env.get_template('varnish5.vcl.jinja2'),
 }
 
 DIRECTOR_TYPES = [
@@ -21,7 +22,6 @@ DIRECTOR_TYPES = [
 class VclGenerator(object):
 
     def __init__(self, cfg):
-
         major = cfg.get('version', None)
         if major not in TEMPLATES_BY_MAJORVERSION:
             self._log_and_raise(
@@ -139,6 +139,8 @@ class VclGenerator(object):
     def __call__(self):
         data = {}
         data['version'] = self.cfg['version']
+        data['minor_version'] = int(self.cfg.get('minor_version', 1))
+        data['vcl_version'] = self.cfg.get('vcl_version', 4.0)
         data['backends'] = self.cfg['backends']
         data['directors'] = self._directors()
         data['vhosting'] = self._vhostings(data['directors'])
@@ -150,5 +152,5 @@ class VclGenerator(object):
         data['gracehealthy'] = self.cfg['gracehealthy']
         data['gracesick'] = self.cfg['gracesick']
         # render vcl file
-        template = TEMPLATES_BY_MAJORVERSION[data['version']]
+        template = TEMPLATES_BY_MAJORVERSION[data['version'][0]]
         return template.render(**data)
