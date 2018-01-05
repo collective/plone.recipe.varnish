@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.2.0 (unreleased)
+2.2.0 (2018-01-05)
 ------------------
 
 - Initial Varnish 5 support.
