@@ -7,6 +7,8 @@ Changelog
 - Fix custom vcl code insertion for ``vcl_purge``
   [mamico]
 
+- Fix grace-sick default.
+  [mamico]
 
 2.2.0 (2018-01-05)
 ------------------
