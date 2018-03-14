@@ -4,7 +4,8 @@ Changelog
 2.2.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix custom vcl code insertion for ``vcl_purge``
+  [mamico]
 
 
 2.2.0 (2018-01-05)
