@@ -306,7 +306,7 @@ class ConfigureRecipe(BaseRecipe):
         #         'When using saint-mode verbose headers must be off'
         #     )
         config['gracehealthy'] = self.options.get('grace-healthy', None)
-        config['gracesick'] = self.options.get('grace-sick', 600)
+        config['gracesick'] = self.options.get('grace-sick', '600s')
 
         # fixup cookies for better plone caching
         config['cookiewhitelist'] = [

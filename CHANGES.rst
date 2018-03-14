@@ -4,8 +4,8 @@ Changelog
 2.2.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Fix grace-sick default.
+  [mamico]
 
 2.2.0 (2018-01-05)
 ------------------
