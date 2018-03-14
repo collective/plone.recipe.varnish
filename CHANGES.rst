@@ -4,6 +4,9 @@ Changelog
 2.2.1 (unreleased)
 ------------------
 
+- Fix custom vcl code insertion for ``vcl_purge``
+  [mamico]
+
 - Fix grace-sick default.
   [mamico]
 
