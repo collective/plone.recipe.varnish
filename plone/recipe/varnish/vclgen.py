@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 TEMPLATES_BY_MAJORVERSION = {
     '4': jinja2env.get_template('varnish4.vcl.jinja2'),
     '5': jinja2env.get_template('varnish5.vcl.jinja2'),
+    '6': jinja2env.get_template('varnish6.vcl.jinja2'),
 }
 
 DIRECTOR_TYPES = [
@@ -29,7 +30,8 @@ class VclGenerator(object):
                 'Use an older version of this recipe to support older '
                 'Varnish. Newer versions than listed here are not '
                 'supported.'.format(
-                    str(TEMPLATES_BY_MAJORVERSION.keys()),
+                    str(sorted(TEMPLATES_BY_MAJORVERSION.keys(),
+                        reverse=True)),
                     major
                 )
             )

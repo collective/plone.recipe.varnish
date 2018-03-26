@@ -17,7 +17,7 @@ Check init fails on wrong version::
     >>> VclGenerator(config)
     Traceback (most recent call last):
     ...
-    UserError: Varnish version must be one out of ['5', '4']. Got: 3. Use an older version of this recipe to support older Varnish. Newer versions than listed here are not supported.
+    UserError: Varnish version must be one out of ['6', '5', '4']. Got: 3. Use an older version of this recipe to support older Varnish. Newer versions than listed here are not supported.
 
 Correct version::
 
@@ -31,6 +31,14 @@ And with Varnish 5::
 
     >>> config = {
     ...     'version': '5'
+    ... }
+    >>> VclGenerator(config)
+    <plone.recipe.varnish.vclgen.VclGenerator object at 0x...>
+
+And with Varnish 6::
+
+    >>> config = {
+    ...     'version': '6'
     ... }
     >>> VclGenerator(config)
     <plone.recipe.varnish.vclgen.VclGenerator object at 0x...>

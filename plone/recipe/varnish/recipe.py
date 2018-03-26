@@ -18,6 +18,7 @@ DEFAULT_DOWNLOAD_URLS = {
     '5.1': 'http://varnish-cache.org/_downloads/varnish-5.1.3.tgz',
     '5.2': 'http://varnish-cache.org/_downloads/varnish-5.2.1.tgz',
     '5': 'http://varnish-cache.org/_downloads/varnish-5.2.1.tgz',
+    '6': 'http://varnish-cache.org/_downloads/varnish-6.0.0.tgz',
 }
 DEFAULT_VERSION = '5'
 DEFAULT_VCL_VERSION = '4.0'
