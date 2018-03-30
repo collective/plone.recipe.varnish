@@ -4,6 +4,9 @@ Changelog
 2.2.1 (unreleased)
 ------------------
 
+- Initial Varnish 6 support.
+  [cleberjsantos]
+
 - Fix custom vcl code insertion for ``vcl_purge``
   [mamico]
 

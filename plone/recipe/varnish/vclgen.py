@@ -135,7 +135,8 @@ class VclGenerator(object):
 
     def _purgehosts(self):
         purgehosts = set(self.cfg['purgehosts'])
-        purgehosts.update([_['host'] for _ in self.cfg['backends']])
+        purgehosts.update(
+            [_['host'] for _ in self.cfg['backends'] if 'host' in _])
         return purgehosts
 
     def __call__(self):
