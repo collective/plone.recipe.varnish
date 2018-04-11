@@ -17,9 +17,9 @@ Check init fails on wrong version::
     >>> VclGenerator(config)
     Traceback (most recent call last):
     ...
-    UserError: Varnish version must be one out of ['5', '4']. Got: 3. Use an older version of this recipe to support older Varnish. Newer versions than listed here are not supported.
+    UserError: Varnish version must be one out of ['6', '5', '4']. Got: 3. Use an older version of this recipe to support older Varnish. Newer versions than listed here are not supported.
 
-Correct version::
+Correct versions::
 
     >>> config = {
     ...     'version': '4'
@@ -27,10 +27,18 @@ Correct version::
     >>> VclGenerator(config)
     <plone.recipe.varnish.vclgen.VclGenerator object at 0x...>
 
-And with Varnish 5::
+with Varnish 5::
 
     >>> config = {
     ...     'version': '5'
+    ... }
+    >>> VclGenerator(config)
+    <plone.recipe.varnish.vclgen.VclGenerator object at 0x...>
+
+And with Varnish 6::
+
+    >>> config = {
+    ...     'version': '6'
     ... }
     >>> VclGenerator(config)
     <plone.recipe.varnish.vclgen.VclGenerator object at 0x...>
@@ -83,7 +91,7 @@ VHostings
 Basic check::
 
     >>> config = {
-    ...     'version': '4',
+    ...     'version': '5',
     ...     'backends': [],
     ...     'zope2_vhm_map': {},
     ...     'custom': '',
@@ -248,6 +256,26 @@ Check purgehosts. add some manual and then all above hosts should be in too::
          '10.11.22.37',
          '123.123.123.123',
          '192.168.1.2'])
+
+Unix domain sockets as backend addresses::
+
+    >>> config['version'] = '6'
+    >>> config['vcl_version'] = '4.1'
+    >>> config['backends'] = [
+    ...     {
+    ...         'name': 'backend_030',
+    ...         'url': 'foo.org',
+    ...         'path': '/tmp/foo.sock',
+    ...         'connect_timeout': '0.45',
+    ...         'first_byte_timeout': '295s',
+    ...         'between_bytes_timeout': '55s',
+    ...     },
+    ... ]
+
+    >>> vg = VclGenerator(config)
+    >>> pprint(vg._vhostings(directors))
+    [{'match': 'req.http.host ~ "^foo.org(:[0-9]+)?$"',
+      'setters': OrderedDict([('req.backend_hint', 'backend_030')])}]
 
 Generate!
 

@@ -18,6 +18,7 @@ DEFAULT_DOWNLOAD_URLS = {
     '5.1': 'http://varnish-cache.org/_downloads/varnish-5.1.3.tgz',
     '5.2': 'http://varnish-cache.org/_downloads/varnish-5.2.1.tgz',
     '5': 'http://varnish-cache.org/_downloads/varnish-5.2.1.tgz',
+    '6': 'http://varnish-cache.org/_downloads/varnish-6.0.0.tgz',
 }
 DEFAULT_VERSION = '5'
 DEFAULT_VCL_VERSION = '4.0'
@@ -326,8 +327,9 @@ class ConfigureRecipe(BaseRecipe):
             )
         # inject custom vcl
         config['custom'] = {}
-        for name in ('vcl_recv', 'vcl_hit', 'vcl_miss', 'vcl_backend_fetch',
-                     'vcl_purge', 'vcl_deliver', 'vcl_pipe', 'vcl_backend_response'):
+        for name in ('vcl_recv', 'vcl_hit', 'vcl_miss',
+                     'vcl_backend_fetch', 'vcl_purge', 'vcl_deliver',
+                     'vcl_pipe', 'vcl_backend_response'):
             config['custom'][name] = self.options.get(name, '')
 
         config['backends'] = self._process_backends()
