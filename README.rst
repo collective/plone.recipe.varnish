@@ -178,9 +178,14 @@ Two parameters are different/ extra:
     - 5.1: uses 5.1.3, will stick to 5.1.x
     - 5.2: uses 5.2.1, will stick to 5.2.x
     - 5: uses 5.2.1, will stick to 5.x
+    - 6: uses 6.1.1, will stick to 6.x
 
     The exact version and the default version may be changed in future release of this recipe.
 
+``extra_options``
+    This parameter is part of zc.recipe.cmmi and can be used to insert extra options to the
+    ./configure part of building Varnish. For example to skip building documentation, add
+    ``--with-sphinx-build=false``.
 
 VCL Configuration Generator
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~

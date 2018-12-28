@@ -4,6 +4,15 @@ Changelog
 2.2.1 (unreleased)
 ------------------
 
+- Test Varnish 6. Speed up installatin a bit by skipping docs building.
+  [fredvd]
+
+- Update latest available Varnishes, 4.1.0 for 4.X and 6.1.1 for Varnish 6.
+  [fredvd]
+
+- Use latest Plone 4.3.18 and Plone 5.1 for testing.
+  [fredvd]
+
 - Pick up vcl_hash custom code insertion again from the buildout recipe values.
   It was defined in the varnish templates but never picked up.
   [fredvd]

@@ -265,6 +265,52 @@ Test with Varnish 5::
     ... [varnish-build]
     ... recipe = plone.recipe.varnish:build
     ... varnish_version = 5.1
+    ... extra_options = --with-sphinx-build=false
+    ... jobs = 4
+    ...
+    ... [varnish-configuration]
+    ... recipe = plone.recipe.varnish:configuration
+    ... daemon = ${varnish-build:location}/sbin/varnishd
+    ... backends = 127.0.0.1:8081
+    ...
+    ... [varnish]
+    ... recipe = plone.recipe.varnish:script
+    ... bind = 127.0.0.1:8001'''
+    >>> write('buildout.cfg', varnish_5 % globals())
+
+Let's run it::
+
+    >>> output = system(buildout_bin)
+    >>> if 'Traceback' in output:
+    ...     print(output)
+    >>> if 'Uninstalling varnish.' not in output:
+    ...     print(output)
+    >>> if 'Uninstalling varnish-configuration.' not in output:
+    ...     print(output)
+    >>> if 'Uninstalling varnish-build.' not in output:
+    ...     print(output)
+    >>> if 'Installing varnish-configuration.' not in output:
+    ...     print(output)
+    >>> if 'Installing varnish.' not in output:
+    ...     print(output)
+
+Check if Varnish version's 5.1.x::
+
+    >>> output = system(varnishd + ' -V')
+    >>> if 'varnishd (varnish-5.1.' not in output:
+    ...     print(output)
+
+Test with Varnish 6.1::
+
+    >>> varnish_6 = '''
+    ... [buildout]
+    ... parts = varnish-build varnish-configuration varnish
+    ... find-links = %(sample_buildout)s/eggs
+    ...
+    ... [varnish-build]
+    ... recipe = plone.recipe.varnish:build
+    ... varnish_version = 6
+    ... extra_options = --with-sphinx-build=false
     ... jobs = 4
     ...
     ... [varnish-configuration]

@@ -8,10 +8,11 @@ python:
   - 2.7
 env:
   - PLONE_VERSION=4.3.x
-  - PLONE_VERSION=5.0.x
-matrix:
-  allow_failures:
-    - env: PLONE_VERSION=5.0.x
+  - PLONE_VERSION=5.1.x
+
+#matrix:
+#  allow_failures:
+#    - env: PLONE_VERSION=5.0.x
 addons:
   apt:
     packages:
