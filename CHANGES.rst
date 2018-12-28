@@ -4,6 +4,10 @@ Changelog
 2.2.1 (unreleased)
 ------------------
 
+- Pick up vcl_hash custom code insertion again from the buildout recipe values.
+  It was defined in the varnish templates but never picked up.
+  [fredvd]
+
 - Initial Varnish 6 support.
   [cleberjsantos]
 
