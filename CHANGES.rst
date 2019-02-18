@@ -4,6 +4,8 @@ Changelog
 2.2.1 (unreleased)
 ------------------
 
+- Updated default varnish 4 version to latest 4.1.11.  [maurits]
+
 - Pick up vcl_hash custom code insertion again from the buildout recipe values.
   It was defined in the varnish templates but never picked up.
   [fredvd]
