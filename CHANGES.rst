@@ -4,6 +4,9 @@ Changelog
 2.2.1 (unreleased)
 ------------------
 
+- Simplified test buildout setup by not using plone versions.
+  See `issue #69 <https://github.com/collective/plone.recipe.varnish/issues/69>`_.  [maurits]
+
 - Updated default varnish 4 version to latest 4.1.11.  [maurits]
 
 - Pick up vcl_hash custom code insertion again from the buildout recipe values.
