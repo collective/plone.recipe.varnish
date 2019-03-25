@@ -7,11 +7,11 @@ cache:
 python:
   - 2.7
 env:
-  - PLONE_VERSION=4.3.x
-  - PLONE_VERSION=5.0.x
+  - LATEST=false
+  - LATEST=true
 matrix:
   allow_failures:
-    - env: PLONE_VERSION=5.0.x
+    - env: LATEST=true
 addons:
   apt:
     packages:
@@ -28,7 +28,7 @@ before_install:
   - echo "eggs-directory = $HOME/buildout-cache/eggs" >> $HOME/.buildout/default.cfg
   - pip install --upgrade pip setuptools zc.buildout coveralls six==1.10.0
 install:
-  - sed -ie "s#plone-4.3.x.cfg#plone-$PLONE_VERSION.cfg#" travis.cfg
+  - if test "$LATEST" == "true"; then sed -ie "/versions.cfg/d" travis.cfg; fi
   - buildout -N -t 3 -c travis.cfg
 script:
   - bin/code-analysis
