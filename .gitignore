@@ -6,8 +6,8 @@
 .Python
 .installed.cfg
 .mr.developer.cfg
-buildout.cfg
 pip-selfcheck.json
+pyvenv.cfg
 /bin/
 /build/
 /develop-eggs/
