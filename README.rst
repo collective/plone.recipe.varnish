@@ -158,7 +158,7 @@ Build varnish from sources
 `zc.recipe.cmmi <https://pypi.python.org/pypi/zc.recipe.cmmi>`_ - so all
 parameters from that recipe are available here too (but rarely used). These options are available for the recipe part plone.recipe.varnish:build.
 
-Two parameters are different/ extra:
+Three parameters are different/ extra:
 
 ``url``
     Location used for download of varnish sources. Defaults to a version tested
