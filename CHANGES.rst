@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.3.0 (unreleased)
+2.3.0 (2019-03-26)
 ------------------
 
 - Simplified test buildout setup by not using plone versions.
