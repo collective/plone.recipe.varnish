@@ -4,7 +4,15 @@ Changelog
 2.3.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Disable building sphinx documentation in the varnish-build/cmmi stage of installing the software. 
+  [fredvd]
+  
+- Update Varnish versions. Anything below 6.0.X is officially unmaintained. Update versions 6 and 6.0 to latest version 6.0.4
+  [fredvd]
+
+- Set default version to version 6, downloading 6.0.4 if no url is provided.
+  [fredvd]
+
 
 
 2.3.0 (2019-03-26)

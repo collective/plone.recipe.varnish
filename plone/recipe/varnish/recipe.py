@@ -18,9 +18,12 @@ DEFAULT_DOWNLOAD_URLS = {
     '5.1': 'http://varnish-cache.org/_downloads/varnish-5.1.3.tgz',
     '5.2': 'http://varnish-cache.org/_downloads/varnish-5.2.1.tgz',
     '5': 'http://varnish-cache.org/_downloads/varnish-5.2.1.tgz',
-    '6': 'http://varnish-cache.org/_downloads/varnish-6.0.0.tgz',
+    '6': 'http://varnish-cache.org/_downloads/varnish-6.0.4.tgz',
+    '6.0': 'http://varnish-cache.org/_downloads/varnish-6.0.4.tgz',
+    '6.2': 'http://varnish-cache.org/_downloads/varnish-6.2.1.tgz',
+
 }
-DEFAULT_VERSION = '5'
+DEFAULT_VERSION = '6'
 DEFAULT_VCL_VERSION = '4.0'
 
 COOKIE_WHITELIST_DEFAULT = """\
@@ -110,11 +113,13 @@ class BuildRecipe(CMMIRecipe, BaseRecipe):
         This is overidden in order to enable parallel jobs in make.
         """
         options = self.configure_options
+
         if options is None:
             options = '--prefix="%s"' % dest
         if self.extra_options:
             options += ' %s' % self.extra_options
-
+        print ("options: " + options)
+        options += ' --with-sphinx-build=false'
         # C
         system('%s %s' % (self.configure_cmd, options))
 

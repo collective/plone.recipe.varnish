@@ -7,7 +7,6 @@ cache:
 python:
   - 2.7
 env:
-  - LATEST=false
   - LATEST=true
 matrix:
   allow_failures:
