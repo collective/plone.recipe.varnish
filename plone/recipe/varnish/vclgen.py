@@ -9,8 +9,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 TEMPLATES_BY_MAJORVERSION = {
-    '4': jinja2env.get_template('varnish4.vcl.jinja2'),
-    '5': jinja2env.get_template('varnish5.vcl.jinja2'),
     '6': jinja2env.get_template('varnish6.vcl.jinja2'),
 }
 

@@ -8,9 +8,6 @@
 vcl {{vcl_version}};
 
 import std;
-{% if minor_version > 1 %}
-import purge;
-{% endif %}
 
 # configure all backends
 {% for backend in backends %}
@@ -90,11 +87,7 @@ sub vcl_recv {
         if (!client.ip ~ list_purge) {
             return (synth(405, "This IP is not allowed to send PURGE requests."));
         }
-        {% if minor_version > 1 %}
-        return (hash);
-        {% else %}
         return(purge);
-        {% endif %}
     }
 
     if (req.method == "BAN") {
@@ -242,12 +235,8 @@ sub vcl_hit {
 
     if (req.method == "PURGE") {
         set req.method = "GET";
-        {% if minor_version > 1 %}
-        call custom_purge;
-        {% else %}
         set req.http.X-purger = "Purged";
         return(synth(200, "Purged. in hit " + req.url));
-        {% endif %}
     }
 
     // fetch & deliver once we get the result
@@ -259,12 +248,8 @@ sub vcl_miss {
 
     if (req.method == "PURGE") {
         set req.method = "GET";
-        {% if minor_version > 1 %}
-        call custom_purge;
-        {% else %}
         set req.http.X-purger = "Purged-possibly";
         return(synth(200, "Purged. in miss " + req.url));
-        {% endif %}
     }
 
     // fetch & deliver once we get the result
@@ -386,20 +371,3 @@ sub vcl_synth {
 
     return (deliver);
 }
-{% if minor_version > 1 %}
-sub custom_purge {
-    if (req.method == "PURGE") {
-        set req.http.purged = purge.hard();
-    }
-    else {
-        set req.http.purged = purge.soft();
-    }
-
-    if (req.http.purged == "0") {
-        return (synth(404, "Not Found"));
-    }
-    else {
-        return (synth(200, "Purged"));
-    }
-}
-{% endif %}

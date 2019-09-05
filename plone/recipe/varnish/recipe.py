@@ -11,19 +11,12 @@ import zc.buildout
 
 
 DEFAULT_DOWNLOAD_URLS = {
-    '4.0': 'http://varnish-cache.org/_downloads/varnish-4.0.5.tgz',
-    '4.1': 'http://varnish-cache.org/_downloads/varnish-4.1.11.tgz',
-    '4': 'http://varnish-cache.org/_downloads/varnish-4.1.11.tgz',
-    '5.0': 'http://varnish-cache.org/_downloads/varnish-5.0.0.tgz',
-    '5.1': 'http://varnish-cache.org/_downloads/varnish-5.1.3.tgz',
-    '5.2': 'http://varnish-cache.org/_downloads/varnish-5.2.1.tgz',
-    '5': 'http://varnish-cache.org/_downloads/varnish-5.2.1.tgz',
     '6': 'http://varnish-cache.org/_downloads/varnish-6.0.4.tgz',
     '6.0': 'http://varnish-cache.org/_downloads/varnish-6.0.4.tgz',
-    '6.2': 'http://varnish-cache.org/_downloads/varnish-6.2.1.tgz',
+    '6.0.4': 'http://varnish-cache.org/_downloads/varnish-6.0.4.tgz',
 
 }
-DEFAULT_VERSION = '6'
+SUPPORTED_VERSION = '6.0.4'
 DEFAULT_VCL_VERSION = '4.0'
 
 COOKIE_WHITELIST_DEFAULT = """\
@@ -94,7 +87,7 @@ class BuildRecipe(CMMIRecipe, BaseRecipe):
 
     def __init__(self, buildout, name, options):
         BaseRecipe.__init__(self, buildout, name, options)
-        self.options.setdefault('varnish_version', DEFAULT_VERSION)
+        self.options.setdefault('varnish_version', SUPPORTED_VERSION)
         self._version_check()
         self.options.setdefault(
             'url',
@@ -153,7 +146,7 @@ class ConfigureRecipe(BaseRecipe):
             self.get_from_section(
                 self.options['build-part'],
                 'varnish_version',
-                DEFAULT_VERSION
+                SUPPORTED_VERSION
             )
         )
         self._version_check()
