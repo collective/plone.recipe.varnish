@@ -239,11 +239,9 @@ Let's run it::
     ...     print(output)
     >>> if 'Uninstalling varnish.' not in output.replace('\n',''):
     ...     print(output)
-    >>> if 'Uninstalling varnish-configuration.' not in output.replace('\n',''):
-    ...     print(output)
     >>> if 'Uninstalling varnish-build.' not in output.replace('\n',''):
     ...     print(output)
-    >>> if 'Installing varnish-configuration.' not in output.replace('\n',''):
+    >>> if 'Updating varnish-configuration.' not in output.replace('\n',''):
     ...     print(output)
     >>> if 'Installing varnish.' not in output.replace('\n',''):
     ...     print(output)
