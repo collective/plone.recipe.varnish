@@ -18,7 +18,10 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 
-version = '3.6.0.dev0+zest0'
+# 1) recipe gen 3
+# 2-3) support varnish 6.0 LTS.
+# 4) plone.recipe.varnish patch release X.
+version = '3.6.0.0.dev0'
 
 setup(
     name='plone.recipe.varnish',
