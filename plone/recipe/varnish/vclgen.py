@@ -7,10 +7,8 @@ import logging
 
 
 logger = logging.getLogger(__name__)
-
-TEMPLATES_BY_MAJORVERSION = {
-    '6': jinja2env.get_template('varnish6.vcl.jinja2'),
-}
+ 
+VCL_TEMPLATE = 'varnish6.vcl.jinja2'
 
 DIRECTOR_TYPES = [
     'round_robin',
@@ -21,18 +19,6 @@ DIRECTOR_TYPES = [
 class VclGenerator(object):
 
     def __init__(self, cfg):
-        major = cfg.get('version', None)
-        if major not in TEMPLATES_BY_MAJORVERSION:
-            self._log_and_raise(
-                'Varnish version must be one out of {0}. Got: {1}. '
-                'Use an older version of this recipe to support older '
-                'Varnish. Newer versions than listed here are not '
-                'supported.'.format(
-                    str(sorted(TEMPLATES_BY_MAJORVERSION.keys(),
-                        reverse=True)),
-                    major
-                )
-            )
         self.cfg = cfg
 
     def _log_and_raise(self, message):
@@ -139,9 +125,6 @@ class VclGenerator(object):
 
     def __call__(self):
         data = {}
-        data['version'] = self.cfg['version']
-        data['minor_version'] = int(self.cfg.get('minor_version', 1))
-        data['vcl_version'] = self.cfg.get('vcl_version', 4.0)
         data['backends'] = self.cfg['backends']
         data['directors'] = self._directors()
         data['vhosting'] = self._vhostings(data['directors'])
@@ -153,6 +136,7 @@ class VclGenerator(object):
         data['gracehealthy'] = self.cfg['gracehealthy']
         data['gracesick'] = self.cfg['gracesick']
         data['healthprobeurl'] = self.cfg['healthprobeurl']
+        data['vcl_version'] = 4.0
         # render vcl file
-        template = TEMPLATES_BY_MAJORVERSION[data['version'][0]]
+        template = jinja2env.get_template(VCL_TEMPLATE)
         return template.render(**data)

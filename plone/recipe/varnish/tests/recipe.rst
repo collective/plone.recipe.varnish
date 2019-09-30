@@ -19,7 +19,7 @@ Let's create a minimum buildout that uses the current plone.recipe.varnish::
     ... [buildout]
     ... parts = varnish-build varnish-configuration varnish
     ... find-links = %(sample_buildout)s/eggs
-    ...
+    ... index = https://pypi.org/simple/
     ... [varnish-build]
     ... recipe = plone.recipe.varnish:build
     ... jobs = 4
@@ -64,7 +64,6 @@ Check the contents of the control script are correct::
 
 Check the config with Varnish 5 is syntactically correct by compiling it to C::
     >>> print system(varnish_bin + ' -C')
-    /* VCC_INFO VMOD...
     /* VCC_INFO VMOD...
     /* ---===### include/vdef.h ###===--- */
     <BLANKLINE>

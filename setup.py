@@ -18,7 +18,7 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 
-version = '2.3.1.dev0'
+version = '3.6.0.dev0+zest0'
 
 setup(
     name='plone.recipe.varnish',
@@ -52,9 +52,10 @@ setup(
         'setuptools',
         'zc.buildout',
         'zc.recipe.cmmi',
+        'semver>=2.8.1'
     ],
     extras_require = dict(
-        test=['interlude', 'ipdb']
+        test=['interlude', 'ipdb', 'semver']
     ),
     tests_require=['pytest'],
     cmdclass = {'test': PyTest},

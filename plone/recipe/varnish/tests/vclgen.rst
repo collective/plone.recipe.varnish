@@ -9,21 +9,9 @@ Prepare::
 Initialization checks
 =====================
 
-Check init fails on wrong version::
+Create a config object::
 
-    >>> config = {
-    ...     'version': '3'
-    ... }
-    >>> VclGenerator(config)
-    Traceback (most recent call last):
-    ...
-    UserError: Varnish version must be one out of ['6']. Got: 3. Use an older version of this recipe to support older Varnish. Newer versions than listed here are not supported.
-
-Correct versions with Varnish 6::
-
-    >>> config = {
-    ...     'version': '6'
-    ... }
+    >>> config = {}
     >>> VclGenerator(config)
     <plone.recipe.varnish.vclgen.VclGenerator object at 0x...>
 
@@ -75,7 +63,7 @@ VHostings
 Basic check::
 
     >>> config = {
-    ...     'version': '5',
+    ...     'major_version': '6',
     ...     'backends': [],
     ...     'zope2_vhm_map': {},
     ...     'custom': '',
@@ -243,7 +231,7 @@ Check purgehosts. add some manual and then all above hosts should be in too::
 
 Unix domain sockets as backend addresses::
 
-    >>> config['version'] = '6'
+    >>> config['major_version'] = '6'
     >>> config['vcl_version'] = '4.1'
     >>> config['backends'] = [
     ...     {
