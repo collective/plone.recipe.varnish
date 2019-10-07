@@ -18,10 +18,9 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 
-# 1) recipe gen 3
-# 2-3) support varnish 6.0 LTS.
-# 4) plone.recipe.varnish patch release X.
-version = '3.6.0.0.dev0'
+# 1-2) support varnish 6.0 LTS.
+# 3) plone.recipe.varnish patch release X.
+version = '6.0.0.dev0'
 
 setup(
     name='plone.recipe.varnish',
@@ -54,8 +53,7 @@ setup(
         'jinja2>=2.7.3',
         'setuptools',
         'zc.buildout',
-        'zc.recipe.cmmi',
-        'semver>=2.8.1'
+        'zc.recipe.cmmi'
     ],
     extras_require = dict(
         test=['interlude', 'ipdb', 'semver']

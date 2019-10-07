@@ -6,7 +6,6 @@ from zc.recipe.cmmi import system
 import logging
 import os
 import re
-import semver
 import zc.buildout
 
 

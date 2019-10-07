@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.6.0.0 (unreleased)
+6.0.0 (unreleased)
 ------------------
 
 - BREAKING: only support Varnish version 6.0 LTS VCL Generation . If you want to use a different Varnish
