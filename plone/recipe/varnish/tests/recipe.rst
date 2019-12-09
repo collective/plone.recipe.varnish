@@ -208,46 +208,4 @@ Check if Varnish default version's is 6.0.x::
     >>> output = system(varnishd + ' -V')
     >>> if 'varnishd (varnish-6.0.' not in output:
     ...     print(output)
-
-
-Test the varnish download with an older version::
-
-    >>> varnish_4_old = '''
-    ... [buildout]
-    ... parts = varnish-build varnish-configuration varnish
-    ... find-links = %(sample_buildout)s/eggs
-    ...
-    ... [varnish-build]
-    ... recipe = plone.recipe.varnish:build
-    ... varnish_version = 4.1
-    ... url = http://varnish-cache.org/_downloads/varnish-4.1.11.tgz
-    ... jobs = 4
-    ...
-    ... [varnish-configuration]
-    ... recipe = plone.recipe.varnish:configuration
-    ... daemon = ${varnish-build:location}/sbin/varnishd
-    ... backends = 127.0.0.1:8081
-    ...
-    ... [varnish]
-    ... recipe = plone.recipe.varnish:script'''
-    >>> write('buildout.cfg', varnish_4_old % globals())
-
-Let's run it::
-
-    >>> output = system(buildout_bin)
-    >>> if 'Traceback' in output:
-    ...     print(output)
-    >>> if 'Uninstalling varnish.' not in output.replace('\n',''):
-    ...     print(output)
-    >>> if 'Uninstalling varnish-build.' not in output.replace('\n',''):
-    ...     print(output)
-    >>> if 'Updating varnish-configuration.' not in output.replace('\n',''):
-    ...     print(output)
-    >>> if 'Installing varnish.' not in output.replace('\n',''):
-    ...     print(output)
-
-Check if Varnish version's old 4.1.11::
-
-    >>> output = system(varnishd + ' -V')
-    >>> if 'varnishd (varnish-4.1.11 revision' not in output:
-    ...     print(output)
+    

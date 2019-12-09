@@ -18,8 +18,8 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 
-# 1-2) support varnish 6.0 LTS.
-# 3) plone.recipe.varnish patch release X.
+# versioning scheme: major/minor (positions 1-2): support varnish 6.0 LTS.
+# positions 3: lone.recipe.varnish patch release X.
 version = '6.0.0.dev0'
 
 setup(

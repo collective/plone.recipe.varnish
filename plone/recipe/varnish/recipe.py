@@ -9,8 +9,8 @@ import re
 import zc.buildout
 
 
-DOWNLOAD_URL = "http://varnish-cache.org/_downloads/varnish-6.0.4.tgz"
-SUPPORTED_VERSION = "6.0.4"
+DOWNLOAD_URL = "http://varnish-cache.org/_downloads/varnish-6.0.5.tgz"
+SUPPORTED_VERSION = "6.0.5"
 
 COOKIE_WHITELIST_DEFAULT = """\
 statusmessages
