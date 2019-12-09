@@ -313,6 +313,7 @@ class ConfigureRecipe(BaseRecipe):
         #     )
         config['gracehealthy'] = self.options.get('grace-healthy', None)
         config['gracesick'] = self.options.get('grace-sick', '600s')
+        config['healthprobeurl'] = self.options.get('health-probe-url', '/ok')
 
         # fixup cookies for better plone caching
         config['cookiewhitelist'] = [

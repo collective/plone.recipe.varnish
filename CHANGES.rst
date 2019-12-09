@@ -7,6 +7,9 @@ Changelog
 - Run the purge when entering the vcl_hit state
   [erral]
 
+- Add an option to modify the health-check url defaulting to Plone's /ok view.
+  [erral]
+
 - Disable building sphinx documentation in the varnish-build/cmmi stage of installing the software.
   [fredvd]
 
