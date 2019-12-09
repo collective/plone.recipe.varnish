@@ -4,9 +4,12 @@ Changelog
 2.3.1 (unreleased)
 ------------------
 
-- Disable building sphinx documentation in the varnish-build/cmmi stage of installing the software. 
+- Add an option to modify the health-check url defaulting to Plone's /ok view.
+  [erral]
+
+- Disable building sphinx documentation in the varnish-build/cmmi stage of installing the software.
   [fredvd]
-  
+
 - Update Varnish versions. Anything below 6.0.X is officially unmaintained. Update versions 6 and 6.0 to latest version 6.0.4
   [fredvd]
 
