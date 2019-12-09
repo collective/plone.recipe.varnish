@@ -198,6 +198,14 @@ sub vcl_purge {
 
 sub vcl_hit {
     {{custom['vcl_hit']}}
+
+    if (req.method == "PURGE") {
+        set req.method = "GET";
+        set req.http.X-purger = "Purged";
+        return(synth(200, "Purged. in hit " + req.url));
+    }
+
+
     if (obj.ttl >= 0s) {
         // A pure unadultered hit, deliver it
         # normal hit
@@ -228,12 +236,6 @@ sub vcl_hit {
         }
     }
     {% endif %}
-
-    if (req.method == "PURGE") {
-        set req.method = "GET";
-        set req.http.X-purger = "Purged";
-        return(synth(200, "Purged. in hit " + req.url));
-    }
 
     // fetch & deliver once we get the result
     return (fetch);

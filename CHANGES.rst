@@ -4,9 +4,12 @@ Changelog
 2.3.1 (unreleased)
 ------------------
 
-- Disable building sphinx documentation in the varnish-build/cmmi stage of installing the software. 
+- Run the purge when entering the vcl_hit state
+  [erral]
+
+- Disable building sphinx documentation in the varnish-build/cmmi stage of installing the software.
   [fredvd]
-  
+
 - Update Varnish versions. Anything below 6.0.X is officially unmaintained. Update versions 6 and 6.0 to latest version 6.0.4
   [fredvd]
 
