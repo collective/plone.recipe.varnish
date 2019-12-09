@@ -26,7 +26,7 @@ backend {{backend['name']}} {
    .between_bytes_timeout  = {{backend['between_bytes_timeout']}};
    {% if gracehealthy %}
    .probe = {
-        .url = "/";
+        .url = "{{healthprobeurl}}";
         .timeout = 5s;
         .interval = 15s;
         .window = 10;
@@ -403,4 +403,3 @@ sub custom_purge {
     }
 }
 {% endif %}
-

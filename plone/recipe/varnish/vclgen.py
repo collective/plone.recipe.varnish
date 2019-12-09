@@ -154,6 +154,7 @@ class VclGenerator(object):
         data['code404page'] = self.cfg['code404page']
         data['gracehealthy'] = self.cfg['gracehealthy']
         data['gracesick'] = self.cfg['gracesick']
+        data['healthprobeurl'] = self.cfg['healthprobeurl']
         # render vcl file
         template = TEMPLATES_BY_MAJORVERSION[data['version'][0]]
         return template.render(**data)
