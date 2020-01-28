@@ -74,6 +74,7 @@ Basic check::
     ...     ],
     ...     'gracehealthy': '10s',
     ...     'gracesick': '1h',
+    ...     'healthprobeurl':'/ok',
     ...     'code404page' : True,
     ... }
     >>> vg = VclGenerator(config)
