@@ -21,7 +21,7 @@ __cp
 
 DEFAULT_VCL_HASH = """\
 hash_data(req.url);
-return(lookup);    
+return(lookup);
 """
 
 COOKIE_PASS_DEFAULT = """\

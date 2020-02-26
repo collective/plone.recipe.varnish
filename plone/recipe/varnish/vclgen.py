@@ -7,7 +7,7 @@ import logging
 
 
 logger = logging.getLogger(__name__)
- 
+
 VCL_TEMPLATE = 'varnish6.vcl.jinja2'
 
 DIRECTOR_TYPES = [
