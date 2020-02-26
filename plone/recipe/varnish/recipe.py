@@ -19,7 +19,7 @@ _ZopeId
 __cp
 """
 
-DEFAULT_VCL)_HASH = """\
+DEFAULT_VCL_HASH = """\
 hash_data(req.url);
 return(lookup);    
 """
