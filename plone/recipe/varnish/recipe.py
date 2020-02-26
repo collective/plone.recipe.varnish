@@ -9,14 +9,19 @@ import re
 import zc.buildout
 
 
-DOWNLOAD_URL = "http://varnish-cache.org/_downloads/varnish-6.0.5.tgz"
-SUPPORTED_VERSION = "6.0.5"
+DOWNLOAD_URL = "http://varnish-cache.org/_downloads/varnish-6.0.6.tgz"
+SUPPORTED_VERSION = "6.0.6"
 
 COOKIE_WHITELIST_DEFAULT = """\
 statusmessages
 __ac
 _ZopeId
 __cp
+"""
+
+DEFAULT_VCL)_HASH = """\
+hash_data(req.url);
+return(lookup);    
 """
 
 COOKIE_PASS_DEFAULT = """\
@@ -133,6 +138,8 @@ class ConfigureRecipe(BaseRecipe):
         self.options.setdefault("purge-hosts", "")
         self.options.setdefault("cookie-pass", COOKIE_PASS_DEFAULT)
         self.options.setdefault("cookie-whitelist", COOKIE_WHITELIST_DEFAULT)
+        # Set default vcl_hash function so it doesn't use the default.vcl hostname
+        self.options.setdefault("vcl_hash", DEFAULT_VCL_HASH)
         # set and test for valid bind value
         self.options.setdefault("bind", "127.0.0.1:8000")
         self._process_bind()

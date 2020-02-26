@@ -1,12 +1,20 @@
 Changelog
 =========
 
-6.0.0 (unreleased)
+6.0.0b1 (unreleased)
 ------------------
 
-- BREAKING: only support Varnish version 6.0 LTS VCL Generation . If you want to use a different Varnish
-  version with this recipe, provide your own vcl and a custom link to a varnish download url.
+- BREAKING: only support Varnish version 6.0 LTS and generates config (VCL) for this version
+  only as well. If you want to use a different Varnish version with this recipe to use the
+  software build and runner setup, provide your own VCL and a custom link to a Varnish
+  download url. (Closes #70)
   [fredvd]
+
+- Update to Varnish 6.0.6 LTS security release. [fredvd]
+
+- Set default vcl_hash value so the fallback default.vcl hash function doesn't get activated. This
+  will break purging because the hash from the incoming request on your public dns/hostname will
+  never match the internal hostname when Plone makes the purge request. (Closes #61, Refs #70)
 
 - Add an option to modify the health-check url defaulting to Plone's /ok view.
   [erral]
