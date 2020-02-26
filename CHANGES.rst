@@ -1,8 +1,8 @@
 Changelog
 =========
 
-6.0.0b1 (unreleased)
-------------------
+6.0.0b1 (2020-02-26)
+--------------------
 
 - BREAKING: only support Varnish version 6.0 LTS and generates config (VCL) for this version
   only as well. If you want to use a different Varnish version with this recipe to use the
