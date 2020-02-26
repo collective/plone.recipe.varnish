@@ -66,36 +66,36 @@ a drop in placement, there are a few area's of expertise which you can learn
 about to understand and test for a performant but stable Varnish set up.
 
 * If you use this recipe, you will use buildout and a common setup for
-'single' projects is that your Varnish will only cache for one Plone site. An
-inherent problem with caching is cache invalidation: when an editor changes a
-page you want to make sure the next delivery for this content item fetched
-freshly from the backend (Plone) site. Plone's caching setup can be configured
-to send a purge requests for changed content to Varnish. The calculated has
-plays an essential role in this type of purging: if the calculated hash from
-the client request is different from the calculated hash on the purge request,
-purging will fail. 
+  'single' projects is that your Varnish will only cache for one Plone site. An
+  inherent problem with caching is cache invalidation: when an editor changes a
+  page you want to make sure the next delivery for this content item fetched
+  freshly from the backend (Plone) site. Plone's caching setup can be configured
+  to send a purge requests for changed content to Varnish. The calculated has
+  plays an essential role in this type of purging: if the calculated hash from
+  the client request is different from the calculated hash on the purge request,
+  purging will fail. 
 
 * There are clever alternative purge request setups, which can improve freshness
-but you really have to know what you are doing and experience so far is that 
-more advanced schemes have broken between Varnish upgrades. 
+  but you really have to know what you are doing and experience so far is that 
+  more advanced schemes have broken between Varnish upgrades. 
 
 * Especially if you have multiple backends and you let Varnish do the load
-balancing, don't forget to enable the grace-sick and grace-healthy options.
-When the recipe notices there parameters, it automatically enables health probe
-settings in the generated vcl. grace helps serving pages temporarily when your
-backends are temporarily down.
+  balancing, don't forget to enable the grace-sick and grace-healthy options.
+  When the recipe notices there parameters, it automatically enables health probe
+  settings in the generated vcl. grace helps serving pages temporarily when your
+  backends are temporarily down.
 
 * As soon as a cookie appears on an incoming request, Varnish will not cache the request
-and even store the url in a 'hit for pass' buffer so that subsequent similar requests
-don't get delayed by waiting in the backend request queue. The generated vcl has a function
-which strips off most irrelevant cookies from incomiing requests before they get passed
-to the backend to increas cache hit rate. the __ac cookie is the most notable exception,
-this indicated for Plone a user is logged in and caching should be disabled. 
+  and even store the url in a 'hit for pass' buffer so that subsequent similar requests
+  don't get delayed by waiting in the backend request queue. The generated vcl has a function
+  which strips off most irrelevant cookies from incomiing requests before they get passed
+  to the backend to increas cache hit rate. the __ac cookie is the most notable exception,
+  this indicated for Plone a user is logged in and caching should be disabled. 
 
 * You can monitor Varnish caching operations in great detail by learning how to
-use varnishlog and the query language, but it will take at least a few hours if
-you have never used this tool before. It is easy to draw the wrong
-conclusions from just poking around a bit in varnishlog and seeing hits or misses.
+  use varnishlog and the query language, but it will take at least a few hours if
+  you have never used this tool before. It is easy to draw the wrong conclusions
+  from just poking around a bit in varnishlog and seeing hits or misses.
 
 
 Virtual hosting
