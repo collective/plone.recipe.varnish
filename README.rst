@@ -16,11 +16,11 @@ PLEASE NOTE: Version 6.x of this recipe now 'supports' Varnish 6.0 LTS only. Tem
 generation support for older unsupported Varnish versions or the intermediate
 development versions have been removed.  Varnish Software (the company) has switched
 to a half yearly time boxed release cycles without rigorous quality assurance, from
-which an lts version is picked when deemed stable enough. 
+which an lts version is picked when deemed stable enough.
 
 If you have custom vcl and/or want to use your current recipe, you can keep
 plone.recipe.varnish pinned to versions 2.x, or you can use this 6.x version of the
-recipe, but provide parameters for a custom download url and custom vcl file. 
+recipe, but provide parameters for a custom download url and custom vcl file.
 
 
 Configuring it is very simple. For example::
@@ -73,11 +73,11 @@ about to understand and test for a performant but stable Varnish set up.
   to send a purge requests for changed content to Varnish. The calculated has
   plays an essential role in this type of purging: if the calculated hash from
   the client request is different from the calculated hash on the purge request,
-  purging will fail. 
+  purging will fail.
 
 * There are clever alternative purge request setups, which can improve freshness
-  but you really have to know what you are doing and experience so far is that 
-  more advanced schemes have broken between Varnish upgrades. 
+  but you really have to know what you are doing and experience so far is that
+  more advanced schemes have broken between Varnish upgrades.
 
 * Especially if you have multiple backends and you let Varnish do the load
   balancing, don't forget to enable the grace-sick and grace-healthy options.
@@ -90,7 +90,7 @@ about to understand and test for a performant but stable Varnish set up.
   don't get delayed by waiting in the backend request queue. The generated vcl has a function
   which strips off most irrelevant cookies from incomiing requests before they get passed
   to the backend to increas cache hit rate. the __ac cookie is the most notable exception,
-  this indicated for Plone a user is logged in and caching should be disabled. 
+  this indicated for Plone a user is logged in and caching should be disabled.
 
 * You can monitor Varnish caching operations in great detail by learning how to
   use varnishlog and the query language, but it will take at least a few hours if
@@ -318,6 +318,31 @@ These options are available for the recipe part plone.recipe.varnish:configurati
     Varnish VCL format version.
     If not given it defaults to ``4.0``.
 
+``grace-healthy``
+    Grace in the context of Varnish means delivering otherwise expired objects
+    when circumstances call for it. This can happen because:
+    (1) the backend-director selected is down, or
+    (2) a different thread has already made a request to the backend that's
+    not yet finished.
+
+    If the backend is healthy, accept objects that are this number of seconds
+    old. Clients will be delivered content that is no more than number of
+    seconds past its TTL.
+
+    Format: number followed by a time unit: ms, s, m, h.
+
+    Defaults to ``None``. If this is set to ``None`` the grace
+    feature is disabled.
+
+``grace-sick``
+    If the backend is sick, accept objects that are this old.
+    See also ``grace-healthy``.
+
+    Format: number followed by a time unit: ms, s, m, h.
+
+    Defaults to ``600s``. Should be greater than ``grace-healthy``.
+
+
 To test the generated configuration for syntactic correctness, run
 ``varnishd -C -f ./parts/varnish-configuration/varnish.vcl``.
 
@@ -372,30 +397,6 @@ Start varnish as a daemon or in foreground with the given settings. These option
     If there is no build part, it defaults to ``/usr/sbin/varnishd`` - the
     most common place
     where it's found on many Unix systems. Adjust it if needed.
-
-``grace-healthy``
-    Grace in the context of Varnish means delivering otherwise expired objects
-    when circumstances call for it. This can happen because:
-    (1) the backend-director selected is down, or
-    (2) a different thread has already made a request to the backend that's
-    not yet finished.
-
-    If the backend is healthy, accept objects that are this number of seconds
-    old. Clients will be delivered content that is no more than number of
-    seconds past its TTL.
-
-    Format: number followed by a time unit: ms, s, m, h.
-
-    Defaults to ``None``. If this is set to ``None`` the grace
-    feature is disabled.
-
-``grace-sick``
-    If the backend is sick, accept objects that are this old.
-    See also ``grace-healthy``.
-
-    Format: number followed by a time unit: ms, s, m, h.
-
-    Defaults to ``600s``. Should be greater than ``grace-healthy``.
 
 ``group``
     The name of the group that varnish should switch to before accepting any
