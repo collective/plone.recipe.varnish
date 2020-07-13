@@ -9,6 +9,19 @@ vcl {{vcl_version}};
 
 import std;
 
+{% if gracehealthy %}
+probe backend_probe {
+    .url = "{{healthprobeurl}}";
+    .timeout = {{healthprobetimeout}};
+    .interval = {{healthprobeinterval}};
+    .window = {{healthprobewindow}};
+    .threshold = {{healthprobethreshold}};
+    {% if healthprobeinitial %}
+    .initial = {{healthprobeinitial}};
+    {% endif %}
+}
+{% endif %}
+
 # configure all backends
 {% for backend in backends %}
 backend {{backend['name']}} {
@@ -22,13 +35,7 @@ backend {{backend['name']}} {
    .first_byte_timeout = {{backend['first_byte_timeout']}};
    .between_bytes_timeout  = {{backend['between_bytes_timeout']}};
    {% if gracehealthy %}
-   .probe = {
-        .url = "{{healthprobeurl}}";
-        .timeout = 5s;
-        .interval = 15s;
-        .window = 10;
-        .threshold = 8;
-    }
+   .probe = backend_probe;
     {% endif %}
 }
 {% endfor %}

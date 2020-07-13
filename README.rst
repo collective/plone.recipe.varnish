@@ -16,11 +16,11 @@ PLEASE NOTE: Version 6.x of this recipe now 'supports' Varnish 6.0 LTS only. Tem
 generation support for older unsupported Varnish versions or the intermediate
 development versions have been removed.  Varnish Software (the company) has switched
 to a half yearly time boxed release cycles without rigorous quality assurance, from
-which an lts version is picked when deemed stable enough. 
+which an lts version is picked when deemed stable enough.
 
 If you have custom vcl and/or want to use your current recipe, you can keep
 plone.recipe.varnish pinned to versions 2.x, or you can use this 6.x version of the
-recipe, but provide parameters for a custom download url and custom vcl file. 
+recipe, but provide parameters for a custom download url and custom vcl file.
 
 
 Configuring it is very simple. For example::
@@ -73,11 +73,11 @@ about to understand and test for a performant but stable Varnish set up.
   to send a purge requests for changed content to Varnish. The calculated has
   plays an essential role in this type of purging: if the calculated hash from
   the client request is different from the calculated hash on the purge request,
-  purging will fail. 
+  purging will fail.
 
 * There are clever alternative purge request setups, which can improve freshness
-  but you really have to know what you are doing and experience so far is that 
-  more advanced schemes have broken between Varnish upgrades. 
+  but you really have to know what you are doing and experience so far is that
+  more advanced schemes have broken between Varnish upgrades.
 
 * Especially if you have multiple backends and you let Varnish do the load
   balancing, don't forget to enable the grace-sick and grace-healthy options.
@@ -90,7 +90,7 @@ about to understand and test for a performant but stable Varnish set up.
   don't get delayed by waiting in the backend request queue. The generated vcl has a function
   which strips off most irrelevant cookies from incomiing requests before they get passed
   to the backend to increas cache hit rate. the __ac cookie is the most notable exception,
-  this indicated for Plone a user is logged in and caching should be disabled. 
+  this indicated for Plone a user is logged in and caching should be disabled.
 
 * You can monitor Varnish caching operations in great detail by learning how to
   use varnishlog and the query language, but it will take at least a few hours if
@@ -198,7 +198,6 @@ The ``plone.recipe.varnish`` recipe does one or more of the following:
     generates a wrapper script inside your buildout that will start Varnish
     with the correct configuration.
 
-Please note that this recipe requires Varnish 4.0.x or later.
 
 
 Build varnish from sources
@@ -317,6 +316,23 @@ These options are available for the recipe part plone.recipe.varnish:configurati
 ``vcl-version``
     Varnish VCL format version.
     If not given it defaults to ``4.0``.
+
+``health-probe-*``
+    Settings for backend health probes. Probes are activated if `grace-healthy` is set.
+
+    See https://varnish-cache.org/docs/6.0/reference/vcl.html#probes for a
+    detailed explanation of each setting.
+
+    * `health-probe-url`: defaults to ``/ok``
+    * `health-probe-timeout`: defaults to ``5s``
+    * `health-probe-interval`: defaults to ``15s``
+    * `health-probe-window`: defaults to ``10``
+    * `health-probe-threshold`: defaults to ``8``
+    * `health-probe-initial`: If not given varnish will default to `threshold -1`
+
+
+https://varnish-cache.org/docs/6.0/reference/vcl.html#probes
+
 
 To test the generated configuration for syntactic correctness, run
 ``varnishd -C -f ./parts/varnish-configuration/varnish.vcl``.

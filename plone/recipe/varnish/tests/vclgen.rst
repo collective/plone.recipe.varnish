@@ -74,7 +74,6 @@ Basic check::
     ...     ],
     ...     'gracehealthy': '10s',
     ...     'gracesick': '1h',
-    ...     'healthprobeurl':'/ok',
     ...     'code404page' : True,
     ... }
     >>> vg = VclGenerator(config)
@@ -255,3 +254,89 @@ Generate!
     >>> result = vg()
     >>> len(result) > 8000
     True
+
+
+Backend probes
+--------------
+
+
+When gracehealthy is set, probes for the backend are activated::
+
+    >>> config = {
+    ...     'major_version': '6',
+    ...     'zope2_vhm_map': {},
+    ...     'custom': '',
+    ...     'cookiewhitelist': ['statusmessages', '__ac',],
+    ...     'cookiepass': [
+    ...         {'match': '__ac(|_(name|password|persistent))=',
+    ...          'exclude': '\.(js|css|kss)' }
+    ...     ],
+    ...     'gracehealthy': '10s',
+    ...     'gracesick': '1h',
+    ...     'code404page' : True,
+    ...     'purgehosts': [],
+    ... }
+
+    >>> config['backends'] = [
+    ...     {
+    ...         'name': 'backend_000',
+    ...         'url': None,
+    ...         'host': '10.11.22.33',
+    ...         'port': '8080',
+    ...         'connect_timeout': '10',
+    ...         'first_byte_timeout': '20',
+    ...         'between_bytes_timeout': '30',
+    ...     }
+    ... ]
+
+    >>> config['directors'] = [
+    ...     {
+    ...         'type': 'round_robin',
+    ...         'name': 'alpha',
+    ...         'backends': ['backend_000']
+    ...     }
+    ... ]
+    >>> vg = VclGenerator(config)
+    >>> print vg()
+    # This a configuration file for varnish.
+    ...
+    probe backend_probe {
+        .url = "/ok";
+        .timeout = 5s;
+        .interval = 15s;
+        .window = 10;
+        .threshold = 8;
+    }
+    <BLANKLINE>
+    ...
+    backend backend_000 {
+       .host = "10.11.22.33";
+       .port = "8080";
+       .connect_timeout = 10;
+       .first_byte_timeout = 20;
+       .between_bytes_timeout  = 30;
+       .probe = backend_probe;
+    }
+    ...
+
+Provide non-default values. If initial is set, it is added to the config as well::
+
+    >>> config['healthprobeurl'] = '/test'
+    >>> config['healthprobetimeout'] = '1s'
+    >>> config['healthprobeinterval'] = '5s'
+    >>> config['healthprobewindow'] = '3'
+    >>> config['healthprobethreshold'] = '2'
+    >>> config['healthprobeinitial'] = '1'
+
+    >>> print VclGenerator(config)()
+    # This a configuration file for varnish.
+    ...
+    probe backend_probe {
+        .url = "/test";
+        .timeout = 1s;
+        .interval = 5s;
+        .window = 3;
+        .threshold = 2;
+        .initial = 1;
+    }
+    ...
