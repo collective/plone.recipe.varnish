@@ -1,7 +1,7 @@
 Changelog
 =========
 
-6.0.0b2 (unreleased)
+6.0.0b2 (2020-07-14)
 --------------------
 
 - Add options to configure backend health checks [frisi]
