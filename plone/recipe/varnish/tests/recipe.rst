@@ -203,9 +203,8 @@ Check the contents of the control script reflect our new options::
         -S .../sample-buildout/var/varnish-secret \
     ...
 
-Check if Varnish default version's is 6.0.x::
+Check if Varnish default version is 6.0.x::
 
     >>> output = system(varnishd + ' -V')
     >>> if 'varnishd (varnish-6.0.' not in output:
     ...     print(output)
-    

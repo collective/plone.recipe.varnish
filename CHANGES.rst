@@ -4,7 +4,7 @@ Changelog
 6.0.0b2 (unreleased)
 --------------------
 
-- Nothing changed yet.
+- Add options to configure backend health checks [frisi]
 
 
 6.0.0b1 (2020-02-26)
@@ -25,7 +25,7 @@ Changelog
 - Add an option to modify the health-check url defaulting to Plone's /ok view.
   [erral]
 
-- Disable building sphinx documentation in the varnish-build/cmmi stage of installing the software. 
+- Disable building sphinx documentation in the varnish-build/cmmi stage of installing the software.
   [fredvd]
 
 - Update Varnish versions. Anything below 6.0.X is officially unmaintained. Update versions 6 and 6.0 to latest version 6.0.4

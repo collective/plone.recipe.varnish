@@ -254,7 +254,12 @@ class ConfigureRecipe(BaseRecipe):
         #     )
         config['gracehealthy'] = self.options.get('grace-healthy', None)
         config['gracesick'] = self.options.get('grace-sick', '600s')
-        config['healthprobeurl'] = self.options.get('health-probe-url', '/ok')
+        config['healthprobeurl'] = self.options.get('health-probe-url', None)
+        config['healthprobetimeout'] = self.options.get('health-probe-timeout', None)
+        config['healthprobeinterval'] = self.options.get('health-probe-interval', None)
+        config['healthprobewindow'] = self.options.get('health-probe-window', None)
+        config['healthprobethreshold'] = self.options.get('health-probe-threshold', None)
+        config['healthprobeinitial'] = self.options.get('health-probe-initial', None)
 
         # fixup cookies for better plone caching
         config["cookiewhitelist"] = [
@@ -316,7 +321,7 @@ class ScriptRecipe(BaseRecipe):
         self.options.setdefault(
             "daemon",
             self.get_from_section(self.options["build-part"], "location", "/usr")
-            + "/sbin/varnishd",
+            +"/sbin/varnishd",
         )
 
         self.options.setdefault(

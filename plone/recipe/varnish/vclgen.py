@@ -135,7 +135,13 @@ class VclGenerator(object):
         data['code404page'] = self.cfg['code404page']
         data['gracehealthy'] = self.cfg['gracehealthy']
         data['gracesick'] = self.cfg['gracesick']
-        data['healthprobeurl'] = self.cfg['healthprobeurl']
+        data['healthprobeurl'] = self.cfg.get('healthprobeurl', '/ok')
+        data['healthprobetimeout'] = self.cfg.get('healthprobetimeout', '5s')
+        data['healthprobeinterval'] = self.cfg.get('healthprobeinterval', '15s')
+        data['healthprobewindow'] = self.cfg.get('healthprobewindow', '10')
+        data['healthprobethreshold'] = self.cfg.get('healthprobethreshold', '8')
+        data['healthprobeinitial'] = self.cfg.get('healthprobeinitial', None)
+
         data['vcl_version'] = 4.0
         # render vcl file
         template = jinja2env.get_template(VCL_TEMPLATE)

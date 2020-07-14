@@ -198,7 +198,6 @@ The ``plone.recipe.varnish`` recipe does one or more of the following:
     generates a wrapper script inside your buildout that will start Varnish
     with the correct configuration.
 
-Please note that this recipe requires Varnish 4.0.x or later.
 
 
 Build varnish from sources
@@ -317,6 +316,19 @@ These options are available for the recipe part plone.recipe.varnish:configurati
 ``vcl-version``
     Varnish VCL format version.
     If not given it defaults to ``4.0``.
+
+``health-probe-*``
+    Settings for backend health probes. Probes are activated if `grace-healthy` is set.
+
+    See https://varnish-cache.org/docs/6.0/reference/vcl.html#probes for a
+    detailed explanation of each setting.
+
+    * `health-probe-url`: defaults to ``/ok``
+    * `health-probe-timeout`: defaults to ``5s``
+    * `health-probe-interval`: defaults to ``15s``
+    * `health-probe-window`: defaults to ``10``
+    * `health-probe-threshold`: defaults to ``8``
+    * `health-probe-initial`: If not given varnish will default to `threshold -1`
 
 ``grace-healthy``
     Grace in the context of Varnish means delivering otherwise expired objects
