@@ -6,6 +6,8 @@ Changelog
 
 - Add options to configure backend health checks [frisi]
 
+- Update documentation for health probes. [frisi]
+
 
 6.0.0b1 (2020-02-26)
 --------------------
