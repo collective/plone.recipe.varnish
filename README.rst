@@ -330,8 +330,29 @@ These options are available for the recipe part plone.recipe.varnish:configurati
     * `health-probe-threshold`: defaults to ``8``
     * `health-probe-initial`: If not given varnish will default to `threshold -1`
 
+``grace-healthy``
+    Grace in the context of Varnish means delivering otherwise expired objects
+    when circumstances call for it. This can happen because:
+    (1) the backend-director selected is down, or
+    (2) a different thread has already made a request to the backend that's
+    not yet finished.
 
-https://varnish-cache.org/docs/6.0/reference/vcl.html#probes
+    If the backend is healthy, accept objects that are this number of seconds
+    old. Clients will be delivered content that is no more than number of
+    seconds past its TTL.
+
+    Format: number followed by a time unit: ms, s, m, h.
+
+    Defaults to ``None``. If this is set to ``None`` the grace
+    feature is disabled.
+
+``grace-sick``
+    If the backend is sick, accept objects that are this old.
+    See also ``grace-healthy``.
+
+    Format: number followed by a time unit: ms, s, m, h.
+
+    Defaults to ``600s``. Should be greater than ``grace-healthy``.
 
 
 To test the generated configuration for syntactic correctness, run
@@ -388,30 +409,6 @@ Start varnish as a daemon or in foreground with the given settings. These option
     If there is no build part, it defaults to ``/usr/sbin/varnishd`` - the
     most common place
     where it's found on many Unix systems. Adjust it if needed.
-
-``grace-healthy``
-    Grace in the context of Varnish means delivering otherwise expired objects
-    when circumstances call for it. This can happen because:
-    (1) the backend-director selected is down, or
-    (2) a different thread has already made a request to the backend that's
-    not yet finished.
-
-    If the backend is healthy, accept objects that are this number of seconds
-    old. Clients will be delivered content that is no more than number of
-    seconds past its TTL.
-
-    Format: number followed by a time unit: ms, s, m, h.
-
-    Defaults to ``None``. If this is set to ``None`` the grace
-    feature is disabled.
-
-``grace-sick``
-    If the backend is sick, accept objects that are this old.
-    See also ``grace-healthy``.
-
-    Format: number followed by a time unit: ms, s, m, h.
-
-    Defaults to ``600s``. Should be greater than ``grace-healthy``.
 
 ``group``
     The name of the group that varnish should switch to before accepting any
