@@ -321,7 +321,7 @@ class ScriptRecipe(BaseRecipe):
         self.options.setdefault(
             "daemon",
             self.get_from_section(self.options["build-part"], "location", "/usr")
-            +"/sbin/varnishd",
+            + "/sbin/varnishd",
         )
 
         self.options.setdefault(
