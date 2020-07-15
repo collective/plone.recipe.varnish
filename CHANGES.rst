@@ -1,7 +1,7 @@
 Changelog
 =========
 
-6.0.0b3 (unreleased)
+6.0.0b3 (2020-07-15)
 --------------------
 
 - BUGFIX: omitting health-probe-url resulted in `.url = "None";` [frisi]
