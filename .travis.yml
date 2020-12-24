@@ -5,7 +5,8 @@ cache:
   directories:
     - $HOME/buildout-cache
 python:
-  - 2.7
+  - "2.7"
+  - "3.8"
 env:
   - LATEST=true
 matrix:
