@@ -26,11 +26,13 @@ def exec_system(command, input=''):
                          stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE)
-    try:
-        o, e = p.communicate(input, timeout=180)
-    except subprocess.TimeoutExpired:
-        p.kill()
-        o, e = p.communicate()
+    # timeut not supported by python 2
+    # try:
+    #     o, e = p.communicate(input, timeout=180)
+    # except subprocess.TimeoutExpired:
+    #     p.kill()
+    #     o, e = p.communicate()
+    o, e = p.communicate(input)
     return (o + e).decode()
 
 
