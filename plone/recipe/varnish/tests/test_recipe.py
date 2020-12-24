@@ -5,9 +5,9 @@ from zc.buildout.testing import buildoutTearDown
 from zc.buildout.testing import install
 from zc.buildout.testing import install_develop
 
-import subprocess
 import doctest
 import shutil
+import subprocess
 import unittest
 
 
@@ -15,6 +15,8 @@ FLAGS = \
     doctest.ELLIPSIS | \
     doctest.NORMALIZE_WHITESPACE | \
     doctest.REPORT_ONLY_FIRST_FAILURE
+
+
 # We used to have a custom exec_system from zc.buildout,
 # but that one fails to give output back with varnish
 # So we fall back to a simpler version.
