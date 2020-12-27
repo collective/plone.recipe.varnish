@@ -92,7 +92,7 @@ class BuildRecipe(CMMIRecipe, BaseRecipe):
             options = '--prefix="%s"' % dest
         if self.extra_options:
             options += ' %s' % self.extra_options
-        print('options: ' + options)
+        print('options: %s' % options)
         options += ' --with-sphinx-build=false'
         # C
         system('%s %s' % (self.configure_cmd, options))

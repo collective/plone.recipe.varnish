@@ -58,11 +58,11 @@ setup(
         'zc.buildout',
         'zc.recipe.cmmi'
     ],
-    extras_require = dict(
+    extras_require=dict(
         test=['interlude', 'ipdb', 'semver']
     ),
     tests_require=['pytest'],
-    cmdclass = {'test': PyTest},
+    cmdclass={'test': PyTest},
     entry_points={
         "zc.buildout": [
             "build = plone.recipe.varnish.recipe:BuildRecipe",

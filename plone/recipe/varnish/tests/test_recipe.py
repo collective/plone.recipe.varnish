@@ -33,7 +33,7 @@ def exec_system(command, input=''):
     #     p.kill()
     #     o, e = p.communicate()
     o, e = p.communicate(input)
-    return (o + e).decode()
+    return (o + e).decode('utf-8')
 
 
 def setUp(test):

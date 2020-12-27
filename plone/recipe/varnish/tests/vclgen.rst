@@ -28,10 +28,10 @@ Type must match::
     ...     {'type': 'unknown', 'name': 'sellerie'}
     ... ]
     >>> vg = VclGenerator(config)
-    >>> vg._directors()
+    >>> vg._directors()  # doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
     ...
-    zc.buildout.UserError: director type unknown not supported.
+    UserError: director type unknown not supported.
 
 Type must match::
 
