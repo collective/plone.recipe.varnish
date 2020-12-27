@@ -10,6 +10,7 @@ import zc.buildout
 
 
 DOWNLOAD_URL = "http://varnish-cache.org/_downloads/varnish-6.0.6.tgz"
+VMODS_DOWNLOAD_URL = "https://github.com/varnish/varnish-modules/archive/0.15.1.tar.gz"
 SUPPORTED_VERSION = "6.0.6"
 
 COOKIE_WHITELIST_DEFAULT = """\
@@ -78,6 +79,23 @@ class BuildRecipe(CMMIRecipe, BaseRecipe):
         )
         self.options.setdefault("jobs", "4")
         CMMIRecipe.__init__(self, buildout, name, self.options)
+
+    def build(self):
+        super(BuildRecipe, self).build()
+        if zc.buildout.buildout.bool_option(self.options, 'compile-vmods', False):
+            self.url = self.options.get('vmods_url', VMODS_DOWNLOAD_URL)
+            if 'PKG_CONFIG_PATH' not in self.environ:
+                self.environ['PKG_CONFIG_PATH'] = os.path.join(
+                    self.options["location"], "lib", "pkgconfig"
+                )
+                os.environ.update(self.environ)
+            self.source_directory_contains = self.options.get(
+                'vmods_source-directory-contains', 'bootstrap'
+            )
+            self.configure_cmd = self.options.get(
+                'vmods_configure-command', './bootstrap; ./configure'
+            )
+            super(BuildRecipe, self).build()
 
     def cmmi(self, dest):
         """Do the 'configure; make; make install' command sequence.
@@ -278,6 +296,7 @@ class ConfigureRecipe(BaseRecipe):
         # inject custom vcl
         config["custom"] = {}
         for name in (
+            'vcl_import',
             "vcl_recv",
             "vcl_hit",
             "vcl_miss",

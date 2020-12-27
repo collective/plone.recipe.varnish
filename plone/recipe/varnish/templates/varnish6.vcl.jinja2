@@ -8,6 +8,7 @@
 vcl {{vcl_version}};
 
 import std;
+{{custom['vcl_import']}}
 
 {% if gracehealthy %}
 probe backend_probe {

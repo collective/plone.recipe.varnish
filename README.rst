@@ -210,13 +210,16 @@ parameters from that recipe are available here too (but rarely used). These opti
 Three parameters are different/ extra:
 
 ``url``
-    Location used for download of varnish sources. Defaults to a version tested
-    for the selected ``varnish_version``.
+    Location used for download of varnish sources. Defaults to the latest LTS version.
 
 ``jobs``
     Passes the number of parallel jobs to ``make``, defaults to ``4``. Adjust as
     needed to your CPU resources.
 
+``compile-vmods``
+    Boolean flag defaults to False, used for building Varnish modules. By defaults,
+    the Varnish modules are from `module collection by Varnish Software
+    <https://github.com/varnish/varnish-modules/releases>`_
 
 VCL Configuration Generator
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -4,7 +4,7 @@ Changelog
 6.0.0b4 (unreleased)
 --------------------
 
-- Nothing changed yet.
+- Build VMODS [mamico]
 
 
 6.0.0b3 (2020-07-15)
