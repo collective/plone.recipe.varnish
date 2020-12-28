@@ -81,21 +81,20 @@ class BuildRecipe(CMMIRecipe, BaseRecipe):
         CMMIRecipe.__init__(self, buildout, name, self.options)
 
     def build(self):
+        # build varnish
         super(BuildRecipe, self).build()
         if zc.buildout.buildout.bool_option(self.options, 'compile-vmods', False):
-            self.url = self.options.get('vmods_url', VMODS_DOWNLOAD_URL)
             if 'PKG_CONFIG_PATH' not in self.environ:
                 self.environ['PKG_CONFIG_PATH'] = os.path.join(
                     self.options["location"], "lib", "pkgconfig"
                 )
                 os.environ.update(self.environ)
-            self.source_directory_contains = self.options.get(
-                'vmods_source-directory-contains', 'bootstrap'
-            )
-            self.configure_cmd = self.options.get(
-                'vmods_configure-command', './bootstrap; ./configure'
-            )
-            super(BuildRecipe, self).build()
+            vmods_options = {k[6:]: v for k, v in self.options.items() if k.startswith('vmods_')}
+            vmods_options.setdefault('url', VMODS_DOWNLOAD_URL)
+            vmods_options.setdefault('source-directory-contains', 'bootstrap')
+            vmods_options.setdefault('configure-command', './bootstrap; ./configure')
+            vmods_recipe = CMMIRecipe(self.buildout, self.name, vmods_options)
+            vmods_recipe.build()
 
     def cmmi(self, dest):
         """Do the 'configure; make; make install' command sequence.
