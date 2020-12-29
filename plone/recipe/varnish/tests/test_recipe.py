@@ -5,9 +5,9 @@ from zc.buildout.testing import buildoutTearDown
 from zc.buildout.testing import install
 from zc.buildout.testing import install_develop
 
-import commands
 import doctest
 import shutil
+import subprocess
 import unittest
 
 
@@ -15,10 +15,25 @@ FLAGS = \
     doctest.ELLIPSIS | \
     doctest.NORMALIZE_WHITESPACE | \
     doctest.REPORT_ONLY_FIRST_FAILURE
+
+
 # We used to have a custom exec_system from zc.buildout,
-# but that one fails to give output back with varnish 4.1.
+# but that one fails to give output back with varnish
 # So we fall back to a simpler version.
-exec_system = commands.getoutput
+def exec_system(command, input=''):
+    p = subprocess.Popen(command,
+                         shell=True,
+                         stdin=subprocess.PIPE,
+                         stdout=subprocess.PIPE,
+                         stderr=subprocess.PIPE)
+    # timeut not supported by python 2
+    # try:
+    #     o, e = p.communicate(input, timeout=180)
+    # except subprocess.TimeoutExpired:
+    #     p.kill()
+    #     o, e = p.communicate()
+    o, e = p.communicate(input)
+    return (o + e).decode('utf-8')
 
 
 def setUp(test):
