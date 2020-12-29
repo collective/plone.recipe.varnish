@@ -22,12 +22,14 @@ Let's create a minimum buildout that uses the current plone.recipe.varnish::
     ... index = https://pypi.org/simple/
     ... [varnish-build]
     ... recipe = plone.recipe.varnish:build
+    ... compile-vmods = true
     ... jobs = 4
     ...
     ... [varnish-configuration]
     ... recipe = plone.recipe.varnish:configuration
     ... daemon = ${varnish-build:location}/sbin/varnishd
     ... backends = 127.0.0.1:8081
+    ... vcl_import = import header; import xkey;
     ...
     ... [varnish]
     ... recipe = plone.recipe.varnish:script'''
@@ -67,6 +69,10 @@ Check the config with Varnish is syntactically correct by compiling it to C::
     /* VCC_INFO VMOD...
     /* ---===### include/vdef.h ###===--- */
     <BLANKLINE>
+    ...
+    /* --- BEGIN VMOD header --- */
+    ...
+    /* --- BEGIN VMOD xkey --- */
     ...
     const struct VCL_conf VCL_conf = {
     ...
