@@ -1,2 +1,4 @@
 zc.buildout==2.13.2
 setuptools==41.0.1
+six==1.10.0
+virtualenv>=20.0.35

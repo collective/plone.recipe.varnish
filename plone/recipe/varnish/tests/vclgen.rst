@@ -28,7 +28,7 @@ Type must match::
     ...     {'type': 'unknown', 'name': 'sellerie'}
     ... ]
     >>> vg = VclGenerator(config)
-    >>> vg._directors()
+    >>> vg._directors()  # doctest: +IGNORE_EXCEPTION_DETAIL
     Traceback (most recent call last):
     ...
     UserError: director type unknown not supported.
@@ -125,13 +125,14 @@ also ::
     ...     'plone.org': {'location': '/PloneOrg', 'proto': 'http', 'external_port': '80'}
     ... }
     >>> vg = VclGenerator(config)
-    >>> pprint(vg._vhostings([]))
-    [{'match': 'req.http.host ~ "^plone.org(:[0-9]+)?$"',
-      'setters': OrderedDict([('req.backend_hint', 'backend_000'), ('req.url', '"/VirtualHostBase/http/plone.org:80/PloneOrg/VirtualHostRoot" + req.url')])},
-     {'match': 'req.url ~ "^/Plone/"',
-      'setters': OrderedDict([('req.backend_hint', 'backend_001')])},
-     {'match': 'req.http.host ~ "^[zope.org](:[0-9]+)?$" && req.url ~ "^/foo/bar"',
-      'setters': OrderedDict([('req.backend_hint', 'backend_002')])}]
+    >>> from collections import OrderedDict
+    >>> vg._vhostings([]) == [{'match': 'req.http.host ~ "^plone.org(:[0-9]+)?$"',
+    ...  'setters': OrderedDict([('req.backend_hint', 'backend_000'), ('req.url', '"/VirtualHostBase/http/plone.org:80/PloneOrg/VirtualHostRoot" + req.url')])},
+    ... {'match': 'req.url ~ "^/Plone/"',
+    ...  'setters': OrderedDict([('req.backend_hint', 'backend_001')])},
+    ... {'match': 'req.http.host ~ "^[zope.org](:[0-9]+)?$" && req.url ~ "^/foo/bar"',
+    ...  'setters': OrderedDict([('req.backend_hint', 'backend_002')])}]
+    True
 
 
 Combine Backends and directors::
@@ -208,26 +209,28 @@ Combine Backends and directors::
       'name': 'beta',
       'type': 'random'}]
 
-    >>> pprint(vg._vhostings(directors))
-    [{'match': 'req.http.host ~ "^plone.org(:[0-9]+)?$"',
-      'setters': OrderedDict([('req.backend_hint', 'alpha.backend()'), ('req.url', '"/VirtualHostBase/http/plone.org:80/PloneOrg/VirtualHostRoot" + req.url')])},
-     {'match': 'req.http.host ~ "^python.org(:[0-9]+)?$"',
-      'setters': OrderedDict([('req.backend_hint', 'beta.backend()')])},
-     {'match': 'req.http.host ~ "^single.org(:[0-9]+)?$"',
-      'setters': OrderedDict([('req.backend_hint', 'backend_020')])}]
+    >>> vg._vhostings(directors) == \
+    ... [{'match': 'req.http.host ~ "^plone.org(:[0-9]+)?$"',
+    ...  'setters': OrderedDict([('req.backend_hint', 'alpha.backend()'), ('req.url', '"/VirtualHostBase/http/plone.org:80/PloneOrg/VirtualHostRoot" + req.url')])},
+    ... {'match': 'req.http.host ~ "^python.org(:[0-9]+)?$"',
+    ...  'setters': OrderedDict([('req.backend_hint', 'beta.backend()')])},
+    ... {'match': 'req.http.host ~ "^single.org(:[0-9]+)?$"',
+    ...  'setters': OrderedDict([('req.backend_hint', 'backend_020')])}]
+    True
 
 Check purgehosts. add some manual and then all above hosts should be in too::
 
     >>> config['purgehosts'] = ['192.168.1.2', '123.123.123.123',]
     >>> vg = VclGenerator(config)
-    >>> pprint(vg._purgehosts())
-    set(['10.11.22.33',
-         '10.11.22.34',
-         '10.11.22.35',
-         '10.11.22.36',
-         '10.11.22.37',
-         '123.123.123.123',
-         '192.168.1.2'])
+    >>> vg._purgehosts() == \
+    ... set(['10.11.22.33',
+    ...      '10.11.22.34',
+    ...      '10.11.22.35',
+    ...      '10.11.22.36',
+    ...      '10.11.22.37',
+    ...      '123.123.123.123',
+    ...      '192.168.1.2'])
+    True
 
 Unix domain sockets as backend addresses::
 
@@ -297,7 +300,7 @@ When gracehealthy is set, probes for the backend are activated::
     ...     }
     ... ]
     >>> vg = VclGenerator(config)
-    >>> print vg()
+    >>> print(vg())
     # This a configuration file for varnish.
     ...
     probe backend_probe {
@@ -328,7 +331,7 @@ Provide non-default values. If initial is set, it is added to the config as well
     >>> config['healthprobethreshold'] = '2'
     >>> config['healthprobeinitial'] = '1'
 
-    >>> print VclGenerator(config)()
+    >>> print(VclGenerator(config)())
     # This a configuration file for varnish.
     ...
     probe backend_probe {

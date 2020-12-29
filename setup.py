@@ -38,6 +38,9 @@ setup(
         "Operating System :: POSIX",
         "Programming Language :: Python",
         "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "Topic :: Internet :: Proxy Servers",
     ],
     keywords='buildout varnish cache proxy',
@@ -55,11 +58,11 @@ setup(
         'zc.buildout',
         'zc.recipe.cmmi'
     ],
-    extras_require = dict(
+    extras_require=dict(
         test=['interlude', 'ipdb', 'semver']
     ),
     tests_require=['pytest'],
-    cmdclass = {'test': PyTest},
+    cmdclass={'test': PyTest},
     entry_points={
         "zc.buildout": [
             "build = plone.recipe.varnish.recipe:BuildRecipe",

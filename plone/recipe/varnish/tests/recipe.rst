@@ -52,7 +52,7 @@ A control script got created::
 
 Check the contents of the control script are correct::
 
-    >>> print open(varnish_bin).read()
+    >>> print(open(varnish_bin).read())
     #!/bin/sh
     exec ...sample-buildout/parts/varnish-build/sbin/varnishd \
         -f "...sample-buildout/parts/varnish-configuration/varnish.vcl" \
@@ -62,8 +62,8 @@ Check the contents of the control script are correct::
         "$@"
     <BLANKLINE>
 
-Check the config with Varnish 5 is syntactically correct by compiling it to C::
-    >>> print system(varnish_bin + ' -C')
+Check the config with Varnish is syntactically correct by compiling it to C::
+    >>> print(system(varnish_bin + ' -C'))
     /* VCC_INFO VMOD...
     /* ---===### include/vdef.h ###===--- */
     <BLANKLINE>
@@ -99,7 +99,7 @@ Check the contents of the control script are correct::
     >>> 'varnish' in os.listdir('bin')
     True
 
-    >>> print open(varnish_bin).read()
+    >>> print(open(varnish_bin).read())
     #!/bin/sh
     ...
         -s file,"...sample-buildout/custom_storage",3.14G \
@@ -133,7 +133,7 @@ Check the contents of the control script reflect our new options::
     >>> 'varnish' in os.listdir('bin')
     True
 
-    >>> print open(varnish_bin).read()
+    >>> print(open(varnish_bin).read())
     #!/bin/sh
     ...
         -s malloc,2.71G \
@@ -165,7 +165,7 @@ Check the contents of the control script reflect our new options::
     >>> 'varnish' in os.listdir('bin')
     True
 
-    >>> print open(varnish_bin).read()
+    >>> print(open(varnish_bin).read())
     #!/bin/sh
     ...
         -S "" \
@@ -197,7 +197,7 @@ Check the contents of the control script reflect our new options::
     >>> 'varnish' in os.listdir('bin')
     True
 
-    >>> print open(varnish_bin).read()
+    >>> print(open(varnish_bin).read())
     #!/bin/sh
     ...
         -S .../sample-buildout/var/varnish-secret \
