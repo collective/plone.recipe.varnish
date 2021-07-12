@@ -18,6 +18,7 @@ statusmessages
 __ac
 _ZopeId
 __cp
+auth_token
 """
 
 DEFAULT_VCL_HASH = """\
@@ -26,7 +27,7 @@ return(lookup);
 """
 
 COOKIE_PASS_DEFAULT = """\
-"__ac(|_(name|password|persistent))=":"\.(js|css|kss)$"
+"auth_token|__ac(|_(name|password|persistent))=":"\.(js|css|kss)$"
 """
 COOKIE_PASS_RE = re.compile('"(.*)":"(.*)"')
 
