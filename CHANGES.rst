@@ -1,7 +1,7 @@
 Changelog
 =========
 
-6.0.0b4 (unreleased)
+6.0.0b4 (2021-12-08)
 --------------------
 
 - Use Varnish 6.0.9 LTS.  [fredvd]
