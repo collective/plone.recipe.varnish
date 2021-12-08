@@ -4,6 +4,8 @@ Changelog
 6.0.0b4 (unreleased)
 --------------------
 
+- Use Varnish 6.0.9 LTS.  [fredvd]
+
 - Build VMODS [mamico]
 
 
