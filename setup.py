@@ -20,7 +20,7 @@ class PyTest(TestCommand):
 
 # versioning scheme: major/minor (positions 1-2) matches: supported varnish 6.0 LTS.
 # position 3: plone.recipe.varnish patch release X.
-version = '6.0.0b5.dev0'
+version = '6.0.9'
 
 setup(
     name='plone.recipe.varnish',
