@@ -4,7 +4,7 @@ Changelog
 6.0.0b5 (unreleased)
 --------------------
 
-- Nothing changed yet.
+- Re-release 6.0.0b4 as version 6.0.9. [fredvd]
 
 
 6.0.0b4 (2021-12-08)
