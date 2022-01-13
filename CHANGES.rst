@@ -4,6 +4,8 @@ Changelog
 6.0.9.1.dev0 (unreleased)
 -------------------------
 
+- Set the default varnish download url to https.  [maurits]
+
 - Fixed typo that prevented mp3 and mp4 from being piped, like other large files.  [maurits]
 
 
