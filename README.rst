@@ -486,8 +486,8 @@ Start varnish as a daemon or in foreground with the given settings. These option
     requests. Defaults to ``nobody``.
 
 
-.. _Varnish: http://varnish-cache.org/
-.. _zc.buildout: http://cheeseshop.python.org/pypi/zc.buildout
+.. _Varnish: https://varnish-cache.org/
+.. _zc.buildout: https://pypi.org/project/zc.buildout/
 
 Examples:
 ---------
