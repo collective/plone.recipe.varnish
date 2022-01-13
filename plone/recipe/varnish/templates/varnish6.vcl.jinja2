@@ -176,7 +176,7 @@ sub vcl_recv {
 
     # TODO: make this configureable.
 
-    if (req.url ~ "^[^?]*\.(mp3,mp4|rar|tar|tgz|gz|wav|zip)(\?.*)?$") {
+    if (req.url ~ "^[^?]*\.(mp3|mp4|rar|tar|tgz|gz|wav|zip)(\?.*)?$") {
         return(pipe);
     }
 

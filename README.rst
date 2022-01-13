@@ -89,8 +89,8 @@ about to understand and test for a performant but stable Varnish set up.
   and even store the url in a 'hit for pass' buffer so that subsequent similar requests
   don't get delayed by waiting in the backend request queue. The generated vcl has a function
   which strips off most irrelevant cookies from incomiing requests before they get passed
-  to the backend to increas cache hit rate. the __ac cookie is the most notable exception,
-  this indicated for Plone a user is logged in and caching should be disabled.
+  to the backend to increase cache hit rate. the __ac cookie is the most notable exception,
+  this indicates for Plone that a user is logged in and caching should be disabled.
 
 * You can monitor Varnish caching operations in great detail by learning how to
   use varnishlog and the query language, but it will take at least a few hours if
@@ -261,22 +261,30 @@ These options are available for the recipe part plone.recipe.varnish:configurati
     connect to a given backend for this many seconds before giving up. Defaults
     to 0.4s, as per Varnish's default settings.
 
-``cookie-whitelist``
-    After the ``cookie-pass`` was processed this list is used to to sanitize
-    cookie data on the request. Cookie data to be sent to the backend includes
-    only cookies with the given namens. Goal is to work better with the
-    backend, i.e. detect if user is logged in and adjust caching to ensure no
-    authenticated pages get cached. Defaults are optimized for Zope2/Plone:
-    ``statusmessages __ac _ZopeId __cp``
-
 ``cookie-pass``
     This list consists of lines with a cookie-match and urlexclude in the form:
-    ``"cookiematch":"urlexcludes"``. If *cookiematch* applies for the cookiename
-    and the current url does not match urlexcludes, the request is passed
-    directly to the configured backend bypassing any caching. But if cookie
-    applies and url matches urlexcludes, then a lookup is forced. Defaults are
-    optimized for Plone, one line:
-    ``"__ac(|_(name|password|persistent))=":"\.(js|css|kss)$"``
+    ``"cookiematch":"urlexcludes"``. If *cookiematch* applies for the cookiename,
+    then the request is passed directly to the configured backend
+    bypassing any caching. Additionally, if the current url matches urlexcludes,
+    then the cookies are removed, and the request piped to the backend.
+    Defaults are optimized for Plone, one line:
+    ``"auth_token|__ac(|_(name|password|persistent))=":"\.(js|css|kss)$"``
+    So when you are authenticated, the request is always handled by Plone.
+    When an authenticated user requests a js/css/kss file,
+    Plone will see you as anonymous because no cookies reach Plone.
+
+``cookie-whitelist``
+    When the ``cookie-pass`` is processed and does not match, this means you are
+    anonymous, at least with the default ``cookie-pass`` settings.
+    In that case, this whitelist is used to to sanitize cookie data on the request.
+    Cookie data to be sent to the backend includes only cookies with the given names.
+    Defaults are optimized for Zope2/Plone:
+    ``statusmessages __ac _ZopeId __cp auth_token``
+    The ``__ac`` and ``auth_token`` cookies should not be needed, as they are
+    already in the ``cookie-pass`` list, but they are here for safety in case
+    you have customized the ``cookie-pass`` setting to not include them.
+    If you have custom code that sets cookies and needs to read them in the backend,
+    then you must add the cookie names to this list.
 
 ``first-byte-timeout``
     If specified, this option configures the timeout (in seconds) for Varnish
@@ -288,7 +296,7 @@ These options are available for the recipe part plone.recipe.varnish:configurati
     Specifies hostnames or IP addresses for purge ACL. By default ``localhost`` and
     the backends are allowed to purge. Additional allowed hosts are listed here.
 
-``vcl_recv``, ``vcl_hit``, ``vcl_miss``, ``vcl_backend_fetch``, ``vcl_backend_response``, ``vcl_deliver``, ``vcl_pipe``, ``vlc_purge``, ``vcl_hash``
+``vcl_recv``, ``vcl_hit``, ``vcl_miss``, ``vcl_backend_fetch``, ``vcl_backend_response``, ``vcl_deliver``, ``vcl_pipe``, ``vlc_purge``, ``vcl_hash``, ``vcl_import``, ``vcl_init``, ``vcl_pass``
     Insert arbitrary VCL code into the generated config.
 
 ``verbose-headers``
@@ -479,8 +487,8 @@ Start varnish as a daemon or in foreground with the given settings. These option
     requests. Defaults to ``nobody``.
 
 
-.. _Varnish: http://varnish-cache.org/
-.. _zc.buildout: http://cheeseshop.python.org/pypi/zc.buildout
+.. _Varnish: https://varnish-cache.org/
+.. _zc.buildout: https://pypi.org/project/zc.buildout/
 
 Examples:
 ---------
