@@ -268,7 +268,7 @@ These options are available for the recipe part plone.recipe.varnish:configurati
     bypassing any caching. Additionally, if the current url matches urlexcludes,
     then the cookies are removed, and the request piped to the backend.
     Defaults are optimized for Plone, one line:
-    ``"__ac(|_(name|password|persistent))=":"\.(js|css|kss)$"``
+    ``"auth_token|__ac(|_(name|password|persistent))=":"\.(js|css|kss)$"``
     So when you are authenticated, the request is always handled by Plone.
     When an authenticated user requests a js/css/kss file,
     Plone will see you as anonymous because no cookies reach Plone.
@@ -279,9 +279,10 @@ These options are available for the recipe part plone.recipe.varnish:configurati
     In that case, this whitelist is used to to sanitize cookie data on the request.
     Cookie data to be sent to the backend includes only cookies with the given names.
     Defaults are optimized for Zope2/Plone:
-    ``statusmessages __ac _ZopeId __cp``
-    The ``__ac`` cookie should not be needed, but is there for safety in case
-    you have customized the ``cookie-pass`` setting to not include it.
+    ``statusmessages __ac _ZopeId __cp auth_token``
+    The ``__ac`` and ``auth_token`` cookies should not be needed, as they are
+    already in the ``cookie=pass`` list, but they are here for safety in case
+    you have customized the ``cookie-pass`` setting to not include them.
     If you have custom code that sets cookies and needs to read them in the backend,
     then you must add the cookie names to this list.
 
