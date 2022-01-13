@@ -281,7 +281,7 @@ These options are available for the recipe part plone.recipe.varnish:configurati
     Defaults are optimized for Zope2/Plone:
     ``statusmessages __ac _ZopeId __cp auth_token``
     The ``__ac`` and ``auth_token`` cookies should not be needed, as they are
-    already in the ``cookie=pass`` list, but they are here for safety in case
+    already in the ``cookie-pass`` list, but they are here for safety in case
     you have customized the ``cookie-pass`` setting to not include them.
     If you have custom code that sets cookies and needs to read them in the backend,
     then you must add the cookie names to this list.
