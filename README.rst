@@ -295,7 +295,7 @@ These options are available for the recipe part plone.recipe.varnish:configurati
     Specifies hostnames or IP addresses for purge ACL. By default ``localhost`` and
     the backends are allowed to purge. Additional allowed hosts are listed here.
 
-``vcl_recv``, ``vcl_hit``, ``vcl_miss``, ``vcl_backend_fetch``, ``vcl_backend_response``, ``vcl_deliver``, ``vcl_pipe``, ``vlc_purge``, ``vcl_hash``
+``vcl_recv``, ``vcl_hit``, ``vcl_miss``, ``vcl_backend_fetch``, ``vcl_backend_response``, ``vcl_deliver``, ``vcl_pipe``, ``vlc_purge``, ``vcl_hash``, ``vcl_import``, ``vcl_init``, ``vcl_pass``
     Insert arbitrary VCL code into the generated config.
 
 ``verbose-headers``
