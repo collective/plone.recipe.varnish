@@ -215,14 +215,6 @@ class ConfigureRecipe(BaseRecipe):
                 'proto': vhm_proto,
                 'external_port': vhm_external_port,
             }
-
-        # consistency checks
-        if result:
-            lengths = set([len(x) for x in backends])
-            if lengths != set([3]):
-                self._log_and_raise(
-                    'When using VHM a hostname must be given for each backend'
-                )
         return result
 
     def _process_balancers(self, balancer, backends):
