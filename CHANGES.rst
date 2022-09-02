@@ -4,7 +4,8 @@ Changelog
 6.0.10.1 (unreleased)
 ---------------------
 
-- Nothing changed yet.
+- Remove strange check to make vhm_map generation work again. Fixes https://github.com/collective/plone.recipe.varnish/issues/19
+  [agitator]
 
 
 6.0.10 (2022-02-20)
