@@ -180,7 +180,7 @@ Check the contents of the control script reflect our new options::
 Check if we can specify a key file for varnishadm access::
 
     >>> enable_secret = simplest + '''
-    ... secret-file = ${buildout:directory}/var/varnish-secret
+    ... secret-file = ${buildout:directory}/var/varnish-Secret
     ... '''
     >>> write('buildout.cfg', enable_secret % globals())
 
@@ -206,7 +206,7 @@ Check the contents of the control script reflect our new options::
     >>> print(open(varnish_bin).read())
     #!/bin/sh
     ...
-        -S .../sample-buildout/var/varnish-secret \
+        -S .../sample-buildout/var/varnish-Secret \
     ...
 
 Check if Varnish default version is 6.0.x::
