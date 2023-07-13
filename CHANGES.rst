@@ -4,6 +4,9 @@ Changelog
 6.0.10.1 (unreleased)
 ---------------------
 
+- Allow to configure the other storages than file and malloc (https://varnish-cache.org/docs/trunk/users-guide/storage-backends.html)
+  [mamico]
+
 - Remove strange check to make vhm_map generation work again. Fixes https://github.com/collective/plone.recipe.varnish/issues/19
   [agitator]
 

@@ -145,6 +145,40 @@ Check the contents of the control script reflect our new options::
         -s malloc,2.71G \
     ...
 
+Customising our storage options again to check we can work with umem as
+well::
+
+    >>> mem_storage = simplest + '''
+    ... cache-type = umem
+    ... cache-size = 1.71G
+    ... '''
+    >>> write('buildout.cfg', mem_storage % globals())
+
+Let's run it::
+
+    >>> output = system(buildout_bin)
+    >>> if 'Traceback' in output:
+    ...     print(output)
+    >>> if 'Uninstalling varnish.' not in output:
+    ...     print(output)
+    >>> if 'Updating varnish-build.' not in output:
+    ...     print(output)
+    >>> if 'Updating varnish-configuration.' not in output:
+    ...     print(output)
+    >>> if 'Installing varnish.' not in output:
+    ...     print(output)
+
+Check the contents of the control script reflect our new options::
+
+    >>> 'varnish' in os.listdir('bin')
+    True
+
+    >>> print(open(varnish_bin).read())
+    #!/bin/sh
+    ...
+        -s umem,1.71G \
+    ...
+
 Check if we can disable the pre shared key secret file for varnishadm access::
 
     >>> disable_secret = simplest + '''
