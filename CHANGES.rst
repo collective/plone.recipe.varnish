@@ -4,6 +4,8 @@ Changelog
 6.0.10.1 (unreleased)
 ---------------------
 
+- BUGFIX: secret filename case sensitive [mamico]
+
 - Remove strange check to make vhm_map generation work again. Fixes https://github.com/collective/plone.recipe.varnish/issues/19
   [agitator]
 
