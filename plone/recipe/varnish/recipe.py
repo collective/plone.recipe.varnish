@@ -28,7 +28,7 @@ return(lookup);
 
 COOKIE_PASS_DEFAULT = """\
 "auth_token|__ac(|_(name|password|persistent))=":"\.(js|css|kss)$"
-"""
+"""  # noqa: W605
 COOKIE_PASS_RE = re.compile('"(.*)":"(.*)"')
 
 
