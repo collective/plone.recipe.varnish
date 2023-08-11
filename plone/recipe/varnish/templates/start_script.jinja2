@@ -17,7 +17,7 @@ exec {{daemon}} \
 {% if telnet %}
     -T {{telnet}} \
 {% endif %}
-    -s {{cache_type}},{% if cache_type != 'malloc' %}"{{cache_location}}",{% endif %}{{cache_size}} \
+    -s {{cache_type}},{% if cache_type == 'file' %}"{{cache_location}}",{% endif %}{{cache_size}} \
 {% if mode == 'foreground' %}
     -F \
 {% endif %}

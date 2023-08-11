@@ -4,6 +4,9 @@ Changelog
 6.0.10.1 (unreleased)
 ---------------------
 
+- Allow to configure storages other than file and malloc (https://varnish-cache.org/docs/trunk/users-guide/storage-backends.html)
+  [mamico]
+
 - BUGFIX: secret filename case sensitive [mamico]
 
 - Remove strange check to make vhm_map generation work again. Fixes https://github.com/collective/plone.recipe.varnish/issues/19
