@@ -1,8 +1,10 @@
 Changelog
 =========
 
-6.0.10.1 (unreleased)
----------------------
+6.0.11 (unreleased)
+-------------------
+
+- Use Varnish 6.0.11 LTS.  [maurits]
 
 - Allow to configure storages other than file and malloc (https://varnish-cache.org/docs/trunk/users-guide/storage-backends.html)
   [mamico]
