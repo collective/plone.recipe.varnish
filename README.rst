@@ -1,9 +1,21 @@
-.. image:: https://travis-ci.org/collective/plone.recipe.varnish.svg?branch=master
-    :target: https://travis-ci.org/collective/plone.recipe.varnish
+.. This README is meant for consumption by humans and PyPI. PyPI can render rst files so please do not use Sphinx features.
+   If you want to learn more about writing documentation, please check out: http://docs.plone.org/about/documentation_styleguide.html
+   This text does not appear on PyPI or github. It is a comment.
 
-.. image:: https://coveralls.io/repos/github/collective/plone.recipe.varnish/badge.svg?branch=master
-    :target: https://coveralls.io/github/collective/plone.recipe.varnish?branch=master
+.. image:: https://github.com/collective/plone.recipe.varnish/actions/workflows/tests.yml/badge.svg
+    :target: https://github.com/collective/plone.recipe.varnish/actions/workflows/tests.yml
 
+.. image:: https://img.shields.io/pypi/v/plone.recipe.varnish.svg
+    :target: https://pypi.python.org/pypi/plone.recipe.varnish/
+    :alt: Latest Version
+
+.. image:: https://img.shields.io/pypi/pyversions/plone.recipe.varnish.svg?style=plastic
+    :target: https://pypi.python.org/pypi/plone.recipe.varnish/
+   :alt: Supported - Python Versions
+
+.. image:: https://img.shields.io/pypi/l/plone.recipe.varnish.svg
+    :target: https://pypi.python.org/pypi/plone.recipe.varnish/
+    :alt: License
 
 Varnish recipe for buildout
 ===========================

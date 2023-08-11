@@ -10,6 +10,7 @@
 pip-selfcheck.json
 pyvenv.cfg
 .python-version
+.coverage
 /bin/
 /build/
 /develop-eggs/
@@ -19,6 +20,7 @@ pyvenv.cfg
 /fake-eggs/
 /include/
 /lib/
+/lib64
 /local/
 /parts/
 /var/
