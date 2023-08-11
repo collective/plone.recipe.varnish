@@ -10,7 +10,7 @@
     :alt: Latest Version
 
 .. image:: https://img.shields.io/pypi/pyversions/plone.recipe.varnish.svg?style=plastic
-    :target: https://pypi.python.org/pypi/plone.recipe.varnish/
+   :target: https://pypi.python.org/pypi/plone.recipe.varnish/
    :alt: Supported - Python Versions
 
 .. image:: https://img.shields.io/pypi/l/plone.recipe.varnish.svg
