@@ -3,11 +3,13 @@
 *.mo
 *.pyc
 *.pyo
+*.swp
 .Python
 .installed.cfg
 .mr.developer.cfg
 pip-selfcheck.json
 pyvenv.cfg
+.python-version
 /bin/
 /build/
 /develop-eggs/

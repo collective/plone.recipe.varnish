@@ -54,12 +54,14 @@ setup(
     zip_safe=False,
     install_requires=[
         'jinja2>=2.7.3',
+        'jinja2<3; python_version < "3"',
+        'MarkupSafe<2; python_version < "3"',
         'setuptools',
         'zc.buildout',
         'zc.recipe.cmmi'
     ],
     extras_require=dict(
-        test=['interlude', 'ipdb', 'semver']
+        test=['interlude']
     ),
     tests_require=['pytest'],
     cmdclass={'test': PyTest},

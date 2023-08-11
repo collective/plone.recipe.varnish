@@ -1,0 +1,53 @@
+[tool.towncrier]
+# package should be "collective.recipe.backup", but that cannot be imported.
+# See https://github.com/hawkowl/towncrier/issues/111
+# We cheat here because we do not really need the package name:
+package = "towncrier"
+issue_format = "`Issue #{issue} <https://github.com/collective/collective.recipe.backup/issues/{issue}>`_"
+filename = "CHANGES.rst"
+directory = "news/"
+title_format = "{version} ({project_date})"
+# First underline is used for version/date header.
+# Second underline is used for the type names (like 'Bug fixes:').
+underlines = ["=", ""]
+
+[[tool.towncrier.type]]
+directory = "breaking"
+name = "Breaking changes:"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "feature"
+name = "New features:"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "bugfix"
+name = "Bug fixes:"
+showcontent = true
+
+[tool.isort]
+profile = "black"
+force_alphabetical_sort = true
+force_single_line = true
+lines_after_imports = 2
+
+[tool.flakeheaven.plugins]
+# Disable some checks.
+# - E203 whitespace before ':'
+#   black does this differently
+# - E501 line too long
+#   we use the line length of black, so pycodestyle should not test it.
+# - W503 line break before binary operator
+#   Outdated recommendation, see https://www.flake8rules.com/rules/W503.html
+mccabe = ["+*"]
+pycodestyle = ["+*", "-E203", "-E501", "-W503"]
+pyflakes = ["+*"]
+pylint = ["+*"]
+
+[tool.plone-code-analysis]
+# No zpretty
+checkers = ["black", "flake8", "isort", "pyroma",]
+formatters = ["black", "isort",]
+paths = "src/ setup.py"
+paths_pyroma = "."
