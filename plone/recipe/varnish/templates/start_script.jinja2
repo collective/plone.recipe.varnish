@@ -24,9 +24,9 @@ exec {{daemon}} \
 {% if name %}
     -n {{name}} \
 {% endif %}
-{% if secret == 'disabled' %}
+{% if secret.lower() == 'disabled' %}
     -S "" \
-{% elif secret != 'nosecret' %}
+{% elif secret.lower() != 'nosecret' %}
     -S {{secret}} \
 {% endif %}
 {% for parameter in parameters %}

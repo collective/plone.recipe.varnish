@@ -397,7 +397,7 @@ class ScriptRecipe(BaseRecipe):
         data['cache_size'] = self.options['cache-size']
         data['mode'] = self.options.get('mode', 'daemon')
         data['name'] = self.options.get('name')
-        data['secret'] = self.options.get('secret-file', 'nosecret').lower()
+        data['secret'] = self.options.get('secret-file', 'nosecret')
         data['telnet'] = self.options.get('telnet')
         data['parameters'] = self.options['runtime-parameters'].strip().split()
 
