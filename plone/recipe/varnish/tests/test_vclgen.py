@@ -5,22 +5,20 @@ import doctest
 import unittest
 
 FLAGS = (
-    doctest.ELLIPSIS |
-    doctest.NORMALIZE_WHITESPACE |
-    doctest.REPORT_ONLY_FIRST_FAILURE
+    doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE | doctest.REPORT_ONLY_FIRST_FAILURE
 )
 
 
 def test_suite():
     suite = [
         doctest.DocFileSuite(
-            'vclgen.rst',
+            "vclgen.rst",
             optionflags=FLAGS,
-            globs={'interact': interact, 'pprint': pprint},
+            globs={"interact": interact, "pprint": pprint},
         ),
     ]
     return unittest.TestSuite(suite)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

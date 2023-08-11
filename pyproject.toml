@@ -49,5 +49,5 @@ pylint = ["+*"]
 # No zpretty
 checkers = ["black", "flake8", "isort", "pyroma",]
 formatters = ["black", "isort",]
-paths = "src/ setup.py"
+paths = "plone/"
 paths_pyroma = "."
