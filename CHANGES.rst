@@ -1,7 +1,7 @@
 Changelog
 =========
 
-6.0.11 (unreleased)
+6.0.11 (2023-08-18)
 -------------------
 
 - Use Varnish 6.0.11 LTS.  [maurits]
