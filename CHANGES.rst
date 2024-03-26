@@ -4,7 +4,7 @@ Changelog
 6.0.13 (unreleased)
 -------------------
 
-- Use Varnish 6.0.13 LTS, varnish module 0.15.4 [mamico]
+- Use Varnish 6.0.13 LTS [mamico]
 
 
 6.0.11 (2023-08-18)
