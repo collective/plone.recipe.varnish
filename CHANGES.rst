@@ -1,10 +1,10 @@
 Changelog
 =========
 
-6.0.12 (unreleased)
+6.0.13 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Use Varnish 6.0.13 LTS, varnish module 0.15.4 [mamico]
 
 
 6.0.11 (2023-08-18)
