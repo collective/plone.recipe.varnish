@@ -4,7 +4,8 @@ Changelog
 6.0.12 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Add vcl_synth options to insert arbitrary vcl.
+  [mamico]
 
 
 6.0.11 (2023-08-18)

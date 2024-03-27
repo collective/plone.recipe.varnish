@@ -300,6 +300,7 @@ class ConfigureRecipe(BaseRecipe):
             "vcl_pipe",
             "vcl_backend_response",
             "vcl_hash",
+            "vcl_synth",
         ):
             config["custom"][name] = self.options.get(name, "")
 
