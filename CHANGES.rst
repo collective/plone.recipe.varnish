@@ -6,6 +6,8 @@ Changelog
 
 - Use Varnish 6.0.13 LTS [mamico]
 
+- Add vcl_synth options to insert arbitrary vcl. [mamico]
+
 
 6.0.11 (2023-08-18)
 -------------------
