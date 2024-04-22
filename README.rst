@@ -285,7 +285,7 @@ These options are available for the recipe part plone.recipe.varnish:configurati
     When an authenticated user requests a js/css/kss file,
     Plone will see you as anonymous because no cookies reach Plone.
 
-``cookie-pass-notexclude``
+``cookie-pass-not-exclude``
     If url matches this regexp, ``cookie-pass`` exclude rules are skipped. This is useful
     for url like ``++resource++zmi`` that requires authentication also for resources
     like js, css, ...
