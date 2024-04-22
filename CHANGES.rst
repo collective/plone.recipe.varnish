@@ -1,7 +1,7 @@
 Changelog
 =========
 
-6.0.13 (unreleased)
+6.0.13 (2024-04-22)
 -------------------
 
 - Add ``cookie-pass-not-exclude`` config.
