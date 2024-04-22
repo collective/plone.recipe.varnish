@@ -32,6 +32,7 @@ COOKIE_PASS_DEFAULT = """\
 COOKIE_PASS_RE = re.compile('"(.*)":"(.*)"')
 COOKIE_PASS_NOT_EXCLUDE_DEFAULT = "/\+\+resources\+\+zmi/"
 
+
 class BaseRecipe(object):
     def __init__(self, buildout, name, options):
         self.name = name
@@ -155,7 +156,9 @@ class ConfigureRecipe(BaseRecipe):
         self.options.setdefault("between-bytes-timeout", "60s")
         self.options.setdefault("purge-hosts", "")
         self.options.setdefault("cookie-pass", COOKIE_PASS_DEFAULT)
-        self.options.setdefault("cookie-pass-not-exclude", COOKIE_PASS_NOT_EXCLUDE_DEFAULT)
+        self.options.setdefault(
+            "cookie-pass-not-exclude", COOKIE_PASS_NOT_EXCLUDE_DEFAULT
+        )
         self.options.setdefault("cookie-whitelist", COOKIE_WHITELIST_DEFAULT)
         # Set default vcl_hash function so it doesn't use the default.vcl hostname
         self.options.setdefault("vcl_hash", DEFAULT_VCL_HASH)
