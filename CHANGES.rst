@@ -4,7 +4,9 @@ Changelog
 6.0.13 (unreleased)
 -------------------
 
-- Add `cookie-pass-not-exclude` config [mamico]
+- Add ``cookie-pass-not-exclude`` config.
+  The default value has ``++resource++zmi``, which is needed for Zope 5.9+ (Plone 6.0.10+).
+  [mamico]
 
 - Use Varnish 6.0.13 LTS [mamico]
 
