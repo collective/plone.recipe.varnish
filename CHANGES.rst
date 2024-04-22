@@ -4,6 +4,8 @@ Changelog
 6.0.13 (unreleased)
 -------------------
 
+- Add `cookie-pass-not-exclude` config [mamico]
+
 - Use Varnish 6.0.13 LTS [mamico]
 
 - Add vcl_synth options to insert arbitrary vcl. [mamico]
