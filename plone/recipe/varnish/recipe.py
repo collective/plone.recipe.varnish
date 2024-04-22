@@ -30,6 +30,7 @@ COOKIE_PASS_DEFAULT = """\
 "auth_token|__ac(|_(name|password|persistent))=":"\.(js|css|kss)$"
 """  # noqa: W605
 COOKIE_PASS_RE = re.compile('"(.*)":"(.*)"')
+COOKIE_PASS_NOT_EXCLUDE_DEFAULT = "/\\+\\+resource\\+\\+zmi/"
 
 
 class BaseRecipe(object):
@@ -155,6 +156,9 @@ class ConfigureRecipe(BaseRecipe):
         self.options.setdefault("between-bytes-timeout", "60s")
         self.options.setdefault("purge-hosts", "")
         self.options.setdefault("cookie-pass", COOKIE_PASS_DEFAULT)
+        self.options.setdefault(
+            "cookie-pass-not-exclude", COOKIE_PASS_NOT_EXCLUDE_DEFAULT
+        )
         self.options.setdefault("cookie-whitelist", COOKIE_WHITELIST_DEFAULT)
         # Set default vcl_hash function so it doesn't use the default.vcl hostname
         self.options.setdefault("vcl_hash", DEFAULT_VCL_HASH)
@@ -287,6 +291,7 @@ class ConfigureRecipe(BaseRecipe):
             if not mg and len(mg) != 2:
                 continue
             config["cookiepass"].append(dict(zip(("match", "exclude"), mg)))
+        config["cookiepassnotexclude"] = self.options["cookie-pass-not-exclude"]
         # inject custom vcl
         config["custom"] = {}
         for name in (

@@ -72,6 +72,7 @@ Basic check::
     ...         {'match': '__ac(|_(name|password|persistent))=',
     ...          'exclude': '\.(js|css|kss)' }
     ...     ],
+    ...     'cookiepassnotexclude': '/\\+\\+resource\\+\\+zmi/',
     ...     'gracehealthy': '10s',
     ...     'gracesick': '1h',
     ...     'code404page' : True,
@@ -274,6 +275,7 @@ When gracehealthy is set, probes for the backend are activated::
     ...         {'match': '__ac(|_(name|password|persistent))=',
     ...          'exclude': '\.(js|css|kss)' }
     ...     ],
+    ...     'cookiepassnotexclude': '/\\+\\+resource\\+\\+zmi/',
     ...     'gracehealthy': '10s',
     ...     'gracesick': '1h',
     ...     'code404page' : True,

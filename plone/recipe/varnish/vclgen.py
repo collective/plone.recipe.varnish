@@ -120,6 +120,7 @@ class VclGenerator(object):
         data["custom"] = self.cfg["custom"]
         data["cookiewhitelist"] = self.cfg["cookiewhitelist"]
         data["cookiepass"] = self.cfg["cookiepass"]
+        data["cookiepassnotexclude"] = self.cfg["cookiepassnotexclude"]
         data["code404page"] = self.cfg["code404page"]
         data["gracehealthy"] = self.cfg["gracehealthy"]
         data["gracesick"] = self.cfg["gracesick"]
