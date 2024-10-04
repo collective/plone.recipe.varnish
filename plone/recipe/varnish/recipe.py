@@ -27,7 +27,7 @@ return(lookup);
 """
 
 COOKIE_PASS_DEFAULT = """\
-"auth_token|__ac(|_(name|password|persistent))=":"\.(js|css|kss)$"
+"auth_token|__ac(|_(name|password|persistent))=":"\.(js|css|kss|woff|woff2|eot|ttf|otf)$"
 """  # noqa: W605
 COOKIE_PASS_RE = re.compile('"(.*)":"(.*)"')
 COOKIE_PASS_NOT_EXCLUDE_DEFAULT = "/\\+\\+resource\\+\\+zmi/"
