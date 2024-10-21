@@ -4,7 +4,9 @@ Changelog
 6.0.14 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Add common font formats to the list of extensions where cookies should be unset.
+  Remove kss from this list.
+  [erral]
 
 
 6.0.13 (2024-04-22)
