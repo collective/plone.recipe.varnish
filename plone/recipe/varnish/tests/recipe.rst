@@ -307,22 +307,19 @@ Check the generated VCL defines three backends pointing to the correct servers::
 Check the vcl_recv section routes by host+path for the two site backends, then
 falls back to the host-only match, with a 404 for unrecognised virtual hosts::
 
-    >>> print(open(varnish_vcl).read())
-    # This a configuration file for varnish.
-    ...
-    if (req.http.host ~ "^www.example.it(:[0-9]+)?$" && req.url ~ "^/site1") {
-    ...
-        set req.backend_hint = backend_000;
-    ...
-    } elseif (req.http.host ~ "^www.example.it(:[0-9]+)?$" && req.url ~ "^/site2") {
-    ...
-        set req.backend_hint = backend_001;
-    ...
-    } elseif (req.http.host ~ "^www.example.it(:[0-9]+)?$") {
-    ...
-        set req.backend_hint = backend_002;
-    ...
-    } else {
-        return (synth(404, "Unknown virtual host."));
-    ...
+    >>> vcl = open(varnish_vcl).read()
+    >>> recv = vcl[vcl.index('# virtual hosting matches'):]
+    >>> vhosting = ' '.join(recv[:recv.index('if (req.method == "PURGE")')].split())
+    >>> vhosting == (
+    ...     '# virtual hosting matches'
+    ...     ' if (req.http.host ~ "^www.example.it(:[0-9]+)?$" && req.url ~ "^/site1") {'
+    ...     ' set req.backend_hint = backend_000;'
+    ...     ' } elseif (req.http.host ~ "^www.example.it(:[0-9]+)?$" && req.url ~ "^/site2") {'
+    ...     ' set req.backend_hint = backend_001;'
+    ...     ' } elseif (req.http.host ~ "^www.example.it(:[0-9]+)?$") {'
+    ...     ' set req.backend_hint = backend_002;'
+    ...     ' } else {'
+    ...     ' return (synth(404, "Unknown virtual host."));'
+    ...     ' }')
+    True
 
