@@ -1,8 +1,10 @@
 Changelog
 =========
 
-6.0.13.2 (unreleased)
+6.0.18 (unreleased)
 ---------------------
+
+- Use Varnish 6.0.18 LTS. [mamico]
 
 - Fix VCL regex for ``hostname:/path`` backends: the hostname was incorrectly
   wrapped in square brackets (e.g. ``^[www.example.it]...``), making it a
