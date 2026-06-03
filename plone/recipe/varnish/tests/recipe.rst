@@ -289,6 +289,7 @@ Let's run it::
 Check the generated VCL defines three backends pointing to the correct servers::
 
     >>> print(open(varnish_vcl).read())
+    # This a configuration file for varnish.
     ...
     backend backend_000 {
        .host = "server1";
@@ -307,6 +308,7 @@ Check the vcl_recv section routes by host+path for the two site backends, then
 falls back to the host-only match, with a 404 for unrecognised virtual hosts::
 
     >>> print(open(varnish_vcl).read())
+    # This a configuration file for varnish.
     ...
     if (req.http.host ~ "^www.example.it(:[0-9]+)?$" && req.url ~ "^/site1") {
     ...
