@@ -4,7 +4,11 @@ Changelog
 6.0.13.2 (unreleased)
 ---------------------
 
-- Nothing changed yet.
+- Fix VCL regex for ``hostname:/path`` backends: the hostname was incorrectly
+  wrapped in square brackets (e.g. ``^[www.example.it]...``), making it a
+  character class instead of a literal match. Now generates the correct form
+  ``^www.example.it(:[0-9]+)?$``.
+  [mamico]
 
 
 6.0.13.1 (2024-10-21)
