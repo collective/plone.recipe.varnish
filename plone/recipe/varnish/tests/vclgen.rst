@@ -131,7 +131,7 @@ also ::
     ...  'setters': OrderedDict([('req.backend_hint', 'backend_000'), ('req.url', '"/VirtualHostBase/http/plone.org:80/PloneOrg/VirtualHostRoot" + req.url')])},
     ... {'match': 'req.url ~ "^/Plone/"',
     ...  'setters': OrderedDict([('req.backend_hint', 'backend_001')])},
-    ... {'match': 'req.http.host ~ "^[zope.org](:[0-9]+)?$" && req.url ~ "^/foo/bar"',
+    ... {'match': 'req.http.host ~ "^zope.org(:[0-9]+)?$" && req.url ~ "^/foo/bar"',
     ...  'setters': OrderedDict([('req.backend_hint', 'backend_002')])}]
     True
 

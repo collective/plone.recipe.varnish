@@ -248,3 +248,78 @@ Check if Varnish default version is 6.0.x::
     >>> output = system(varnishd + ' -V')
     >>> if 'varnishd (varnish-6.0.' not in output:
     ...     print(output)
+
+Test a buildout with multiple backends for path-based virtual hosting: two backends
+serve different paths on the same hostname and one backend is the host-level fallback::
+
+    >>> varnish_vcl = os.path.join('parts', 'varnish-configuration', 'varnish.vcl')
+    >>> multi_backends_cfg = '''
+    ... [buildout]
+    ... parts = varnish-build varnish-configuration varnish
+    ... find-links = %(sample_buildout)s/eggs
+    ... index = https://pypi.org/simple/
+    ...
+    ... [varnish-build]
+    ... recipe = plone.recipe.varnish:build
+    ... compile-vmods = true
+    ... jobs = 4
+    ...
+    ... [varnish-configuration]
+    ... recipe = plone.recipe.varnish:configuration
+    ... daemon = ${varnish-build:location}/sbin/varnishd
+    ... backends =
+    ...     www.example.it:/site1:server1:8080
+    ...     www.example.it:/site2:server2:8080
+    ...     www.example.it:server0:8080
+    ...
+    ... [varnish]
+    ... recipe = plone.recipe.varnish:script'''
+    >>> write('buildout.cfg', multi_backends_cfg % globals())
+
+Let's run it::
+
+    >>> output = system(buildout_bin)
+    >>> if 'Traceback' in output:
+    ...     print(output)
+    >>> if 'Updating varnish-build.' not in output:
+    ...     print(output)
+    >>> if 'varnish-configuration' not in output:
+    ...     print(output)
+
+Check the generated VCL defines three backends pointing to the correct servers::
+
+    >>> print(open(varnish_vcl).read())
+    # This a configuration file for varnish.
+    ...
+    backend backend_000 {
+       .host = "server1";
+       .port = "8080";
+    ...
+    backend backend_001 {
+       .host = "server2";
+       .port = "8080";
+    ...
+    backend backend_002 {
+       .host = "server0";
+       .port = "8080";
+    ...
+
+Check the vcl_recv section routes by host+path for the two site backends, then
+falls back to the host-only match, with a 404 for unrecognised virtual hosts::
+
+    >>> vcl = open(varnish_vcl).read()
+    >>> recv = vcl[vcl.index('# virtual hosting matches'):]
+    >>> vhosting = ' '.join(recv[:recv.index('if (req.method == "PURGE")')].split())
+    >>> vhosting == (
+    ...     '# virtual hosting matches'
+    ...     ' if (req.http.host ~ "^www.example.it(:[0-9]+)?$" && req.url ~ "^/site1") {'
+    ...     ' set req.backend_hint = backend_000;'
+    ...     ' } elseif (req.http.host ~ "^www.example.it(:[0-9]+)?$" && req.url ~ "^/site2") {'
+    ...     ' set req.backend_hint = backend_001;'
+    ...     ' } elseif (req.http.host ~ "^www.example.it(:[0-9]+)?$") {'
+    ...     ' set req.backend_hint = backend_002;'
+    ...     ' } else {'
+    ...     ' return (synth(404, "Unknown virtual host."));'
+    ...     ' }')
+    True
+
